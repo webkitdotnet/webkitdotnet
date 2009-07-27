@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowser", "WebKitBrowser\WebKitBrowser.csproj", "{44AFE214-12C7-4280-898D-A7C4AABF1533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowserTest", "WebKitBrowserTest\WebKitBrowserTest.csproj", "{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A0D75E0-65F8-4777-B5A0-B84937944551}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.txt = README.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44AFE214-12C7-4280-898D-A7C4AABF1533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44AFE214-12C7-4280-898D-A7C4AABF1533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44AFE214-12C7-4280-898D-A7C4AABF1533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44AFE214-12C7-4280-898D-A7C4AABF1533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
