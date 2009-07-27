@@ -47,6 +47,9 @@ namespace WebKit
         [DllImport("Kernel32.dll", SetLastError = true)]
         public static extern bool DeactivateActCtx(uint dwFlags, uint lpCookie);
 
+        [DllImport("Kernel32.dll")]
+        public static extern IntPtr LoadLibrary(string libFileName);
+
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
 
@@ -82,6 +85,7 @@ namespace WebKit
             public string lpAssemblyDirectory;
             public string lpResourceName;
             public string lpApplicationName;
+            public IntPtr hModule;
         }
 
         [StructLayout(LayoutKind.Sequential)]

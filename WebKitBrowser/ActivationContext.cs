@@ -26,7 +26,11 @@
 
 /// TODO:
 /// garbage collection / deinitialization
-/// support for manifest resource
+/// either find out if we can remove the need for this stuff altogether - 
+/// embedding the manifest into a client application seems to work but is
+/// not an ideal solution - or work out how to load it from a resource - 
+/// I've tried this already by getting CreateActCtx to load this assembly,
+/// but it can't seem to find the manifest resource.
 
 using System;
 using System.Collections.Generic;

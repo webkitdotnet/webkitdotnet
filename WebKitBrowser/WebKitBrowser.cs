@@ -24,9 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-// TODO: work out why focused controls in the browser window are not
-// highlighted, and other graphical anomalies.
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -255,7 +252,7 @@ namespace WebKit
                 if (!hasAlreadyLoaded)
                 {
                     hasAlreadyLoaded = true;
-                    activationContext = new ActivationContext("WebKitBrowser.manifest");
+                    activationContext = new ActivationContext("WebKitBrowser.dll.manifest");
                     activationContext.Initialize();
 
                     // TODO: more error handling here
@@ -272,16 +269,6 @@ namespace WebKit
                 W32API.SetFocus(webViewHWND);
             };            
         }
-
-        private void WebKitBrowser_Load(object sender, EventArgs e)
-        {
-            // Create the WebKit browser component
-            InitializeWebKit();
-
-            if (url != "")
-                Navigate(url);
-        }
-
 
         private void InitializeWebKit()
         {
@@ -349,6 +336,15 @@ namespace WebKit
                 // Resize the WebKit control
                 W32API.MoveWindow(webViewHWND, 0, 0, this.Width - 1, this.Height - 1, true);
             }
+        }
+
+        private void WebKitBrowser_Load(object sender, EventArgs e)
+        {
+            // Create the WebKit browser component
+            InitializeWebKit();
+
+            if (url != "")
+                Navigate(url);
         }
 
         #endregion
