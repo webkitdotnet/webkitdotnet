@@ -24,6 +24,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
+// TODO: dispose / finalize stuff
+//       design time support for properties etc..
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,14 +47,15 @@ namespace WebKit
     public partial class WebKitBrowser : UserControl
     {
         // static variables
-        private static bool hasAlreadyLoaded = false;
         private static ActivationContext activationContext;
+        private static int actCtxRefCount = 0;
 
         // private member variables...
         private IWebView webView;
         private IntPtr webViewHWND;
         private Dictionary<WebDownload, WebKitDownload> downloads = new Dictionary<WebDownload, WebKitDownload>();
         private string url = "";
+        private bool disposed = false;
 
         // delegates for WebKit events
         private WebFrameLoadDelegate frameLoadDelegate;
@@ -88,11 +92,13 @@ namespace WebKit
         /// <summary>
         /// Gets the title of the current document.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string DocumentTitle { get; private set; }
 
         /// <summary>
         /// Gets or sets the current Url.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Uri Url
         {
             get
@@ -105,7 +111,7 @@ namespace WebKit
                         return null;
                     return new Uri(webView.mainFrame().dataSource().request().url());
                 }
-                else 
+                else
                     return new Uri(this.url);
             }
             set
@@ -123,6 +129,7 @@ namespace WebKit
         /// <summary>
         /// Gets a value indicating whether a web page is currently being loaded.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsBusy
         {
             get
@@ -137,6 +144,7 @@ namespace WebKit
         /// <summary>
         /// Gets or sets the HTML content of the current document.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string DocumentText
         {
             get
@@ -161,6 +169,7 @@ namespace WebKit
         /// <summary>
         /// Returns the currently selected text.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string SelectedText
         {
             get
@@ -176,6 +185,7 @@ namespace WebKit
         /// <summary>
         /// Gets or sets the application name for user agent.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ApplicationName
         {
             get
@@ -195,6 +205,7 @@ namespace WebKit
         /// <summary>
         /// Gets or sets the user agent.
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string UserAgent
         {
             get
@@ -214,6 +225,7 @@ namespace WebKit
         /// <summary>
         /// Text size multiplier (1.0 is normal size).
         /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public float TextSize
         {
             get
@@ -230,7 +242,7 @@ namespace WebKit
             }
         }
 
-        public readonly string Version = "0.2";
+        public readonly string Version = "0.2.1";
 
         #endregion
 
@@ -239,19 +251,18 @@ namespace WebKit
         public WebKitBrowser()
         {
             InitializeComponent();
-
-            // Control Events            
-            this.Load += new EventHandler(WebKitBrowser_Load);
-            this.Resize += new EventHandler(WebKitBrowser_Resize);
         
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
+                // Control Events            
+                this.Load += new EventHandler(WebKitBrowser_Load);
+                this.Resize += new EventHandler(WebKitBrowser_Resize);
+
                 // If this is the first time the library has been loaded,
                 // initialize the activation context required to load the
                 // WebKit COM component registration free
-                if (!hasAlreadyLoaded)
+                if ((actCtxRefCount++) == 0)
                 {
-                    hasAlreadyLoaded = true;
                     activationContext = new ActivationContext("WebKitBrowser.dll.manifest");
                     activationContext.Initialize();
 
@@ -261,13 +272,13 @@ namespace WebKit
                     // will throw an OutOfMemory exception if we don't...
                     Application.OleRequired();
                 }
-            }
 
-            // If this control is brought to focus, focus our webkit child window
-            this.GotFocus += (s, e) =>
-            {
-                W32API.SetFocus(webViewHWND);
-            };            
+                // If this control is brought to focus, focus our webkit child window
+                this.GotFocus += (s, e) =>
+                {
+                    W32API.SetFocus(webViewHWND);
+                };            
+            }
         }
 
         private void InitializeWebKit()
@@ -454,9 +465,8 @@ namespace WebKit
         {
             if (webView != null)
             {
-                // TODO: a bit more rigorous checking here...
-                //if (!Url.StartsWith("http://"))
-                if (!Url.Contains("://"))
+                // prepend with "http://" if url not well formed
+                if (!Uri.IsWellFormedUriString(Url, UriKind.Absolute))
                     Url = "http://" + Url;
 
                 activationContext.Activate();

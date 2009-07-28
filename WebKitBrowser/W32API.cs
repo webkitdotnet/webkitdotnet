@@ -38,6 +38,8 @@ namespace WebKit
     /// </remarks>
     internal class W32API
     {
+        public static int INVALID_HANDLE_VALUE = (-1);
+
         [DllImport("Kernel32.dll", SetLastError = true)]
         public static extern bool ActivateActCtx(IntPtr hActCtx, out uint lpCookie);
 
@@ -47,14 +49,8 @@ namespace WebKit
         [DllImport("Kernel32.dll", SetLastError = true)]
         public static extern bool DeactivateActCtx(uint dwFlags, uint lpCookie);
 
-        [DllImport("Kernel32.dll")]
-        public static extern IntPtr LoadLibrary(string libFileName);
-
-        [DllImport("user32.dll")]
-        public static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
-
-        [DllImport("user32.dll")]
-        public static extern bool UpdateWindow(IntPtr hwnd);
+        [DllImport("Kernel32.dll", SetLastError = true)]
+        public static extern void ReleaseActCtx(IntPtr hActCtx);
 
         [DllImport("user32.dll")]
         public static extern bool MoveWindow(IntPtr hwnd, int x, int y, int width, int height, bool repaint);
@@ -64,15 +60,6 @@ namespace WebKit
 
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("uxtheme.dll")]
-        public static extern int SetWindowTheme(IntPtr hwnd, string textSubAppName, string textSubIdList);
-
-        [DllImport("comctl32.dll")]
-        public static extern bool InitCommonControlsEx(ref INITCOMMONCONTROLSEX lpInitCtrls);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetActiveWindow(IntPtr hwnd);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct ACTCTX
@@ -86,13 +73,6 @@ namespace WebKit
             public string lpResourceName;
             public string lpApplicationName;
             public IntPtr hModule;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct INITCOMMONCONTROLSEX 
-        {
-            public int dwSize; 
-            public uint dwICC; 
         }
     }
 }

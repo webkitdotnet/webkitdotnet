@@ -54,17 +54,21 @@ namespace WebKitBrowserTest
             // tabcontrol events
             tabControl.SelectedIndexChanged += (s, e) => 
             {
-                UnregisterBrowserEvents();
+                if (currentPage != null)
+                    UnregisterBrowserEvents();
                 currentPage = (WebBrowserTabPage)tabControl.SelectedTab;
-                RegisterBrowserEvents();
-                if (currentPage.browser.Url != null)
-                    navigationBar.UrlText = currentPage.browser.Url.ToString();
-                else
-                    navigationBar.UrlText = "";
+                if (currentPage != null)
+                {
+                    RegisterBrowserEvents();
+                    if (currentPage.browser.Url != null)
+                        navigationBar.UrlText = currentPage.browser.Url.ToString();
+                    else
+                        navigationBar.UrlText = "";
 
-                this.Text = "WebKit Browser Example - " + currentPage.browser.DocumentTitle;
+                    this.Text = "WebKit Browser Example - " + currentPage.browser.DocumentTitle;
 
-                currentPage.browser.Focus();
+                    currentPage.browser.Focus();
+                }
             };
 
             // navigation bar events
@@ -91,7 +95,8 @@ namespace WebKitBrowserTest
 
         void browser_Error(object sender, WebKitBrowserErrorEventArgs args)
         {
-            currentPage.browser.DocumentText = "<html><head><title>Error</title></head><center><p>" + args.Description + "</p></center></html>";
+            if (currentPage != null)
+                currentPage.browser.DocumentText = "<html><head><title>Error</title></head><center><p>" + args.Description + "</p></center></html>";
         }
 
         void browser_DocumentTitleChanged(object sender, EventArgs e)
@@ -158,6 +163,16 @@ namespace WebKitBrowserTest
         {
             if (currentPage.browser.CanFocus)
                 currentPage.browser.Focus();
+        }
+
+        private void closeTabToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TabPage page = currentPage;
+            tabControl.Controls.Remove(page);
+            page.Dispose();
+
+            if (tabControl.Controls.Count == 0)
+                Application.Exit();
         }
     }
 }

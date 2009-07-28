@@ -39,11 +39,20 @@ namespace WebKit
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (!disposed)
             {
-                components.Dispose();
+                if (disposing && (components != null))
+                {
+                    components.Dispose();
+                }
+                if ((--actCtxRefCount) == 0 && activationContext != null)
+                {
+                    activationContext.Dispose();
+                }
+
+                disposed = true;
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
         }
 
         #region Component Designer generated code

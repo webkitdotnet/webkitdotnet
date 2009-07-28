@@ -25,7 +25,7 @@
 */
 
 /// TODO:
-/// garbage collection / deinitialization
+/// possible race conditions?
 /// either find out if we can remove the need for this stuff altogether - 
 /// embedding the manifest into a client application seems to work but is
 /// not an ideal solution - or work out how to load it from a resource - 
@@ -37,6 +37,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using WebKit;
+using System.ComponentModel;
 
 namespace WebKit
 {
@@ -51,7 +52,7 @@ namespace WebKit
     /// Instead we create an activation context which explicitly loads a
     /// manifest and activate this context when we need to create a COM object.
     /// </remarks>
-    internal class ActivationContext
+    internal class ActivationContext : IDisposable
     {
         // Read-only state properties
         public string ManifestFileName { get; private set; }
@@ -60,8 +61,9 @@ namespace WebKit
 
         // Private stuff...
         private W32API.ACTCTX activationContext;
-        private IntPtr contextHandle;
-        private uint lastCookie;
+        private IntPtr contextHandle = IntPtr.Zero;
+        private uint lastCookie = 0;
+        private bool disposed = false;
 
         /// <summary>
         /// Constructor for ActivationContext.
@@ -77,35 +79,38 @@ namespace WebKit
         /// <summary>
         /// Activates the activation context.
         /// </summary>
-        /// <returns>Success value.</returns>
-        public bool Activate()
+        public void Activate()
         {
+            if (disposed)
+                throw new ObjectDisposedException(this.ToString());
             if (!Initialized)
                 throw new InvalidOperationException("ActivationContext has not been initialized");
             if (!Activated)
             {
                 lastCookie = 0;
                 Activated = W32API.ActivateActCtx(contextHandle, out lastCookie);
+
+                if (!Activated)
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to activate activation context");
             }
-            return Activated;
         }
 
         /// <summary>
         /// Deactivates the activation context, activating the next one down
         /// on the 'stack'.
         /// </summary>
-        /// <returns>Success value.</returns>
-        public bool Deactivate()
+        public void Deactivate()
         {
+            if (disposed)
+                throw new ObjectDisposedException(this.ToString());
             if (!Initialized)
                 throw new InvalidOperationException("ActivationContext has not been initialized");
             if (Activated)
             {
-                // TODO: Error handling?
-                W32API.DeactivateActCtx(0, lastCookie);
+                if (!W32API.DeactivateActCtx(0, lastCookie))
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to deactivate activation context");
                 Activated = false;
             }
-            return true;
         }
 
         /// <summary>
@@ -113,17 +118,45 @@ namespace WebKit
         /// </summary>
         public void Initialize()
         {
+            if (disposed)
+                throw new ObjectDisposedException(this.ToString());
             if (!Initialized)
             {
                 activationContext = new W32API.ACTCTX();
-
                 activationContext.cbSize = Marshal.SizeOf(typeof(W32API.ACTCTX));
                 activationContext.lpSource = this.ManifestFileName;
 
                 contextHandle = W32API.CreateActCtx(ref activationContext);
 
-                Initialized = (contextHandle.ToInt32() != -1);
+                Initialized = (contextHandle != (IntPtr) W32API.INVALID_HANDLE_VALUE);
+
+                if (!Initialized)
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to initialize activation context");
             }
         }
+
+        #region Garbage collection stuff
+
+        ~ActivationContext()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                W32API.ReleaseActCtx(contextHandle);
+                disposed = true;
+            }
+        }
+
+        #endregion
     }
 }
