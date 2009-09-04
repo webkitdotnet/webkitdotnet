@@ -86,6 +86,18 @@ namespace WebKitBrowserTest
             currentPage.browser.DocumentTitleChanged += new EventHandler(browser_DocumentTitleChanged);
             currentPage.browser.Error += new WebKit.WebKitBrowserErrorEventHandler(browser_Error);
             currentPage.browser.DownloadBegin += new FileDownloadBeginEventHandler(browser_DownloadBegin);
+            currentPage.browser.NewWindowRequest += new NewWindowRequestEventHandler(browser_NewWindowRequest);
+            currentPage.browser.NewWindowCreated += new NewWindowCreatedEventHandler(browser_NewWindowCreated);
+        }
+
+        void browser_NewWindowCreated(object sender, NewWindowCreatedEventArgs args)
+        {
+            tabControl.TabPages.Add(new WebBrowserTabPage(args.WebKitBrowser, false));
+        }
+
+        void browser_NewWindowRequest(object sender, NewWindowRequestEventArgs args)
+        {
+            args.Cancel = (MessageBox.Show(args.Url, "Open new window?", MessageBoxButtons.YesNo) == DialogResult.No);
         }
 
         void browser_DownloadBegin(object sender, FileDownloadBeginEventArgs args)
@@ -119,6 +131,8 @@ namespace WebKitBrowserTest
             currentPage.browser.DocumentCompleted -= browser_DocumentCompleted;
             currentPage.browser.Navigated -= browser_Navigated;
             currentPage.browser.DocumentTitleChanged -= browser_DocumentTitleChanged;
+            currentPage.browser.NewWindowCreated -= browser_NewWindowCreated;
+            currentPage.browser.NewWindowRequest -= browser_NewWindowRequest;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -173,6 +187,11 @@ namespace WebKitBrowserTest
 
             if (tabControl.Controls.Count == 0)
                 Application.Exit();
+        }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //currentPage.browser.test();
         }
     }
 }

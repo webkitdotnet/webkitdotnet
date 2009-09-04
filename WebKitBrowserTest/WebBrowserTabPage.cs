@@ -44,7 +44,11 @@ namespace WebKitBrowserTest
         private ToolStripLabel iconLabel;
         private ToolStripContainer container;
 
-        public WebBrowserTabPage()
+        public WebBrowserTabPage() : this(new WebKitBrowser(), true)
+        {
+        }
+
+        public WebBrowserTabPage(WebKitBrowser browserControl, bool goHome)
         {
             InitializeComponent();
 
@@ -74,7 +78,7 @@ namespace WebKitBrowserTest
             container.BottomToolStripPanel.Controls.Add(statusStrip);
 
             // create webbrowser control
-            browser = new WebKitBrowser();
+            browser = browserControl;
             browser.Visible = true;
             browser.Dock = DockStyle.Fill;
             browser.Name = "browser";
@@ -90,7 +94,8 @@ namespace WebKitBrowserTest
             browser.Navigating += (s, e) => statusLabel.Text = "Loading...";
             browser.Navigated += (s, e) => { statusLabel.Text = "Downloading..."; };
             browser.DocumentCompleted += (s, e) => { statusLabel.Text = "Done"; };
-            browser.Navigate("http://www.google.com");
+            if (goHome)
+                browser.Navigate("http://www.google.com");
             browser.ApplicationName = "WebKit.NET-test";
         }
 

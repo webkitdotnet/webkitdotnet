@@ -59,7 +59,7 @@ namespace WebKit
         {
             // ignore requests to open new windows for the moment,
             // until we have implemented this stuff (see WebKitUIDelegate)
-            listener.ignore();
+            listener.use();
         }
 
         public void unableToImplementPolicyWithError(WebView WebView, WebError error, IWebFrame frame)

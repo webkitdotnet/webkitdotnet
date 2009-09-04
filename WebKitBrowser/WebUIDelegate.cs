@@ -34,8 +34,12 @@ using WebKit.Interop;
 
 namespace WebKit
 {
+    delegate void CreateWebViewWithRequestEvent(IWebURLRequest request, out WebView webView);
+
     internal class WebUIDelegate : IWebUIDelegate
     {
+        public event CreateWebViewWithRequestEvent CreateWebViewWithRequest;
+
         #region IWebUIDelegate Members
 
         public void addCustomMenuDrawingData(WebView sender, int hMenu)
@@ -85,8 +89,15 @@ namespace WebKit
 
         public WebView createWebViewWithRequest(WebView sender, IWebURLRequest request)
         {
-            throw new NotImplementedException();
+            WebView view;
+            CreateWebViewWithRequest(request, out view);
+            return view;
         }
+
+        /*public IWebDesktopNotificationsDelegate desktopNotificationsDelegate()
+        {
+            throw new NotImplementedException();
+        }*/
 
         public WebDragDestinationAction dragDestinationActionMaskForDraggingInfo(WebView WebView, IDataObject draggingInfo)
         {

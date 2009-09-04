@@ -93,5 +93,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /Y "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"</PostBuildEvent>
+    <PreBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
+tlbimp "$(SolutionDir)webkit\webkit.dll" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"</PreBuildEvent>
   </PropertyGroup>
 </Project>

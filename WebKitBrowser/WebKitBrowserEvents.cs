@@ -47,10 +47,40 @@ namespace WebKit
     public class FileDownloadBeginEventArgs : EventArgs
     {
         public WebKitDownload Download { get; private set; }
+        public bool Cancel { get; set; }
 
         public FileDownloadBeginEventArgs(WebKitDownload Download)
         {
             this.Download = Download;
+            this.Cancel = false;
+        }
+    }
+
+
+    public delegate void NewWindowRequestEventHandler (object sender, NewWindowRequestEventArgs args);
+
+    public class NewWindowRequestEventArgs : EventArgs
+    {
+        public bool Cancel { get; set; }
+        public string Url { get; private set; }
+
+        public NewWindowRequestEventArgs(string Url)
+        {
+            this.Cancel = false;
+            this.Url = Url;
+        }
+    }
+
+
+    public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs args);
+
+    public class NewWindowCreatedEventArgs : EventArgs
+    {
+        public WebKitBrowser WebKitBrowser { get; private set; }
+
+        public NewWindowCreatedEventArgs(WebKitBrowser browser)
+        {
+            WebKitBrowser = browser;
         }
     }
 }

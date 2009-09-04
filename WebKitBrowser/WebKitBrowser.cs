@@ -56,6 +56,7 @@ namespace WebKit
         private Dictionary<WebDownload, WebKitDownload> downloads = new Dictionary<WebDownload, WebKitDownload>();
         private string url = "";
         private bool disposed = false;
+        private bool loaded = false;
 
         // delegates for WebKit events
         private WebFrameLoadDelegate frameLoadDelegate;
@@ -71,6 +72,8 @@ namespace WebKit
         public event WebBrowserNavigatingEventHandler Navigating = delegate { };
         public event WebKitBrowserErrorEventHandler Error = delegate { };
         public event FileDownloadBeginEventHandler DownloadBegin = delegate { };
+        public event NewWindowRequestEventHandler NewWindowRequest = delegate { };
+        public event NewWindowCreatedEventHandler NewWindowCreated = delegate { };
 
         // redirects relevant key strokes to the webkit control
         // bit more work is needed here perhaps
@@ -105,7 +108,6 @@ namespace WebKit
             {
                 if (webView != null)
                 {
-                    // TODO: find out what's supposed to happen here...
                     string url = webView.mainFrame().dataSource().request().url();
                     if (url == "")
                         return null;
@@ -279,13 +281,18 @@ namespace WebKit
                     W32API.SetFocus(webViewHWND);
                 };            
             }
+
+            activationContext.Activate();
+            webView = new WebViewClass();
+            activationContext.Deactivate();
         }
 
         private void InitializeWebKit()
         {
             activationContext.Activate();
 
-            webView = new WebViewClass();
+            if (webView == null)
+                webView = new WebViewClass();
 
             frameLoadDelegate = new WebFrameLoadDelegate();
             Marshal.AddRef(Marshal.GetIUnknownForObject(frameLoadDelegate));
@@ -302,9 +309,7 @@ namespace WebKit
             webView.setPolicyDelegate(policyDelegate);
             webView.setFrameLoadDelegate(frameLoadDelegate);
             webView.setDownloadDelegate(downloadDelegate);
-
-            // haven't implemented this stuff yet
-            // webView.setUIDelegate(uiDelegate);
+            webView.setUIDelegate(uiDelegate);
 
             webView.setHostWindow(this.Handle.ToInt32());
 
@@ -333,6 +338,9 @@ namespace WebKit
             downloadDelegate.DidFinish += new DidFinishEvent(downloadDelegate_DidFinish);
             downloadDelegate.DidFailWithError += new DidFailWithErrorEvent(downloadDelegate_DidFailWithError);
 
+            // UIDelegate events
+            uiDelegate.CreateWebViewWithRequest += new CreateWebViewWithRequestEvent(uiDelegate_CreateWebViewWithRequest);
+
             activationContext.Deactivate();
         }
 
@@ -353,6 +361,8 @@ namespace WebKit
         {
             // Create the WebKit browser component
             InitializeWebKit();
+
+            loaded = true;
 
             if (url != "")
                 Navigate(url);
@@ -433,7 +443,12 @@ namespace WebKit
             // create WebKitDownload object to handle this download and notify listeners
             WebKitDownload d = new WebKitDownload(download);
             downloads.Add(download, d);
-            DownloadBegin(this, new FileDownloadBeginEventArgs(d));
+
+            FileDownloadBeginEventArgs args = new FileDownloadBeginEventArgs(d);
+            DownloadBegin(this, args);
+
+            if (args.Cancel)
+                d.Cancel();
         }
 
         private void downloadDelegate_DecideDestinationWithSuggestedFilename(WebDownload download, string fileName)
@@ -455,6 +470,29 @@ namespace WebKit
 
         #endregion
 
+        #region WebUIDelegate event handlers
+
+        private void uiDelegate_CreateWebViewWithRequest(IWebURLRequest request, out WebView webView)
+        {
+            // Todo: find out why url seems to always be empty
+            string url = (request == null) ? "" : request.url();
+            NewWindowRequestEventArgs args = new NewWindowRequestEventArgs(url);
+            NewWindowRequest(this, args);
+
+            if (!args.Cancel)
+            {
+                WebKitBrowser b = new WebKitBrowser();
+                webView = (WebView) b.webView;
+                NewWindowCreated(this, new NewWindowCreatedEventArgs(b));
+            }
+            else
+            {
+                webView = null;
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         /// <summary>
@@ -463,7 +501,7 @@ namespace WebKit
         /// <param name="Url">Url to navigate to.</param>
         public void Navigate(string Url)
         {
-            if (webView != null)
+            if (loaded && webView != null)
             {
                 // prepend with "http://" if url not well formed
                 if (!Uri.IsWellFormedUriString(Url, UriKind.Absolute))
