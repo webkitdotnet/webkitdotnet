@@ -48,7 +48,7 @@ namespace WebKit
     /// Activation context switching is required here to support registration
     /// free COM interop.  Ordinarily this can be achieved by embedding an
     /// application manifest with mappings to COM objects in the assembly,
-    /// however this does not work in a class library. (TODO: verify this...)
+    /// however this does not work in a class library.
     /// Instead we create an activation context which explicitly loads a
     /// manifest and activate this context when we need to create a COM object.
     /// </remarks>

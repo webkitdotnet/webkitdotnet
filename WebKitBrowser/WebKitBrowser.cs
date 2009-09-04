@@ -244,7 +244,26 @@ namespace WebKit
             }
         }
 
-        public readonly string Version = "0.2.1";
+        /// <summary>
+        /// Gets or sets whether the control can navigate to another page 
+        /// once it's initial page has loaded.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool AllowNavigation { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to allow file downloads.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool AllowDownloads { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to allow new windows.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool AllowNewWindows { get; set; }
+
+        public readonly string Version = "0.2.2";
 
         #endregion
 
@@ -253,7 +272,11 @@ namespace WebKit
         public WebKitBrowser()
         {
             InitializeComponent();
-        
+
+            AllowDownloads = true;
+            AllowNewWindows = true;
+            AllowNavigation = true;
+
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
                 // Control Events            
@@ -300,10 +323,10 @@ namespace WebKit
             downloadDelegate = new WebDownloadDelegate();
             Marshal.AddRef(Marshal.GetIUnknownForObject(downloadDelegate));
 
-            policyDelegate = new WebPolicyDelegate();
+            policyDelegate = new WebPolicyDelegate(this);
             Marshal.AddRef(Marshal.GetIUnknownForObject(policyDelegate));
 
-            uiDelegate = new WebUIDelegate();
+            uiDelegate = new WebUIDelegate(this);
             Marshal.AddRef(Marshal.GetIUnknownForObject(uiDelegate));
 
             webView.setPolicyDelegate(policyDelegate);

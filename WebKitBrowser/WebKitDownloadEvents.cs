@@ -24,12 +24,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
+// Various event handlers and argument classes used by WebKitDownload to
+// communicate with clients.
+
 using System;
 using WebKit.Interop;
 
 namespace WebKit
 {
     public delegate void DownloadStartedEvent(object sender, DownloadStartedEventArgs args);
+    public delegate void DownloadReceiveDataEvent(object sender, DownloadReceiveDataEventArgs args);
+    public delegate void DownloadFinishedEvent(object sender, DownloadFinishedEventArgs args);
 
     public class DownloadStartedEventArgs : EventArgs
     {
@@ -43,9 +48,6 @@ namespace WebKit
         }
     }
 
-
-    public delegate void DownloadReceiveDataEvent(object sender, DownloadReceiveDataEventArgs args);
-
     public class DownloadReceiveDataEventArgs : EventArgs
     {
         public uint Length { get; private set; }
@@ -56,6 +58,7 @@ namespace WebKit
         }
     }
 
-
-    public delegate void DownloadFinishedEvent(object sender, EventArgs args);
+    public class DownloadFinishedEventArgs : EventArgs
+    {
+    }
 }

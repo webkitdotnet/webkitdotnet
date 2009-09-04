@@ -58,7 +58,7 @@ namespace WebKit
 
         internal void NotifyDidFinish(WebDownload download)
         {
-            DownloadFinished(this, new EventArgs());
+            DownloadFinished(this, new DownloadFinishedEventArgs());
         }
 
         internal void NotifyDecideDestinationWithSuggestedFilename(WebDownload download, string fileName)

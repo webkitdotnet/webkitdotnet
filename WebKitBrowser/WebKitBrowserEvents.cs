@@ -24,12 +24,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
+// Various event handlers and argument classes used by WebKitBrowser to
+// communicate with the client.
+
 using System;
 using WebKit.Interop;
 
 namespace WebKit
 {
     public delegate void WebKitBrowserErrorEventHandler (object sender, WebKitBrowserErrorEventArgs args);
+    public delegate void FileDownloadBeginEventHandler (object sender, FileDownloadBeginEventArgs args);
+    public delegate void NewWindowRequestEventHandler (object sender, NewWindowRequestEventArgs args);
+    public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs args);
 
     public class WebKitBrowserErrorEventArgs : EventArgs
     {
@@ -40,9 +46,6 @@ namespace WebKit
             this.Description = Description;
         }
     }
-
-
-    public delegate void FileDownloadBeginEventHandler (object sender, FileDownloadBeginEventArgs args);
 
     public class FileDownloadBeginEventArgs : EventArgs
     {
@@ -56,9 +59,6 @@ namespace WebKit
         }
     }
 
-
-    public delegate void NewWindowRequestEventHandler (object sender, NewWindowRequestEventArgs args);
-
     public class NewWindowRequestEventArgs : EventArgs
     {
         public bool Cancel { get; set; }
@@ -70,9 +70,6 @@ namespace WebKit
             this.Url = Url;
         }
     }
-
-
-    public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs args);
 
     public class NewWindowCreatedEventArgs : EventArgs
     {

@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-// info at
+// Handles frame-level events that occur from loading a web page.  More info at
 // http://developer.apple.com/documentation/Cocoa/Reference/WebKit/Protocols/WebFrameLoadDelegate_Protocol
 
 using System;
@@ -52,13 +52,7 @@ namespace WebKit
     delegate void WindowScriptObjectAvailableEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject);
     delegate void DidClearWindowObjectEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject, IWebFrame frame);
 
-    /// <summary>
-    /// Handles frame-level events that occur from loading a web page.
-    /// </summary>
-    /// <remarks>
-    /// See Apple's WebKit documentation for detailed information about each
-    /// event.
-    /// </remarks>
+
     internal class WebFrameLoadDelegate : IWebFrameLoadDelegate
     {
         public event DidCancelClientRedirectForFrameEvent DidCancelClientRedirectForFrame = delegate { };

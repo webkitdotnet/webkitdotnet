@@ -24,8 +24,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-// Not implemented yet.  More info at 
+// Handles events relating to UI changes.  More info at 
 // http://developer.apple.com/documentation/Cocoa/Reference/WebKit/Protocols/WebUIDelegate_Protocol
+
+// TODO: most of these events aren't used at all (yet). Find out what they
+// do and whether they are actually working in WebKit.
 
 using System;
 using System.Collections.Generic;
@@ -39,6 +42,13 @@ namespace WebKit
     internal class WebUIDelegate : IWebUIDelegate
     {
         public event CreateWebViewWithRequestEvent CreateWebViewWithRequest;
+
+        private WebKitBrowser owner;
+
+        public WebUIDelegate(WebKitBrowser browser)
+        {
+            this.owner = browser;
+        }
 
         #region IWebUIDelegate Members
 
@@ -89,15 +99,18 @@ namespace WebKit
 
         public WebView createWebViewWithRequest(WebView sender, IWebURLRequest request)
         {
-            WebView view;
-            CreateWebViewWithRequest(request, out view);
-            return view;
+            // this should be caught in the WebPolicyDelegate, but isn't in the Cairo build
+            if (owner.AllowNewWindows)
+            {
+                WebView view;
+                CreateWebViewWithRequest(request, out view);
+                return view;
+            }
+            else
+            {
+                return null;
+            }
         }
-
-        /*public IWebDesktopNotificationsDelegate desktopNotificationsDelegate()
-        {
-            throw new NotImplementedException();
-        }*/
 
         public WebDragDestinationAction dragDestinationActionMaskForDraggingInfo(WebView WebView, IDataObject draggingInfo)
         {
@@ -250,6 +263,7 @@ namespace WebKit
 
         public void setStatusText(WebView sender, string text)
         {
+            throw new NotImplementedException();        
         }
 
         public void setToolbarsVisible(WebView sender, int visible)

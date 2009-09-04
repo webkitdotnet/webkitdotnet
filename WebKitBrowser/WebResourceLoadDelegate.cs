@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-// Not implemented yet.  More info at
+// Not used yet.  More info at
 // http://developer.apple.com/documentation/Cocoa/Reference/WebKit/Protocols/WebResourceLoadDelegate_Protocol
 
 using System;

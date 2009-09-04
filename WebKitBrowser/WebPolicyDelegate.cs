@@ -24,7 +24,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-// info at
+// Handles events that can be used to modify the policy decisions that the WebView
+// makes when handling various data types.  More information can be found at:
 // http://developer.apple.com/documentation/Cocoa/Reference/WebKit/Protocols/WebPolicyDelegate_Protocol
 
 using System;
@@ -38,6 +39,13 @@ namespace WebKit
 {
     internal class WebPolicyDelegate : IWebPolicyDelegate
     {
+        private WebKitBrowser owner;
+
+        public WebPolicyDelegate(WebKitBrowser browser)
+        {
+            this.owner = browser;
+        }
+
         #region IWebPolicyDelegate Members
 
         public void decidePolicyForMIMEType(WebView WebView, string type, IWebURLRequest request, IWebFrame frame, IWebPolicyDecisionListener listener)
@@ -45,21 +53,32 @@ namespace WebKit
             // todo: add support for showing custom MIME type documents
             // and for changing which MIME types are handled here
             if (WebView.canShowMIMEType(type) == 0)
-                listener.download();
+            {
+                if (owner.AllowDownloads)
+                    listener.download();
+                else
+                    listener.ignore();
+            }
             else
+            {
                 listener.use();
+            }
         }
 
         public void decidePolicyForNavigationAction(WebView WebView, CFDictionaryPropertyBag actionInformation, IWebURLRequest request, IWebFrame frame, IWebPolicyDecisionListener listener)
         {
-            listener.use();
+            if (owner.AllowNavigation)
+                listener.use();
+            else
+                listener.ignore();
         }
 
         public void decidePolicyForNewWindowAction(WebView WebView, CFDictionaryPropertyBag actionInformation, IWebURLRequest request, string frameName, IWebPolicyDecisionListener listener)
         {
-            // ignore requests to open new windows for the moment,
-            // until we have implemented this stuff (see WebKitUIDelegate)
-            listener.use();
+            if (owner.AllowNewWindows)
+                listener.use();
+            else
+                listener.ignore();
         }
 
         public void unableToImplementPolicyWithError(WebView WebView, WebError error, IWebFrame frame)
