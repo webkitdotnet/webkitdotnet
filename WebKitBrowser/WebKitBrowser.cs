@@ -303,19 +303,16 @@ namespace WebKit
                 {
                     W32API.SetFocus(webViewHWND);
                 };            
-            }
 
-            activationContext.Activate();
-            webView = new WebViewClass();
-            activationContext.Deactivate();
+                activationContext.Activate();
+                webView = new WebViewClass();
+                activationContext.Deactivate();            
+            }
         }
 
         private void InitializeWebKit()
         {
             activationContext.Activate();
-
-            if (webView == null)
-                webView = new WebViewClass();
 
             frameLoadDelegate = new WebFrameLoadDelegate();
             Marshal.AddRef(Marshal.GetIUnknownForObject(frameLoadDelegate));
