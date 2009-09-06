@@ -24,6 +24,10 @@
       <DocumentationSource sourceFile="bin\Release\WebKitBrowser.dll" xmlns="" />
       <DocumentationSource sourceFile="bin\Release\WebKitBrowser.xml" xmlns="" />
     </DocumentationSources>
+    <Preliminary>True</Preliminary>
+    <CopyrightText>Copyright 2009 WebKit .NET Project</CopyrightText>
+    <FeedbackEMailAddress>charn.opcode%40gmail.com</FeedbackEMailAddress>
+    <FeedbackEMailLinkText>Contact</FeedbackEMailLinkText>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
