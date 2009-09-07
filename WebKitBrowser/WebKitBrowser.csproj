@@ -93,8 +93,10 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"</PostBuildEvent>
+    <PostBuildEvent>echo WebKitBrowser &gt; temp_exclude_files.txt
+xcopy /E /Y "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"
+del temp_exclude_files.txt</PostBuildEvent>
     <PreBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
-tlbimp "$(SolutionDir)webkit\webkit.dll" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"</PreBuildEvent>
+tlbimp "$(SolutionDir)webkit\webkit.dll" /silent /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"</PreBuildEvent>
   </PropertyGroup>
 </Project>

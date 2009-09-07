@@ -34,16 +34,41 @@ using WebKit.Interop;
 
 namespace WebKit
 {
+    /// <summary>
+    /// Represents a file download.
+    /// </summary>
     public class WebKitDownload
     {
         private WebDownload download;
 
+        #region FileDownload events
+
+        /// <summary>
+        /// Gets a value indicating whether the download was cancelled.
+        /// </summary>
         public bool DidCancel { get; private set; }
+
+        /// <summary>
+        /// Gets the destination file path.
+        /// </summary>
         public string FilePath { get; private set; }
 
+        /// <summary>
+        /// Occurs when file data transfer begins.
+        /// </summary>
         public event DownloadStartedEvent DownloadStarted;
+        
+        /// <summary>
+        /// Occurs when file data arrives.
+        /// </summary>
         public event DownloadReceiveDataEvent DownloadReceiveData;
+
+        /// <summary>
+        /// Occurs when the file is downloaded successfully.
+        /// </summary>
         public event DownloadFinishedEvent DownloadFinished;
+
+        #endregion
 
         internal WebKitDownload(WebDownload download)
         {
@@ -88,6 +113,9 @@ namespace WebKit
             DownloadStarted(this, new DownloadStartedEventArgs(response.suggestedFilename(), response.expectedContentLength()));
         }
 
+        /// <summary>
+        /// Cancel the file download.
+        /// </summary>
         public void Cancel()
         {
             DidCancel = true;

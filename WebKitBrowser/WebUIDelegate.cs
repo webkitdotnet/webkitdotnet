@@ -37,7 +37,7 @@ using WebKit.Interop;
 
 namespace WebKit
 {
-    delegate void CreateWebViewWithRequestEvent(IWebURLRequest request, out WebView webView);
+    internal delegate void CreateWebViewWithRequestEvent(IWebURLRequest request, out WebView webView);
 
     internal class WebUIDelegate : IWebUIDelegate
     {

@@ -32,26 +32,79 @@ using WebKit.Interop;
 
 namespace WebKit
 {
+    #region Event handler delegates
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.Error event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">A WebKitBrowserErrorEventArgs that contains the event data.</param>
     public delegate void WebKitBrowserErrorEventHandler (object sender, WebKitBrowserErrorEventArgs args);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.FileDownloadBegin event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">A FileDownloadBeginEventArgs that contains the event data.</param>
     public delegate void FileDownloadBeginEventHandler (object sender, FileDownloadBeginEventArgs args);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.NewWindowRequest event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">A NewWindowRequestEventArgs that contains the event data.</param>
     public delegate void NewWindowRequestEventHandler (object sender, NewWindowRequestEventArgs args);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.NewWindowCreated event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">A NewWindowCreatedEventArgs that contains the event data.</param>
     public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs args);
 
+    #endregion
+
+    #region EventArgs classes
+
+    /// <summary>
+    /// Provides data for the WebKitBrowser.Error event.
+    /// </summary>
     public class WebKitBrowserErrorEventArgs : EventArgs
     {
+        /// <summary>
+        /// Gets a description of the error that occurred.
+        /// </summary>
         public string Description { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the WebKitBrowserErrorEventArgs class.
+        /// </summary>
+        /// <param name="Description">A description of the error that occurred.</param>
         public WebKitBrowserErrorEventArgs(string Description)
         {
             this.Description = Description;
         }
     }
 
+    /// <summary>
+    /// Provides data for the WebKitBrowser.FileDownloadBegin event.
+    /// </summary>
     public class FileDownloadBeginEventArgs : EventArgs
     {
+        /// <summary>
+        /// Gets the WebKitDownload representing the download.
+        /// </summary>
         public WebKitDownload Download { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the download should be cancelled.
+        /// </summary>
         public bool Cancel { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the FileDownloadBeginEventArgs class.
+        /// </summary>
+        /// <param name="Download">A WebKitDownload representing the download.</param>
         public FileDownloadBeginEventArgs(WebKitDownload Download)
         {
             this.Download = Download;
@@ -59,11 +112,25 @@ namespace WebKit
         }
     }
 
+    /// <summary>
+    /// Provides data for the WebKitBrowser.NewWindowRequest event. 
+    /// </summary>
     public class NewWindowRequestEventArgs : EventArgs
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether opening the new window should be cancelled.
+        /// </summary>
         public bool Cancel { get; set; }
+
+        /// <summary>
+        /// Gets the Url that the new window will attempt to navigate to.
+        /// </summary>
         public string Url { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the NewWindowRequestEventArgs class.
+        /// </summary>
+        /// <param name="Url">The Url that the new window will attempt to navigate to.</param>
         public NewWindowRequestEventArgs(string Url)
         {
             this.Cancel = false;
@@ -71,13 +138,25 @@ namespace WebKit
         }
     }
 
+    /// <summary>
+    /// Provides data for the WebKitBrowser.NewWindowCreated event.
+    /// </summary>
     public class NewWindowCreatedEventArgs : EventArgs
     {
+        /// <summary>
+        /// Gets the WebKitBrowser showing the contents of the new window.
+        /// </summary>
         public WebKitBrowser WebKitBrowser { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the NewWindowCreatedEventArgs class.
+        /// </summary>
+        /// <param name="browser">The WebKitBrowser showing the contents of the new window.</param>
         public NewWindowCreatedEventArgs(WebKitBrowser browser)
         {
             WebKitBrowser = browser;
         }
     }
+
+    #endregion
 }

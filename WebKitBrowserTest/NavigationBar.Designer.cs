@@ -65,6 +65,7 @@ namespace WebKitBrowserTest
             // 
             // buttonBack
             // 
+            this.buttonBack.Enabled = false;
             this.buttonBack.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonBack.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
             this.buttonBack.Location = new System.Drawing.Point(3, 3);
@@ -77,6 +78,7 @@ namespace WebKitBrowserTest
             // 
             // buttonFwd
             // 
+            this.buttonFwd.Enabled = false;
             this.buttonFwd.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonFwd.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
             this.buttonFwd.Location = new System.Drawing.Point(48, 3);

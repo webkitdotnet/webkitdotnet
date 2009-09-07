@@ -41,18 +41,18 @@ using System.Diagnostics;
 
 namespace WebKit
 {
-    delegate void DecideDestinationWithSuggestedFilenameEvent(WebDownload download, string fileName);
-    delegate void DidBeginEvent(WebDownload download);
-    delegate void DidCancelAuthenticationChallengeEvent(WebDownload download, IWebURLAuthenticationChallenge challenge);
-    delegate void DidCreateDestinationEvent(WebDownload download, string destination);
-    delegate void DidFailWithErrorEvent(WebDownload download, WebError error);
-    delegate void DidFinishEvent(WebDownload download);
-    delegate void DidReceiveAuthenticationChallengeEvent(WebDownload download, IWebURLAuthenticationChallenge challenge);
-    delegate void DidReceiveDataOfLengthEvent(WebDownload download, uint length);
-    delegate void DidReceiveResponseEvent(WebDownload download, WebURLResponse response);
-    delegate int ShouldDecodeSourceDataOfMIMETypeEvent(WebDownload download, string encodingType);
-    delegate void WillResumeWithResponseEvent(WebDownload download, WebURLResponse response, long fromByte);
-    delegate void WillSendRequestEvent(WebDownload download, WebMutableURLRequest request, WebURLResponse redirectResponse, out WebMutableURLRequest finalRequest);
+    internal delegate void DecideDestinationWithSuggestedFilenameEvent(WebDownload download, string fileName);
+    internal delegate void DidBeginEvent(WebDownload download);
+    internal delegate void DidCancelAuthenticationChallengeEvent(WebDownload download, IWebURLAuthenticationChallenge challenge);
+    internal delegate void DidCreateDestinationEvent(WebDownload download, string destination);
+    internal delegate void DidFailWithErrorEvent(WebDownload download, WebError error);
+    internal delegate void DidFinishEvent(WebDownload download);
+    internal delegate void DidReceiveAuthenticationChallengeEvent(WebDownload download, IWebURLAuthenticationChallenge challenge);
+    internal delegate void DidReceiveDataOfLengthEvent(WebDownload download, uint length);
+    internal delegate void DidReceiveResponseEvent(WebDownload download, WebURLResponse response);
+    internal delegate int ShouldDecodeSourceDataOfMIMETypeEvent(WebDownload download, string encodingType);
+    internal delegate void WillResumeWithResponseEvent(WebDownload download, WebURLResponse response, long fromByte);
+    internal delegate void WillSendRequestEvent(WebDownload download, WebMutableURLRequest request, WebURLResponse redirectResponse, out WebMutableURLRequest finalRequest);
 
     internal class WebDownloadDelegate : IWebDownloadDelegate
     {

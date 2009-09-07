@@ -57,6 +57,22 @@ namespace WebKitBrowserTest
             }
         }
 
+        public bool CanGoBack
+        {
+            set
+            {
+                buttonBack.Enabled = value;
+            }
+        }
+
+        public bool CanGoForward
+        {
+            set
+            {
+                buttonFwd.Enabled = value;
+            }
+        }
+
         public NavigationBar()
         {
             InitializeComponent();

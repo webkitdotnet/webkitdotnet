@@ -38,10 +38,8 @@ using System.Runtime.InteropServices;
 using WebKit;
 using WebKit.Interop;
 using System.Diagnostics;
+using System.Reflection;
 
-/// <summary>
-/// Contains classes for creating instances of and communication with the WebKit COM component.
-/// </summary>
 namespace WebKit
 {
     /// <summary>
@@ -67,8 +65,15 @@ namespace WebKit
         private WebPolicyDelegate policyDelegate;
         private WebUIDelegate uiDelegate;
 
-        // redirects relevant key strokes to the webkit control
-        // bit more work is needed here perhaps
+
+        #region Overridden methods
+
+        /// <summary>
+        /// Processes a command key.  Overridden in WebKitBrowser to forward key events to the WebKit window.
+        /// </summary>
+        /// <param name="msg">The window message to process.</param>
+        /// <param name="keyData">The key to process.</param>
+        /// <returns>Success value.</returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             Keys key = (Keys)msg.WParam.ToInt32();
@@ -82,6 +87,7 @@ namespace WebKit
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        #endregion
 
         #region WebKitBrowser events
 
@@ -114,7 +120,7 @@ namespace WebKit
         public event WebKitBrowserErrorEventHandler Error = delegate { };
 
         /// <summary>
-        /// Occurs when the WebKitBrowser control starts to download a file.
+        /// Occurs when the WebKitBrowser control begins a file download, before any data has been transferred.
         /// </summary>
         public event FileDownloadBeginEventHandler DownloadBegin = delegate { };
 
@@ -209,7 +215,7 @@ namespace WebKit
         }
 
         /// <summary>
-        /// Returns the currently selected text.
+        /// Gets the currently selected text.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string SelectedText
@@ -245,7 +251,7 @@ namespace WebKit
         }
 
         /// <summary>
-        /// Gets or sets the user agent.
+        /// Gets or sets the user agent string.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string UserAgent
@@ -265,7 +271,7 @@ namespace WebKit
         }
 
         /// <summary>
-        /// Text size multiplier (1.0 is normal size).
+        /// Gets or sets the text size multiplier (1.0 is normal size).
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public float TextSize
@@ -298,17 +304,47 @@ namespace WebKit
         public bool AllowDownloads { get; set; }
 
         /// <summary>
-        /// Gets or sets whether to allow new windows.
+        /// Gets or sets whether to allow links to be opened in a new window.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool AllowNewWindows { get; set; }
 
-        public readonly string Version = "0.2.2";
+        /// <summary>
+        /// Gets a value indicating whether a previous page in the navigation history is available.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool CanGoBack
+        {
+            get
+            {
+                return webView.backForwardList().backListCount() > 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether a subsequent page in the navigation history is available
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool CanGoForward
+        {
+            get
+            {
+                return webView.backForwardList().forwardListCount() > 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current version.
+        /// </summary>
+        public readonly Version Version = Assembly.GetExecutingAssembly().GetName().Version;
 
         #endregion
 
         #region Constructors / initialization functions
 
+        /// <summary>
+        /// Initializes a new instance of the WebKitBrowser control.
+        /// </summary>
         public WebKitBrowser()
         {
             InitializeComponent();

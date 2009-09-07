@@ -124,6 +124,9 @@ namespace WebKitBrowserTest
         void browser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             navigationBar.UrlText = currentPage.browser.Url.ToString();
+
+            navigationBar.CanGoBack = currentPage.browser.CanGoBack;
+            navigationBar.CanGoForward = currentPage.browser.CanGoForward;
         }
 
         private void UnregisterBrowserEvents()

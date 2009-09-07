@@ -32,15 +32,53 @@ using WebKit.Interop;
 
 namespace WebKit
 {
+    #region Event delegates
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitDownload.DownloadStarted event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">A DownloadStartedEventArgs that contains the event data.</param>
     public delegate void DownloadStartedEvent(object sender, DownloadStartedEventArgs args);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitDownload.DownloadReceiveData event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">A DownloadReceiveDataEventArgs that contains the event data.</param>
     public delegate void DownloadReceiveDataEvent(object sender, DownloadReceiveDataEventArgs args);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitDownload.DownloadFinished event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">A DownloadFinishedEventArgs that contains the event data.</param>
     public delegate void DownloadFinishedEvent(object sender, DownloadFinishedEventArgs args);
 
+    #endregion
+
+    #region EventArg classes
+
+    /// <summary>
+    /// Provides data for the WebKitDownload.DownloadStarted event.
+    /// </summary>
     public class DownloadStartedEventArgs : EventArgs
     {
+        /// <summary>
+        /// Gets the suggested name for the destination file.
+        /// </summary>
         public string SuggestedFileName { get; private set; }
+
+        /// <summary>
+        /// Gets the file size in bytes.
+        /// </summary>
         public long FileSize { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the DownloadStartedEventArgs class.
+        /// </summary>
+        /// <param name="SuggestedFileName">The suggested name for the destination file.</param>
+        /// <param name="FileSize">The file size in bytes.</param>
         public DownloadStartedEventArgs(string SuggestedFileName, long FileSize)
         {
             this.SuggestedFileName = SuggestedFileName;
@@ -48,17 +86,32 @@ namespace WebKit
         }
     }
 
+    /// <summary>
+    /// Provides data for the WebKitDownload.DownloadReceiveData event.
+    /// </summary>
     public class DownloadReceiveDataEventArgs : EventArgs
     {
+        /// <summary>
+        /// Gets the length of the data received in bytes.
+        /// </summary>
         public uint Length { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the DownloadReceiveDataEventArgs class.
+        /// </summary>
+        /// <param name="Length">The length of the data received in bytes.</param>
         public DownloadReceiveDataEventArgs(uint Length)
         {
             this.Length = Length;
         }
     }
 
+    /// <summary>
+    /// Provides data for the WebKitDownload.DownloadFinished event.
+    /// </summary>
     public class DownloadFinishedEventArgs : EventArgs
     {
     }
+
+    #endregion
 }

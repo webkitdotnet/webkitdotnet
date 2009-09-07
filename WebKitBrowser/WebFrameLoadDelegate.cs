@@ -37,21 +37,20 @@ using System.Diagnostics;
 namespace WebKit
 {
     // Delegate definitions WebFrameLoadDelegate events
-    delegate void DidCancelClientRedirectForFrameEvent(WebView WebView, IWebFrame frame);
-    delegate void DidChangeLocationWithinPageForFrameEvent(WebView WebView, IWebFrame frame);
-    delegate void DidCommitLoadForFrameEvent(WebView WebView, IWebFrame frame);
-    delegate void DidFailLoadWithErrorEvent(WebView WebView, IWebError error, IWebFrame frame);
-    delegate void DidFailProvisionalLoadWithErrorEvent(WebView WebView, IWebError error, IWebFrame frame);
-    delegate void DidFinishLoadForFrameEvent(WebView WebView, IWebFrame frame);
-    delegate void DidRecieveIconEvent(WebView WebView, int hBitMap, IWebFrame frame);
-    delegate void DidRecieveServerRedirectForProvisionalLoadForFrameEvent(WebView WebView, IWebFrame frame);
-    delegate void DidRecieveTitleEvent(WebView WebView, string title, IWebFrame frame);
-    delegate void DidStartProvisionalLoadForFrameEvent(WebView WebView, IWebFrame frame);
-    delegate void WillCloseFrameEvent(WebView WebView, IWebFrame frame);
-    delegate void WillPerformClientRedirectToURLEvent(WebView WebView, string url, double delaySeconds, DateTime fireDate, IWebFrame frame);
-    delegate void WindowScriptObjectAvailableEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject);
-    delegate void DidClearWindowObjectEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject, IWebFrame frame);
-
+    internal delegate void DidCancelClientRedirectForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidChangeLocationWithinPageForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidCommitLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidFailLoadWithErrorEvent(WebView WebView, IWebError error, IWebFrame frame);
+    internal delegate void DidFailProvisionalLoadWithErrorEvent(WebView WebView, IWebError error, IWebFrame frame);
+    internal delegate void DidFinishLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidRecieveIconEvent(WebView WebView, int hBitMap, IWebFrame frame);
+    internal delegate void DidRecieveServerRedirectForProvisionalLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidRecieveTitleEvent(WebView WebView, string title, IWebFrame frame);
+    internal delegate void DidStartProvisionalLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void WillCloseFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void WillPerformClientRedirectToURLEvent(WebView WebView, string url, double delaySeconds, DateTime fireDate, IWebFrame frame);
+    internal delegate void WindowScriptObjectAvailableEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject);
+    internal delegate void DidClearWindowObjectEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject, IWebFrame frame);
 
     internal class WebFrameLoadDelegate : IWebFrameLoadDelegate
     {
