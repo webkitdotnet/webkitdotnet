@@ -39,6 +39,9 @@ using WebKit;
 using WebKit.Interop;
 using System.Diagnostics;
 
+/// <summary>
+/// Contains classes for creating instances of and communication with the WebKit COM component.
+/// </summary>
 namespace WebKit
 {
     /// <summary>
@@ -63,17 +66,6 @@ namespace WebKit
         private WebDownloadDelegate downloadDelegate;
         private WebPolicyDelegate policyDelegate;
         private WebUIDelegate uiDelegate;
-                
-        // public events, roughly the same as in WebBrowser class
-        // using the null object pattern to avoid null tests
-        public event EventHandler DocumentTitleChanged = delegate { };
-        public event WebBrowserDocumentCompletedEventHandler DocumentCompleted = delegate { };
-        public event WebBrowserNavigatedEventHandler Navigated = delegate { };
-        public event WebBrowserNavigatingEventHandler Navigating = delegate { };
-        public event WebKitBrowserErrorEventHandler Error = delegate { };
-        public event FileDownloadBeginEventHandler DownloadBegin = delegate { };
-        public event NewWindowRequestEventHandler NewWindowRequest = delegate { };
-        public event NewWindowCreatedEventHandler NewWindowCreated = delegate { };
 
         // redirects relevant key strokes to the webkit control
         // bit more work is needed here perhaps
@@ -89,6 +81,54 @@ namespace WebKit
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+
+        #region WebKitBrowser events
+
+        // public events, roughly the same as in WebBrowser class
+        // using the null object pattern to avoid null tests
+        
+        /// <summary>
+        /// Occurs when the DocumentTitle property value changes.
+        /// </summary>
+        public event EventHandler DocumentTitleChanged = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser control finishes loading a document.
+        /// </summary>
+        public event WebBrowserDocumentCompletedEventHandler DocumentCompleted = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser control has navigated to a new document and has begun loading it.
+        /// </summary>
+        public event WebBrowserNavigatedEventHandler Navigated = delegate { };
+
+        /// <summary>
+        /// Occurs before the WebKitBrowser control navigates to a new document.
+        /// </summary>
+        public event WebBrowserNavigatingEventHandler Navigating = delegate { };
+
+        /// <summary>
+        /// Occurs when an error occurs on the current document, or when navigating to a new document.
+        /// </summary>
+        public event WebKitBrowserErrorEventHandler Error = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser control starts to download a file.
+        /// </summary>
+        public event FileDownloadBeginEventHandler DownloadBegin = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser control attempts to open a link in a new window.
+        /// </summary>
+        public event NewWindowRequestEventHandler NewWindowRequest = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser control creates a new window.
+        /// </summary>
+        public event NewWindowCreatedEventHandler NewWindowCreated = delegate { };
+
+        #endregion
 
         #region Public properties
 
