@@ -19,7 +19,7 @@
     <HelpTitle>WebKit .NET</HelpTitle>
     <NamingMethod>MemberName</NamingMethod>
     <FrameworkVersion>2.0.50727</FrameworkVersion>
-    <HelpFileFormat>Website</HelpFileFormat>
+    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
     <DocumentationSources>
       <DocumentationSource sourceFile="bin\Release\WebKitBrowser.dll" xmlns="" />
       <DocumentationSource sourceFile="bin\Release\WebKitBrowser.xml" xmlns="" />
@@ -31,7 +31,8 @@
     <ProjectSummary>WebKit .NET is a WinForms control library wrapper for WebKit written in C#. The aim is to make it easy for developers to incorporate WebKit into their .NET applications.</ProjectSummary>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="WebKit" isDocumented="True" xmlns="">Contains classes for creating instances of and managing communication with WebKit COM components.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="WebKit.Properties" isDocumented="True" xmlns="">Contains information about the WebKitBrowser assembly.</NamespaceSummaryItem></NamespaceSummaries>
+      <NamespaceSummaryItem name="WebKit.Properties" isDocumented="True" xmlns="">Contains information about the WebKitBrowser assembly.</NamespaceSummaryItem>
+    </NamespaceSummaries>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
