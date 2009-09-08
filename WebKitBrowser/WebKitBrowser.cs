@@ -55,9 +55,15 @@ namespace WebKit
         private IWebView webView;
         private IntPtr webViewHWND;
         private Dictionary<WebDownload, WebKitDownload> downloads = new Dictionary<WebDownload, WebKitDownload>();
-        private string url = "";
         private bool disposed = false;
-        private bool loaded = false;
+
+        // initialisation stuff
+        private string initialText = "";
+        private Uri initialUrl = null;
+        private bool loaded = false;    // loaded == true => webView != null
+        private bool initialAllowNavigation = true;
+        private bool initialAllowDownloads = true;
+        private bool initialAllowNewWindows = true;
 
         // delegates for WebKit events
         private WebFrameLoadDelegate frameLoadDelegate;
@@ -147,12 +153,13 @@ namespace WebKit
         /// <summary>
         /// Gets or sets the current Url.
         /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [Browsable(true), Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        [Description("Specifies the Url to navigate to.")]
         public Uri Url
         {
             get
             {
-                if (webView != null)
+                if (loaded)
                 {
                     string url = webView.mainFrame().dataSource().request().url();
                     if (url == "")
@@ -160,17 +167,24 @@ namespace WebKit
                     return new Uri(webView.mainFrame().dataSource().request().url());
                 }
                 else
-                    return new Uri(this.url);
+                {
+                    return initialUrl;
+                }
             }
             set
             {
-                if (webView != null)
+                if (loaded)
                 {
-                    if (Url != null && LicenseManager.UsageMode != LicenseUsageMode.Designtime)
-                        Navigate(Url.AbsoluteUri);
+                    if (value != null)
+                        Navigate(value.AbsoluteUri);
                 }
                 else
-                    url = value.AbsoluteUri;
+                {
+                    if (Uri.IsWellFormedUriString(value.ToString(), UriKind.Absolute))
+                        initialUrl = value;
+                    else
+                        initialUrl = new Uri("http://" + value.ToString());
+                }
             }
         }
 
@@ -182,7 +196,7 @@ namespace WebKit
         {
             get
             {
-                if (webView != null)
+                if (loaded)
                     return (webView.isLoading() > 0);
                 else
                     return false;
@@ -192,25 +206,34 @@ namespace WebKit
         /// <summary>
         /// Gets or sets the HTML content of the current document.
         /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [Browsable(true), DefaultValue(""), Category("Appearance")]
+        [Description("The HTML content to be displayed if no Url is specified.")]
         public string DocumentText
         {
             get
             {
-                // TODO: more...
-                try
+                if (loaded)
                 {
-                    return webView.mainFrame().dataSource().representation().documentSource();
+                    try
+                    {
+                        return webView.mainFrame().dataSource().representation().documentSource();
+                    }
+                    catch (Exception)
+                    {
+                        return "";
+                    }
                 }
-                catch (Exception)
+                else
                 {
-                    return "";
+                    return initialText;
                 }
             }
             set
             {
-                if (webView != null)
+                if (loaded)
                     webView.mainFrame().loadHTMLString(value, null);
+                else
+                    initialText = value;
             }
         }
 
@@ -222,8 +245,7 @@ namespace WebKit
         {
             get
             {
-                // TODO: error handling
-                if (webView != null)
+                if (loaded)
                     return webView.selectedText();
                 else
                     return "";
@@ -231,21 +253,21 @@ namespace WebKit
         }
 
         /// <summary>
-        /// Gets or sets the application name for user agent.
+        /// Gets or sets the application name for the user agent.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ApplicationName
         {
             get
             {
-                if (webView != null)
+                if (loaded)
                     return webView.applicationNameForUserAgent();
                 else
                     return "";
             }
             set
             {
-                if (webView != null)
+                if (loaded)
                     webView.setApplicationNameForUserAgent(value);
             }
         }
@@ -258,14 +280,14 @@ namespace WebKit
         {
             get
             {
-                if (webView != null)
+                if (loaded)
                     return webView.userAgentForURL("");
                 else
                     return "";
             }
             set
             {
-                if (webView != null)
+                if (loaded)
                     webView.setCustomUserAgent(value);
             }
         }
@@ -273,19 +295,20 @@ namespace WebKit
         /// <summary>
         /// Gets or sets the text size multiplier (1.0 is normal size).
         /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [Browsable(true), DefaultValue(1.0f), Category("Appearance")]
+        [Description("Specifies the text size multiplier.")]
         public float TextSize
         {
             get
             {
-                if (webView != null)
+                if (loaded)
                     return webView.textSizeMultiplier();
                 else
                     return 1.0f;
             }
             set
             {
-                if (webView != null)
+                if (loaded)
                     webView.setTextSizeMultiplier(value);
             }
         }
@@ -294,20 +317,73 @@ namespace WebKit
         /// Gets or sets whether the control can navigate to another page 
         /// once it's initial page has loaded.
         /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool AllowNavigation { get; set; }
+        [Browsable(true), DefaultValue(true), Category("Behavior")]
+        [Description("Specifies whether the control can navigate" +
+            " to another page once it's initial page has loaded.")]
+        public bool AllowNavigation 
+        {
+            get
+            {
+                if (loaded)
+                    return policyDelegate.AllowNavigation;
+                else
+                    return initialAllowNavigation;
+            }
+            set
+            {
+                if (loaded)
+                    policyDelegate.AllowInitialNavigation = policyDelegate.AllowNavigation = value;
+                else
+                    initialAllowNavigation = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets whether to allow file downloads.
         /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool AllowDownloads { get; set; }
+        [Browsable(true), DefaultValue(true), Category("Behavior")]
+        [Description("Specifies whether to allow file downloads.")]
+        public bool AllowDownloads
+        {
+            get
+            {
+                if (loaded)
+                    return policyDelegate.AllowDownloads;
+                else
+                    return initialAllowDownloads;
+            }
+            set
+            {
+                if (loaded)
+                    policyDelegate.AllowDownloads = value;
+                else
+                    initialAllowDownloads = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets whether to allow links to be opened in a new window.
         /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool AllowNewWindows { get; set; }
+        [Browsable(true), DefaultValue(true), Category("Behavior")]
+        [Description("Specifies whether to allow links to be" +
+            " opened in a new window.")]
+        public bool AllowNewWindows
+        {
+            get
+            {
+                if (loaded)
+                    return policyDelegate.AllowNewWindows;
+                else
+                    return initialAllowNewWindows;
+            }
+            set
+            {
+                if (loaded)
+                    policyDelegate.AllowNewWindows = value;
+                else
+                    initialAllowNewWindows = value;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether a previous page in the navigation history is available.
@@ -348,10 +424,6 @@ namespace WebKit
         public WebKitBrowser()
         {
             InitializeComponent();
-
-            AllowDownloads = true;
-            AllowNewWindows = true;
-            AllowNavigation = true;
 
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
@@ -396,7 +468,7 @@ namespace WebKit
             downloadDelegate = new WebDownloadDelegate();
             Marshal.AddRef(Marshal.GetIUnknownForObject(downloadDelegate));
 
-            policyDelegate = new WebPolicyDelegate(this);
+            policyDelegate = new WebPolicyDelegate(AllowNavigation, AllowDownloads, AllowNewWindows);
             Marshal.AddRef(Marshal.GetIUnknownForObject(policyDelegate));
 
             uiDelegate = new WebUIDelegate(this);
@@ -446,11 +518,8 @@ namespace WebKit
 
         private void WebKitBrowser_Resize(object sender, EventArgs e)
         {
-            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
-            {
-                // Resize the WebKit control
-                W32API.MoveWindow(webViewHWND, 0, 0, this.Width - 1, this.Height - 1, true);
-            }
+            // Resize the WebKit control
+            W32API.MoveWindow(webViewHWND, 0, 0, this.Width - 1, this.Height - 1, true);
         }
 
         private void WebKitBrowser_Load(object sender, EventArgs e)
@@ -458,10 +527,20 @@ namespace WebKit
             // Create the WebKit browser component
             InitializeWebKit();
 
-            loaded = true;
+            // if webView is null here, we're in trouble
+            loaded = webView != null;
+            if (!loaded)
+                throw new Exception("Failed to initialize WebKit control");
 
-            if (url != "")
-                Navigate(url);
+            if (initialUrl != null)
+            {
+                Navigate(initialUrl.AbsoluteUri);
+            }
+            else
+            {
+                DocumentText = initialText;
+                policyDelegate.AllowInitialNavigation = false;
+            }
         }
 
         #endregion
@@ -472,7 +551,6 @@ namespace WebKit
         {
             if (frame == webView.mainFrame())
             {
-                this.UseWaitCursor = true;
                 Navigated(this, new WebBrowserNavigatedEventArgs(this.Url));
             }
         }
@@ -481,7 +559,6 @@ namespace WebKit
         {
             if (frame == webView.mainFrame())
             {
-                this.UseWaitCursor = true;
                 Navigating(this, new WebBrowserNavigatingEventArgs(this.Url, frame.name()));
             }
         }
@@ -490,7 +567,7 @@ namespace WebKit
         {
             if (frame == webView.mainFrame())
             {
-                this.UseWaitCursor = false;
+                policyDelegate.AllowInitialNavigation = policyDelegate.AllowNavigation;
                 DocumentCompleted(this, new WebBrowserDocumentCompletedEventArgs(this.Url));
             }
         }
@@ -597,7 +674,7 @@ namespace WebKit
         /// <param name="Url">Url to navigate to.</param>
         public void Navigate(string Url)
         {
-            if (loaded && webView != null)
+            if (loaded)
             {
                 // prepend with "http://" if url not well formed
                 if (!Uri.IsWellFormedUriString(Url, UriKind.Absolute))
@@ -614,7 +691,9 @@ namespace WebKit
                 activationContext.Deactivate();
             }
             else
-                url = Url;
+            {
+                initialUrl = Url == "" ? null : new Uri(Url);
+            }
         }
 
         /// <summary>

@@ -54,7 +54,6 @@ namespace WebKit
 
         public void addCustomMenuDrawingData(WebView sender, int hMenu)
         {
-            throw new NotImplementedException();
         }
 
         public int canRedo()
@@ -79,12 +78,10 @@ namespace WebKit
 
         public void cleanUpCustomMenuDrawingData(WebView sender, int hMenu)
         {
-            throw new NotImplementedException();
         }
 
         public void contextMenuItemSelected(WebView sender, IntPtr item, CFDictionaryPropertyBag element)
         {
-            throw new NotImplementedException();
         }
 
         public int contextMenuItemsForElement(WebView sender, CFDictionaryPropertyBag element, int defaultItemsHMenu)
@@ -124,17 +121,14 @@ namespace WebKit
 
         public void drawCustomMenuItem(WebView sender, IntPtr drawItem)
         {
-            throw new NotImplementedException();
         }
 
         public void drawFooterInRect(WebView WebView, ref tagRECT rect, int drawingContext, uint pageIndex, uint pageCount)
         {
-            throw new NotImplementedException();
         }
 
         public void drawHeaderInRect(WebView WebView, ref tagRECT rect, int drawingContext)
         {
-            throw new NotImplementedException();
         }
 
         public string ftpDirectoryTemplatePath(WebView WebView)
@@ -154,12 +148,10 @@ namespace WebKit
 
         public void makeFirstResponder(WebView sender, int responderHWnd)
         {
-            throw new NotImplementedException();
         }
 
         public void measureCustomMenuItem(WebView sender, IntPtr measureItem)
         {
-            throw new NotImplementedException();
         }
 
         public void mouseDidMoveOverElement(WebView sender, CFDictionaryPropertyBag elementInformation, uint modifierFlags)
@@ -168,32 +160,26 @@ namespace WebKit
 
         public void paintCustomScrollCorner(WebView WebView, ref _RemotableHandle hDC, tagRECT rect)
         {
-            throw new NotImplementedException();
         }
 
         public void paintCustomScrollbar(WebView WebView, ref _RemotableHandle hDC, tagRECT rect, WebScrollBarControlSize size, uint state, WebScrollbarControlPart pressedPart, int vertical, float value, float proportion, uint parts)
         {
-            throw new NotImplementedException();
         }
 
         public void printFrame(WebView WebView, IWebFrame frame)
         {
-            throw new NotImplementedException();
         }
 
         public void redo()
         {
-            throw new NotImplementedException();
         }
 
         public void registerUndoWithTarget(IWebUndoTarget target, string actionName, object actionArg)
         {
-            throw new NotImplementedException();
         }
 
         public void removeAllActionsWithTarget(IWebUndoTarget target)
         {
-            throw new NotImplementedException();
         }
 
         public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, IWebFrame initiatedByFrame)
@@ -208,7 +194,6 @@ namespace WebKit
 
         public void runJavaScriptAlertPanelWithMessage(WebView sender, string message)
         {
-            throw new NotImplementedException();
         }
 
         public int runJavaScriptConfirmPanelWithMessage(WebView sender, string message)
@@ -223,72 +208,58 @@ namespace WebKit
 
         public void runModal(WebView WebView)
         {
-            throw new NotImplementedException();
         }
 
         public void runOpenPanelForFileButtonWithResultListener(WebView sender, IWebOpenPanelResultListener resultListener)
         {
-            throw new NotImplementedException();
         }
 
         public void setActionTitle(string actionTitle)
         {
-            throw new NotImplementedException();
         }
 
         public void setContentRect(WebView sender, ref tagRECT contentRect)
         {
-            throw new NotImplementedException();
         }
 
         public void setFrame(WebView sender, ref tagRECT frame)
         {
-            throw new NotImplementedException();
         }
 
         public void setMenuBarVisible(WebView WebView, int visible)
         {
-            throw new NotImplementedException();
         }
 
         public void setResizable(WebView sender, int resizable)
         {
-            throw new NotImplementedException();
         }
 
         public void setStatusBarVisible(WebView sender, int visible)
         {
-            throw new NotImplementedException();
         }
 
         public void setStatusText(WebView sender, string text)
         {
-            throw new NotImplementedException();        
         }
 
         public void setToolbarsVisible(WebView sender, int visible)
         {
-            throw new NotImplementedException();
         }
 
         public void shouldPerformAction(WebView WebView, uint itemCommandID, uint sender)
         {
-            throw new NotImplementedException();
         }
 
         public void takeFocus(WebView sender, int forward)
         {
-            throw new NotImplementedException();
         }
 
         public void trackCustomPopupMenu(WebView sender, int hMenu, ref tagPOINT point)
         {
-            throw new NotImplementedException();
         }
 
         public void undo()
         {
-            throw new NotImplementedException();
         }
 
         public int validateUserInterfaceItem(WebView WebView, uint itemCommandID, int defaultValidation)
@@ -303,7 +274,6 @@ namespace WebKit
 
         public void webViewClose(WebView sender)
         {
-            throw new NotImplementedException();
         }
 
         public tagRECT webViewContentRect(WebView sender)
@@ -318,7 +288,6 @@ namespace WebKit
 
         public void webViewFocus(WebView sender)
         {
-            throw new NotImplementedException();
         }
 
         public float webViewFooterHeight(WebView WebView)
@@ -353,7 +322,6 @@ namespace WebKit
 
         public void webViewShow(WebView sender)
         {
-            throw new NotImplementedException();
         }
 
         public string webViewStatusText(WebView sender)
@@ -363,12 +331,10 @@ namespace WebKit
 
         public void webViewUnfocus(WebView sender)
         {
-            throw new NotImplementedException();
         }
 
         public void willPerformDragDestinationAction(WebView WebView, WebDragDestinationAction action, IDataObject draggingInfo)
         {
-            throw new NotImplementedException();
         }
 
         public IDataObject willPerformDragSourceAction(WebView WebView, WebDragSourceAction action, ref tagPOINT point, IDataObject pasteboard)

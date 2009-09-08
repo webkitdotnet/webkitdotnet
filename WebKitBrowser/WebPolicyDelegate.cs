@@ -39,11 +39,19 @@ namespace WebKit
 {
     internal class WebPolicyDelegate : IWebPolicyDelegate
     {
-        private WebKitBrowser owner;
+        public bool AllowDownloads;
+        public bool AllowNewWindows;
+        public bool AllowNavigation;
 
-        public WebPolicyDelegate(WebKitBrowser browser)
+        // so that we can load and display the first page
+        public bool AllowInitialNavigation;
+
+        public WebPolicyDelegate(bool AllowNavigation, bool AllowDownloads, bool AllowNewWindows)
         {
-            this.owner = browser;
+            this.AllowDownloads = AllowDownloads;
+            this.AllowNavigation = AllowNavigation;
+            this.AllowNewWindows = AllowNewWindows;
+            AllowInitialNavigation = true;
         }
 
         #region IWebPolicyDelegate Members
@@ -54,7 +62,7 @@ namespace WebKit
             // and for changing which MIME types are handled here
             if (WebView.canShowMIMEType(type) == 0)
             {
-                if (owner.AllowDownloads)
+                if (AllowDownloads)
                     listener.download();
                 else
                     listener.ignore();
@@ -67,7 +75,7 @@ namespace WebKit
 
         public void decidePolicyForNavigationAction(WebView WebView, CFDictionaryPropertyBag actionInformation, IWebURLRequest request, IWebFrame frame, IWebPolicyDecisionListener listener)
         {
-            if (owner.AllowNavigation)
+            if (AllowNavigation || AllowInitialNavigation)
                 listener.use();
             else
                 listener.ignore();
@@ -75,7 +83,7 @@ namespace WebKit
 
         public void decidePolicyForNewWindowAction(WebView WebView, CFDictionaryPropertyBag actionInformation, IWebURLRequest request, string frameName, IWebPolicyDecisionListener listener)
         {
-            if (owner.AllowNewWindows)
+            if (AllowNewWindows)
                 listener.use();
             else
                 listener.ignore();
