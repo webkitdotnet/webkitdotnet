@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0816c726-296f-4320-a155-a7633d184d4a}</ProjectGuid>
-    <SHFBSchemaVersion>1.8.0.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>1.8.0.3</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -19,7 +19,7 @@
     <HelpTitle>WebKit .NET</HelpTitle>
     <NamingMethod>MemberName</NamingMethod>
     <FrameworkVersion>2.0.50727</FrameworkVersion>
-    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
     <DocumentationSources>
       <DocumentationSource sourceFile="bin\Release\WebKitBrowser.dll" xmlns="" />
       <DocumentationSource sourceFile="bin\Release\WebKitBrowser.xml" xmlns="" />

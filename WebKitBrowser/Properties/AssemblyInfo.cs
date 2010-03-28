@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("WebKitBrowser")]
 [assembly: AssemblyDescription(".NET Wrapper for WebKit")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Peter Nelson")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("WebKit .NET")]
 [assembly: AssemblyCopyright("Copyright © Peter Nelson 2009")]
 [assembly: AssemblyTrademark("")]
@@ -58,5 +58,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.3.0.0")]
-[assembly: AssemblyFileVersion("0.3.0.0")]
+[assembly: AssemblyVersion("0.4.0.0")]
+[assembly: AssemblyFileVersion("0.4.0.0")]

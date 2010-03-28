@@ -39,8 +39,6 @@ namespace WebKit
     /// </summary>
     public class WebKitDownload
     {
-        private WebDownload download;
-
         #region FileDownload events
 
         /// <summary>
@@ -56,23 +54,22 @@ namespace WebKit
         /// <summary>
         /// Occurs when file data transfer begins.
         /// </summary>
-        public event DownloadStartedEvent DownloadStarted;
+        public event DownloadStartedEventHandler DownloadStarted;
         
         /// <summary>
         /// Occurs when file data arrives.
         /// </summary>
-        public event DownloadReceiveDataEvent DownloadReceiveData;
+        public event DownloadReceiveDataEventHandler DownloadReceiveData;
 
         /// <summary>
         /// Occurs when the file is downloaded successfully.
         /// </summary>
-        public event DownloadFinishedEvent DownloadFinished;
+        public event DownloadFinishedEventHandler DownloadFinished;
 
         #endregion
 
-        internal WebKitDownload(WebDownload download)
+        internal WebKitDownload()
         {
-            this.download = download;
             FilePath = "";
         }
     
@@ -88,7 +85,7 @@ namespace WebKit
 
         internal void NotifyDecideDestinationWithSuggestedFilename(WebDownload download, string fileName)
         {
-            if (FilePath != "")
+            if (FilePath.Length != 0)
                 download.setDestination(FilePath, 1);
             else
                 download.setDestination(fileName, 1);

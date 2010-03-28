@@ -96,7 +96,6 @@ namespace WebKitBrowserTest
             browser.DocumentCompleted += (s, e) => { statusLabel.Text = "Done"; };
             if (goHome)
                 browser.Navigate("http://www.google.com");
-            browser.ApplicationName = "WebKit.NET-test";
         }
 
         public void Stop()

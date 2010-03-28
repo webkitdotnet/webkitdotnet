@@ -60,7 +60,7 @@ namespace WebKit
         public bool Initialized { get; private set; }
 
         // Private stuff...
-        private W32API.ACTCTX activationContext;
+        private NativeMethods.ACTCTX activationContext;
         private IntPtr contextHandle = IntPtr.Zero;
         private uint lastCookie = 0;
         private bool disposed = false;
@@ -88,10 +88,11 @@ namespace WebKit
             if (!Activated)
             {
                 lastCookie = 0;
-                Activated = W32API.ActivateActCtx(contextHandle, out lastCookie);
+                Activated = NativeMethods.ActivateActCtx(contextHandle, out lastCookie);
+                int winError = Marshal.GetLastWin32Error();
 
                 if (!Activated)
-                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to activate activation context");
+                    throw new Win32Exception(winError, "Failed to activate activation context");
             }
         }
 
@@ -107,7 +108,7 @@ namespace WebKit
                 throw new InvalidOperationException("ActivationContext has not been initialized");
             if (Activated)
             {
-                if (!W32API.DeactivateActCtx(0, lastCookie))
+                if (!NativeMethods.DeactivateActCtx(0, lastCookie))
                     throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to deactivate activation context");
                 Activated = false;
             }
@@ -122,16 +123,17 @@ namespace WebKit
                 throw new ObjectDisposedException(this.ToString());
             if (!Initialized)
             {
-                activationContext = new W32API.ACTCTX();
-                activationContext.cbSize = Marshal.SizeOf(typeof(W32API.ACTCTX));
+                activationContext = new NativeMethods.ACTCTX();
+                activationContext.cbSize = Marshal.SizeOf(typeof(NativeMethods.ACTCTX));
                 activationContext.lpSource = this.ManifestFileName;
 
-                contextHandle = W32API.CreateActCtx(ref activationContext);
+                contextHandle = NativeMethods.CreateActCtx(ref activationContext);
+                int winError = Marshal.GetLastWin32Error();
 
-                Initialized = (contextHandle != (IntPtr) W32API.INVALID_HANDLE_VALUE);
+                Initialized = (contextHandle != (IntPtr) NativeMethods.INVALID_HANDLE_VALUE);
 
                 if (!Initialized)
-                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to initialize activation context");
+                    throw new Win32Exception(winError, "Failed to initialize activation context");
             }
         }
 
@@ -152,7 +154,7 @@ namespace WebKit
         {
             if (!disposed)
             {
-                W32API.ReleaseActCtx(contextHandle);
+                NativeMethods.ReleaseActCtx(contextHandle);
                 disposed = true;
             }
         }

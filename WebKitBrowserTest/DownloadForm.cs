@@ -21,9 +21,9 @@ namespace WebKitBrowserTest
 
             this.Visible = false;
 
-            Download.DownloadStarted += new DownloadStartedEvent(Download_DownloadStarted);
-            Download.DownloadReceiveData += new DownloadReceiveDataEvent(Download_DownloadReceiveData);
-            Download.DownloadFinished += new DownloadFinishedEvent(Download_DownloadFinished);
+            Download.DownloadStarted += new DownloadStartedEventHandler(Download_DownloadStarted);
+            Download.DownloadReceiveData += new DownloadReceiveDataEventHandler(Download_DownloadReceiveData);
+            Download.DownloadFinished += new DownloadFinishedEventHandler(Download_DownloadFinished);
         }
 
         void Download_DownloadFinished(object sender, EventArgs args)

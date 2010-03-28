@@ -36,6 +36,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using WebKit;
+using WebKit.DOM;
 using WebKit.Interop;
 using System.Diagnostics;
 using System.Reflection;
@@ -49,7 +50,7 @@ namespace WebKit
     {
         // static variables
         private static ActivationContext activationContext;
-        private static int actCtxRefCount = 0;
+        private static int actCtxRefCount;
 
         // private member variables...
         private IWebView webView;
@@ -57,13 +58,14 @@ namespace WebKit
         private Dictionary<WebDownload, WebKitDownload> downloads = new Dictionary<WebDownload, WebKitDownload>();
         private bool disposed = false;
 
-        // initialisation stuff
+        // initialisation and property stuff
         private string initialText = "";
         private Uri initialUrl = null;
-        private bool loaded = false;    // loaded == true => webView != null
+        private bool loaded = false;    // loaded == true -> webView != null
         private bool initialAllowNavigation = true;
         private bool initialAllowDownloads = true;
         private bool initialAllowNewWindows = true;
+        private readonly Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
         // delegates for WebKit events
         private WebFrameLoadDelegate frameLoadDelegate;
@@ -86,7 +88,7 @@ namespace WebKit
             if (key == Keys.Left || key == Keys.Right || key == Keys.Up || 
                 key == Keys.Down || key == Keys.Tab)
             {
-                W32API.SendMessage(webViewHWND, msg.Msg, msg.WParam, msg.LParam);
+                NativeMethods.SendMessage(webViewHWND, (uint)msg.Msg, msg.WParam, msg.LParam);
                 return true;
             }
 
@@ -161,10 +163,9 @@ namespace WebKit
             {
                 if (loaded)
                 {
-                    string url = webView.mainFrame().dataSource().request().url();
-                    if (url == "")
-                        return null;
-                    return new Uri(webView.mainFrame().dataSource().request().url());
+                    Uri result;
+                    return Uri.TryCreate(webView.mainFrame().dataSource().request().url(), 
+                        UriKind.Absolute, out result) ? result : null;
                 }
                 else
                 {
@@ -180,10 +181,7 @@ namespace WebKit
                 }
                 else
                 {
-                    if (Uri.IsWellFormedUriString(value.ToString(), UriKind.Absolute))
-                        initialUrl = value;
-                    else
-                        initialUrl = new Uri("http://" + value.ToString());
+                    initialUrl = value;
                 }
             }
         }
@@ -218,7 +216,7 @@ namespace WebKit
                     {
                         return webView.mainFrame().dataSource().representation().documentSource();
                     }
-                    catch (Exception)
+                    catch (COMException)
                     {
                         return "";
                     }
@@ -260,14 +258,14 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
+                if (webView != null)
                     return webView.applicationNameForUserAgent();
                 else
                     return "";
             }
             set
             {
-                if (loaded)
+                if (webView != null)
                     webView.setApplicationNameForUserAgent(value);
             }
         }
@@ -280,14 +278,14 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
+                if (webView != null)
                     return webView.userAgentForURL("");
                 else
                     return "";
             }
             set
             {
-                if (loaded)
+                if (webView != null)
                     webView.setCustomUserAgent(value);
             }
         }
@@ -301,14 +299,14 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
+                if (webView != null)
                     return webView.textSizeMultiplier();
                 else
                     return 1.0f;
             }
             set
             {
-                if (loaded)
+                if (webView != null)
                     webView.setTextSizeMultiplier(value);
             }
         }
@@ -393,26 +391,97 @@ namespace WebKit
         {
             get
             {
-                return webView.backForwardList().backListCount() > 0;
+                return loaded ? webView.backForwardList().backListCount() > 0 : false;
             }
         }
 
         /// <summary>
-        /// Gets a value indicating whether a subsequent page in the navigation history is available
+        /// Gets a value indicating whether a subsequent page in the navigation history is available.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool CanGoForward
         {
             get
             {
-                return webView.backForwardList().forwardListCount() > 0;
+                return loaded ? webView.backForwardList().forwardListCount() > 0 : false;
+            }
+        }
+
+        /// <summary>
+        /// Gets a Document representing the currently displayed page.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public DOM.Document Document
+        {
+            get
+            {
+                return DOM.Document.Create(webView.mainFrameDocument());
             }
         }
 
         /// <summary>
         /// Gets the current version.
         /// </summary>
-        public readonly Version Version = Assembly.GetExecutingAssembly().GetName().Version;
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Version Version
+        {
+            get
+            {
+                return version;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the scroll offset of the current page, in pixels from the origin.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Point ScrollOffset
+        {
+            get
+            {
+                if (webView != null)
+                {
+                    IWebViewPrivate v = (IWebViewPrivate)webView;
+                    return new Point(v.scrollOffset().x, v.scrollOffset().y);
+                }
+                else
+                {
+                    return Point.Empty;
+                }
+            }
+            set
+            {
+                if (webView != null)
+                {
+                    IWebViewPrivate v = (IWebViewPrivate)webView;
+                    tagPOINT p = new tagPOINT();
+                    p.x = value.X - ScrollOffset.X;
+                    p.y = value.Y - ScrollOffset.Y;
+                    v.scrollBy(ref p);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the visible content rectangle of the current view, in pixels.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Rectangle VisibleContent
+        {
+            get
+            {
+                if (webView != null)
+                {
+                    IWebViewPrivate v = (IWebViewPrivate)webView;
+                    tagRECT r = v.visibleContentRect();
+                    return new Rectangle(r.left, r.top, (r.right - r.left), (r.bottom - r.top));
+                }
+                else
+                {
+                    return Rectangle.Empty;
+                }
+            }
+        }
 
         #endregion
 
@@ -424,7 +493,7 @@ namespace WebKit
         public WebKitBrowser()
         {
             InitializeComponent();
-
+            
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
                 // Control Events            
@@ -449,7 +518,7 @@ namespace WebKit
                 // If this control is brought to focus, focus our webkit child window
                 this.GotFocus += (s, e) =>
                 {
-                    W32API.SetFocus(webViewHWND);
+                    NativeMethods.SetFocus(webViewHWND);
                 };            
 
                 activationContext.Activate();
@@ -488,7 +557,7 @@ namespace WebKit
             webView.initWithFrame(rect, null, null);
 
             IWebViewPrivate webViewPrivate = (IWebViewPrivate)webView;
-            webViewHWND = (IntPtr) webViewPrivate.viewWindow();
+            webViewHWND = (IntPtr)webViewPrivate.viewWindow();
 
             // Subscribe to FrameLoadDelegate events
             frameLoadDelegate.DidRecieveTitle += new DidRecieveTitleEvent(frameLoadDelegate_DidRecieveTitle);
@@ -519,7 +588,7 @@ namespace WebKit
         private void WebKitBrowser_Resize(object sender, EventArgs e)
         {
             // Resize the WebKit control
-            W32API.MoveWindow(webViewHWND, 0, 0, this.Width - 1, this.Height - 1, true);
+            NativeMethods.MoveWindow(webViewHWND, 0, 0, this.Width - 1, this.Height - 1, true);
         }
 
         private void WebKitBrowser_Load(object sender, EventArgs e)
@@ -527,10 +596,7 @@ namespace WebKit
             // Create the WebKit browser component
             InitializeWebKit();
 
-            // if webView is null here, we're in trouble
             loaded = webView != null;
-            if (!loaded)
-                throw new Exception("Failed to initialize WebKit control");
 
             if (initialUrl != null)
             {
@@ -559,7 +625,8 @@ namespace WebKit
         {
             if (frame == webView.mainFrame())
             {
-                Navigating(this, new WebBrowserNavigatingEventArgs(this.Url, frame.name()));
+                string url = frame.provisionalDataSource().request().url();
+                Navigating(this, new WebBrowserNavigatingEventArgs(new Uri(url), frame.name()));
             }
         }
 
@@ -614,7 +681,7 @@ namespace WebKit
         private void downloadDelegate_DidBegin(WebDownload download)
         {
             // create WebKitDownload object to handle this download and notify listeners
-            WebKitDownload d = new WebKitDownload(download);
+            WebKitDownload d = new WebKitDownload();
             downloads.Add(download, d);
 
             FileDownloadBeginEventArgs args = new FileDownloadBeginEventArgs(d);
@@ -671,19 +738,19 @@ namespace WebKit
         /// <summary>
         /// Navigates to the specified Url.
         /// </summary>
-        /// <param name="Url">Url to navigate to.</param>
-        public void Navigate(string Url)
+        /// <param name="url">Url to navigate to.</param>
+        public void Navigate(string url)
         {
             if (loaded)
             {
                 // prepend with "http://" if url not well formed
-                if (!Uri.IsWellFormedUriString(Url, UriKind.Absolute))
-                    Url = "http://" + Url;
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                    url = "http://" + url;
 
                 activationContext.Activate();
 
                 WebMutableURLRequest request = new WebMutableURLRequestClass();
-                request.initWithURL(Url, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
+                request.initWithURL(url, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
                 request.setHTTPMethod("GET");
 
                 webView.mainFrame().loadRequest(request);
@@ -692,7 +759,7 @@ namespace WebKit
             }
             else
             {
-                initialUrl = Url == "" ? null : new Uri(Url);
+                initialUrl = url.Length == 0 ? null : new Uri(url);
             }
         }
 
@@ -702,9 +769,9 @@ namespace WebKit
         /// <returns>Success value.</returns>
         public bool GoBack()
         {
-            // TODO: return value
+            bool retVal = CanGoBack;
             webView.goBack();
-            return true;
+            return retVal;
         }
 
         /// <summary>
@@ -713,28 +780,27 @@ namespace WebKit
         /// <returns>Success value.</returns>
         public bool GoForward()
         {
-            // TODO: return value
+            bool retVal = CanGoForward;
             webView.goForward();
-            return true;
+            return retVal;
         }
 
         /// <summary>
-        /// Refreshes the current web page.
+        /// Reloads the current web page.
         /// </summary>
-        public override void Refresh()
+        public void Reload()
         {
-            base.Refresh();
             webView.mainFrame().reload();
         }
 
         /// <summary>
-        /// Refreshes the current web page.
+        /// Reloads the current web page.
         /// </summary>
-        /// <param name="Option">Options for refreshing the page.</param>
-        public void Refresh(WebBrowserRefreshOption Option)
+        /// <param name="option">Options for reloading the page.</param>
+        public void Reload(WebBrowserRefreshOption option)
         {
             // TODO: implement
-            Refresh();
+            Reload();
         }
 
         /// <summary>
@@ -747,6 +813,25 @@ namespace WebKit
             {
                 webView.mainFrame().stopLoading();
             }
+        }
+
+        /// <summary>
+        /// Returns the result of running a script.
+        /// </summary>
+        /// <param name="Script">The script to run.</param>
+        /// <returns></returns>
+        public string StringByEvaluatingJavaScriptFromString(string Script)
+        {
+            return webView.stringByEvaluatingJavaScriptFromString(Script);
+        }
+
+        /// <summary>
+        /// Gets the underlying WebKit WebView object used by this instance of WebKitBrowser.
+        /// </summary>
+        /// <returns>The WebView object.</returns>
+        public object GetWebView()
+        {
+            return webView;
         }
 
         #endregion Public Methods

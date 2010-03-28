@@ -75,7 +75,7 @@ namespace WebKitBrowserTest
             navigationBar.Back += () => { currentPage.browser.GoBack(); ActivateBrowser(); };
             navigationBar.Forward += () => { currentPage.browser.GoForward(); ActivateBrowser(); };
             navigationBar.Go += () => { currentPage.browser.Navigate(navigationBar.UrlText); ActivateBrowser(); };
-            navigationBar.Refresh += () => { currentPage.browser.Refresh(); ActivateBrowser(); };
+            navigationBar.Refresh += () => { currentPage.browser.Reload(); ActivateBrowser(); };
             navigationBar.Stop += () => { currentPage.Stop(); ActivateBrowser(); };
         }
 
@@ -192,9 +192,20 @@ namespace WebKitBrowserTest
                 Application.Exit();
         }
 
-        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        private void testPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //currentPage.browser.test();
+            currentPage.browser.DocumentText =
+                "<html><head><title>Test Page</title></head><body>" +
+                "<p id=\"testelement\">Hello, World!</p>" +
+                "<div id=\"testdiv\" style=\"lol\"><p>A</p><p>B</p><p>C</p></div>" +
+                "<script>function MyObject() { this.data = 384; }" + 
+                "function getJSObject() { document.getElementById('testelement').innerText = 'Testing...'; return new MyObject; }</script>" + 
+                "</body></html>";
+        }
+
+        private void tToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }

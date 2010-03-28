@@ -38,29 +38,29 @@ namespace WebKit
     /// Represents the method that will handle the WebKitBrowser.Error event.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
-    /// <param name="args">A WebKitBrowserErrorEventArgs that contains the event data.</param>
-    public delegate void WebKitBrowserErrorEventHandler (object sender, WebKitBrowserErrorEventArgs args);
+    /// <param name="e">A WebKitBrowserErrorEventArgs that contains the event data.</param>
+    public delegate void WebKitBrowserErrorEventHandler (object sender, WebKitBrowserErrorEventArgs e);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.FileDownloadBegin event.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
-    /// <param name="args">A FileDownloadBeginEventArgs that contains the event data.</param>
-    public delegate void FileDownloadBeginEventHandler (object sender, FileDownloadBeginEventArgs args);
+    /// <param name="e">A FileDownloadBeginEventArgs that contains the event data.</param>
+    public delegate void FileDownloadBeginEventHandler (object sender, FileDownloadBeginEventArgs e);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.NewWindowRequest event.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
-    /// <param name="args">A NewWindowRequestEventArgs that contains the event data.</param>
-    public delegate void NewWindowRequestEventHandler (object sender, NewWindowRequestEventArgs args);
+    /// <param name="e">A NewWindowRequestEventArgs that contains the event data.</param>
+    public delegate void NewWindowRequestEventHandler (object sender, NewWindowRequestEventArgs e);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.NewWindowCreated event.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
-    /// <param name="args">A NewWindowCreatedEventArgs that contains the event data.</param>
-    public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs args);
+    /// <param name="e">A NewWindowCreatedEventArgs that contains the event data.</param>
+    public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs e);
 
     #endregion
 
@@ -79,10 +79,10 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the WebKitBrowserErrorEventArgs class.
         /// </summary>
-        /// <param name="Description">A description of the error that occurred.</param>
-        public WebKitBrowserErrorEventArgs(string Description)
+        /// <param name="description">A description of the error that occurred.</param>
+        public WebKitBrowserErrorEventArgs(string description)
         {
-            this.Description = Description;
+            this.Description = description;
         }
     }
 
@@ -104,8 +104,8 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the FileDownloadBeginEventArgs class.
         /// </summary>
-        /// <param name="Download">A WebKitDownload representing the download.</param>
-        public FileDownloadBeginEventArgs(WebKitDownload Download)
+        /// <param name="download">A WebKitDownload representing the download.</param>
+        public FileDownloadBeginEventArgs(WebKitDownload download)
         {
             this.Download = Download;
             this.Cancel = false;
@@ -130,11 +130,11 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the NewWindowRequestEventArgs class.
         /// </summary>
-        /// <param name="Url">The Url that the new window will attempt to navigate to.</param>
-        public NewWindowRequestEventArgs(string Url)
+        /// <param name="url">The Url that the new window will attempt to navigate to.</param>
+        public NewWindowRequestEventArgs(string url)
         {
             this.Cancel = false;
-            this.Url = Url;
+            this.Url = url;
         }
     }
 
