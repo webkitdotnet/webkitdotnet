@@ -33,6 +33,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 using WebKit;
+using WebKit.DOM;
 
 namespace WebKitBrowserTest
 {
@@ -197,15 +198,14 @@ namespace WebKitBrowserTest
             currentPage.browser.DocumentText =
                 "<html><head><title>Test Page</title></head><body>" +
                 "<p id=\"testelement\">Hello, World!</p>" +
-                "<div id=\"testdiv\" style=\"lol\"><p>A</p><p>B</p><p>C</p></div>" +
-                "<script>function MyObject() { this.data = 384; }" + 
-                "function getJSObject() { document.getElementById('testelement').innerText = 'Testing...'; return new MyObject; }</script>" + 
+                "<div><p>A</p><p>B</p><p>C</p></div>" +
+                "<script type=\"text/javascript\">" + 
+                "function testfunc() {var doc = document.implementation.createDocument(\"http://www.w3.org/1999/xhtml\", \"html\", null);} </script>" + 
                 "</body></html>";
         }
 
         private void tToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
         }
     }
 }

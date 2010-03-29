@@ -1304,6 +1304,11 @@ namespace WebKit.DOM
     /// </summary>
     public class DocumentType : Node
     {
+        /// <summary>
+        /// An empty document type.
+        /// </summary>
+        public static DocumentType None = new DocumentType(null);
+
         private IDOMDocumentType documentType;
 
         /// <summary>
