@@ -15,6 +15,8 @@
     <ApplicationManifest>WebKitBrowser.dll.manifest</ApplicationManifest>
     <TargetFrameworkSubset>
     </TargetFrameworkSubset>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>WebKit .NET.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -90,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="WebKit .NET.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -104,6 +107,6 @@
 xcopy /E /Y "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"
 del temp_exclude_files.txt</PostBuildEvent>
     <PreBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
-tlbimp "$(SolutionDir)webkit\webkit.dll" /silent /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"</PreBuildEvent>
+tlbimp "$(SolutionDir)webkit\webkit.dll" /silent /keyfile:"$(ProjectDir)WebKit .NET.snk" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"</PreBuildEvent>
   </PropertyGroup>
 </Project>

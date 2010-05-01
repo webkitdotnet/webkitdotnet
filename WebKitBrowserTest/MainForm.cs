@@ -197,7 +197,7 @@ namespace WebKitBrowserTest
         {
             currentPage.browser.DocumentText =
                 "<html><head><title>Test Page</title></head><body>" +
-                "<p id=\"testelement\">Hello, World!</p>" +
+                "<p id=\"testelement\" style=\"color: red\">Hello, World!</p>" +
                 "<div><p>A</p><p>B</p><p>C</p></div>" +
                 "<script type=\"text/javascript\">" + 
                 "function testfunc() {var doc = document.implementation.createDocument(\"http://www.w3.org/1999/xhtml\", \"html\", null);} </script>" + 
@@ -206,6 +206,9 @@ namespace WebKitBrowserTest
 
         private void tToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Element element = currentPage.browser.Document.GetElementById("testelement");
+            Attr attr = element.GetAttributeNode("style");
+            MessageBox.Show(attr.NodeValue);
         }
     }
 }
