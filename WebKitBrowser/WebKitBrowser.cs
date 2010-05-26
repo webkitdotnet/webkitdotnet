@@ -40,6 +40,7 @@ using WebKit.DOM;
 using WebKit.Interop;
 using System.Diagnostics;
 using System.Reflection;
+using System.IO;
 
 namespace WebKit
 {
@@ -505,7 +506,8 @@ namespace WebKit
                 // WebKit COM component registration free
                 if ((actCtxRefCount++) == 0)
                 {
-                    activationContext = new ActivationContext("WebKitBrowser.dll.manifest");
+                    FileInfo fi = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                    activationContext = new ActivationContext(Path.Combine(fi.DirectoryName, "WebKitBrowser.dll.manifest")); 
                     activationContext.Initialize();
 
                     // TODO: more error handling here

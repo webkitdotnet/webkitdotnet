@@ -200,15 +200,13 @@ namespace WebKitBrowserTest
                 "<p id=\"testelement\" style=\"color: red\">Hello, World!</p>" +
                 "<div><p>A</p><p>B</p><p>C</p></div>" +
                 "<script type=\"text/javascript\">" + 
-                "function testfunc() {var doc = document.implementation.createDocument(\"http://www.w3.org/1999/xhtml\", \"html\", null);} </script>" + 
+                "function f() { window.open('http://www.google.com', 'myWindow'); }</script>" + 
                 "</body></html>";
         }
 
         private void tToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Element element = currentPage.browser.Document.GetElementById("testelement");
-            Attr attr = element.GetAttributeNode("style");
-            MessageBox.Show(attr.NodeValue);
+            currentPage.browser.StringByEvaluatingJavaScriptFromString("f()");
         }
     }
 }
