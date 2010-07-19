@@ -107,6 +107,6 @@
 xcopy /E /Y /EXCLUDE:temp_exclude_files.txt "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"
 del temp_exclude_files.txt</PostBuildEvent>
     <PreBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
-tlbimp "$(SolutionDir)webkit\webkit.dll" /silent /keyfile:"$(ProjectDir)WebKit .NET.snk" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"</PreBuildEvent>
+tlbimp "$(SolutionDir)webkit\webkit.tlb" /silent /keyfile:"$(ProjectDir)WebKit .NET.snk" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"</PreBuildEvent>
   </PropertyGroup>
 </Project>

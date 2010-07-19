@@ -208,5 +208,10 @@ namespace WebKitBrowserTest
         {
             currentPage.browser.StringByEvaluatingJavaScriptFromString("f()");
         }
+
+        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.ShowPrintDialog();
+        }
     }
 }

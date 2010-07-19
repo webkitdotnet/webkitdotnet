@@ -166,7 +166,7 @@ namespace WebKit
         {
         }
 
-        public void printFrame(WebView WebView, IWebFrame frame)
+        public void printFrame(WebView WebView, webFrame frame)
         {
         }
 
@@ -182,12 +182,12 @@ namespace WebKit
         {
         }
 
-        public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, IWebFrame initiatedByFrame)
+        public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, webFrame initiatedByFrame)
         {
             throw new NotImplementedException();
         }
 
-        public int runDatabaseSizeLimitPrompt(WebView WebView, string displayName, IWebFrame initiatedByFrame)
+        public int runDatabaseSizeLimitPrompt(WebView WebView, string displayName, webFrame initiatedByFrame)
         {
             throw new NotImplementedException();
         }
@@ -317,7 +317,13 @@ namespace WebKit
 
         public tagRECT webViewPrintingMarginRect(WebView WebView)
         {
-            throw new NotImplementedException();
+            IWebFramePrivate framePrivate = (IWebFramePrivate)WebView.mainFrame();
+            tagRECT rect = framePrivate.frameBounds();
+            rect.top += 40;
+            rect.left += 40;
+            rect.right -= 80;
+            rect.bottom -= 80;
+            return rect;
         }
 
         public void webViewShow(WebView sender)

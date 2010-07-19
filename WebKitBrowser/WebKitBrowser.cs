@@ -41,6 +41,7 @@ using WebKit.Interop;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Drawing.Printing;
 
 namespace WebKit
 {
@@ -834,6 +835,55 @@ namespace WebKit
         public object GetWebView()
         {
             return webView;
+        }
+
+
+        public void ShowPrintDialog()
+        {
+            PrintDialog printDlg = new PrintDialog();
+            PrintDocument doc = new PrintDocument();
+            doc.DocumentName = this.DocumentTitle;
+            doc.DefaultPageSettings.Margins = new Margins(100, 100, 100, 100);
+            doc.OriginAtMargins = true;
+            printDlg.Document = doc;
+
+            if (printDlg.ShowDialog() == DialogResult.OK)
+            {
+                _printGfx = null;
+                doc.PrintPage += new PrintPageEventHandler(doc_PrintPage);
+                doc.Print();
+            }
+        }
+
+        private Graphics _printGfx;
+        private uint _nPages;
+        private uint _page;
+        private int _hDC;
+        void doc_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            IWebFramePrivate framePrivate = (IWebFramePrivate)webView.mainFrame();
+            if (_printGfx == null)
+            {
+                // initialise printing
+                _printGfx = e.Graphics;
+                _hDC = _printGfx.GetHdc().ToInt32();
+                framePrivate.setInPrintingMode(1, _hDC);
+                _nPages = framePrivate.getPrintedPageCount(_hDC);
+                _page = 1;
+            }
+
+            framePrivate.spoolPages(_hDC, _page, _page, 0);
+
+            ++_page;
+            if (_page <= _nPages)
+            {
+                e.HasMorePages = true;
+            }
+            else
+            {
+                framePrivate.setInPrintingMode(0, _hDC);
+                e.HasMorePages = false;
+            }
         }
 
         #endregion Public Methods
