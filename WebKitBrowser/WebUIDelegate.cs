@@ -34,6 +34,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WebKit.Interop;
+using System.Diagnostics;
+using System.Drawing.Printing;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace WebKit
 {
@@ -317,12 +321,33 @@ namespace WebKit
 
         public tagRECT webViewPrintingMarginRect(WebView WebView)
         {
-            IWebFramePrivate framePrivate = (IWebFramePrivate)WebView.mainFrame();
-            tagRECT rect = framePrivate.frameBounds();
-            rect.top += 40;
-            rect.left += 40;
-            rect.right -= 80;
-            rect.bottom -= 80;
+            PageSettings settings = owner.PageSettings;
+
+            Graphics gfx = settings.PrinterSettings.CreateMeasurementGraphics();
+            
+            // convert margins (in 100ths of inch) to screen pixels.
+            // PrinterResolution.Y returns 0 for some reason,
+            // on Adobe distiller anyway, so we'll use X for the moment.
+            int dpi = settings.PrinterResolution.X;
+            int marginLeft = (int)(((float)settings.Margins.Left / 100) * dpi);
+            int marginRight = (int)(((float)settings.Margins.Right / 100) * dpi);
+            int marginTop = (int)(((float)settings.Margins.Top / 100) * dpi);
+            int marginBottom = (int)(((float)settings.Margins.Top / 100) * dpi);
+            
+            int pageWidth = (int)(((float)settings.PaperSize.Width / 100) * dpi);
+            int pageHeight = (int)(((float)settings.PaperSize.Height / 100) * dpi);
+
+            Point[] pts = new Point[2];
+            pts[0] = new Point(marginLeft, marginTop);
+            pts[1] = new Point(pageWidth - marginRight, pageHeight - marginBottom);
+
+            gfx.TransformPoints(CoordinateSpace.Page, CoordinateSpace.Device, pts);
+
+            tagRECT rect = new tagRECT();
+            rect.left = pts[0].X;
+            rect.top = pts[0].Y;
+            rect.right = pts[1].X;
+            rect.bottom = pts[1].Y;
             return rect;
         }
 

@@ -213,5 +213,10 @@ namespace WebKitBrowserTest
         {
             currentPage.browser.ShowPrintDialog();
         }
+
+        private void pageSetupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.ShowPageSetupDialog();
+        }
     }
 }

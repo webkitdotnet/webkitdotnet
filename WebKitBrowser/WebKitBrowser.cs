@@ -148,6 +148,8 @@ namespace WebKit
 
         #region Public properties
 
+        public PageSettings PageSettings { get; private set; }
+
         /// <summary>
         /// Gets the title of the current document.
         /// </summary>
@@ -495,6 +497,8 @@ namespace WebKit
         public WebKitBrowser()
         {
             InitializeComponent();
+
+            PageSettings = new PageSettings();
             
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
@@ -837,13 +841,32 @@ namespace WebKit
             return webView;
         }
 
+        public void Print()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowPrintPreviewDialog()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowPageSetupDialog()
+        {
+            PageSetupDialog pageSetupDlg = new PageSetupDialog();
+            pageSetupDlg.EnableMetric = true;
+            pageSetupDlg.PageSettings = this.PageSettings;
+
+            if (pageSetupDlg.ShowDialog() == DialogResult.OK)
+                this.PageSettings = pageSetupDlg.PageSettings;
+        }
 
         public void ShowPrintDialog()
         {
             PrintDialog printDlg = new PrintDialog();
             PrintDocument doc = new PrintDocument();
             doc.DocumentName = this.DocumentTitle;
-            doc.DefaultPageSettings.Margins = new Margins(100, 100, 100, 100);
+            doc.DefaultPageSettings.Margins = new Margins(500, 100, 100, 100);
             doc.OriginAtMargins = true;
             printDlg.Document = doc;
 

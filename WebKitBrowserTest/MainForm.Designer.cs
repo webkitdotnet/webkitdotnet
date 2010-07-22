@@ -58,6 +58,8 @@ namespace WebKitBrowserTest
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,8 +74,7 @@ namespace WebKitBrowserTest
             this.tToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.navigationBar = new WebKitBrowserTest.NavigationBar();
-            this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.pageSetupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -97,6 +98,7 @@ namespace WebKitBrowserTest
             this.closeTabToolStripMenuItem,
             this.newTabToolStripMenuItem,
             this.toolStripMenuItem2,
+            this.pageSetupToolStripMenuItem,
             this.printToolStripMenuItem,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
@@ -118,6 +120,18 @@ namespace WebKitBrowserTest
             this.newTabToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.newTabToolStripMenuItem.Text = "New &Tab";
             this.newTabToolStripMenuItem.Click += new System.EventHandler(this.newTabToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(159, 6);
+            // 
+            // printToolStripMenuItem
+            // 
+            this.printToolStripMenuItem.Name = "printToolStripMenuItem";
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.printToolStripMenuItem.Text = "&Print...";
+            this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -225,17 +239,12 @@ namespace WebKitBrowserTest
             this.navigationBar.TabIndex = 1;
             this.navigationBar.UrlText = "";
             // 
-            // printToolStripMenuItem
+            // pageSetupToolStripMenuItem
             // 
-            this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.printToolStripMenuItem.Text = "&Print";
-            this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(159, 6);
+            this.pageSetupToolStripMenuItem.Name = "pageSetupToolStripMenuItem";
+            this.pageSetupToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.pageSetupToolStripMenuItem.Text = "Page &Setup...";
+            this.pageSetupToolStripMenuItem.Click += new System.EventHandler(this.pageSetupToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -278,6 +287,7 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem tToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pageSetupToolStripMenuItem;
 
     }
 }
