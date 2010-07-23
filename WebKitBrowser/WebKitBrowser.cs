@@ -725,7 +725,8 @@ namespace WebKit
 
         private void uiDelegate_CreateWebViewWithRequest(IWebURLRequest request, out WebView webView)
         {
-            // Todo: find out why url seems to always be empty
+            // TODO: find out why url seems to always be empty:
+            // https://bugs.webkit.org/show_bug.cgi?id=41441 explains all
             string url = (request == null) ? "" : request.url();
             NewWindowRequestEventArgs args = new NewWindowRequestEventArgs(url);
             NewWindowRequest(this, args);
