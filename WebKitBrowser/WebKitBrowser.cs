@@ -148,7 +148,11 @@ namespace WebKit
 
         #region Public properties
 
-        public PageSettings PageSettings { get; private set; }
+        /// <summary>
+        /// The current print page settings.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public PageSettings PageSettings { get; set; }
 
         /// <summary>
         /// Gets the title of the current document.
@@ -841,16 +845,20 @@ namespace WebKit
             return webView;
         }
 
+        // printing methods
+
+        /// <summary>
+        /// Prints the document using the current print and page settings.
+        /// </summary>
+        /// <remarks>UNIMPLEMENTED</remarks>
         public void Print()
         {
             throw new NotImplementedException();
         }
 
-        public void ShowPrintPreviewDialog()
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// Displays a Page Setup dialog box with the current page and print settings.
+        /// </summary>
         public void ShowPageSetupDialog()
         {
             PageSetupDialog pageSetupDlg = new PageSetupDialog();
@@ -861,6 +869,9 @@ namespace WebKit
                 this.PageSettings = pageSetupDlg.PageSettings;
         }
 
+        /// <summary>
+        /// Displays a Print dialog box.
+        /// </summary>
         public void ShowPrintDialog()
         {
             PrintDialog printDlg = new PrintDialog();
@@ -875,6 +886,15 @@ namespace WebKit
                 PrintManager pm = new PrintManager(doc, this);
                 pm.Print();
             }
+        }
+
+        /// <summary>
+        /// Displays a Print Preview dialog box.
+        /// </summary>
+        /// <remarks>UNIMPLEMENTED</remarks>
+        public void ShowPrintPreviewDialog()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion Public Methods

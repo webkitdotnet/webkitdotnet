@@ -323,32 +323,34 @@ namespace WebKit
         {
             PageSettings settings = owner.PageSettings;
 
-            Graphics gfx = settings.PrinterSettings.CreateMeasurementGraphics();
-            
-            // convert margins (in 100ths of inch) to screen pixels.
+            // WebKit specifies margins in 1000ths of an inch. (???)
             // PrinterResolution.Y returns 0 for some reason,
             // on Adobe distiller anyway, so we'll use X for the moment.
             int dpi = settings.PrinterResolution.X;
-            int marginLeft = (int)(((float)settings.Margins.Left / 100) * dpi);
-            int marginRight = (int)(((float)settings.Margins.Right / 100) * dpi);
-            int marginTop = (int)(((float)settings.Margins.Top / 100) * dpi);
-            int marginBottom = (int)(((float)settings.Margins.Top / 100) * dpi);
+            int marginLeft = settings.Margins.Left;
+            int marginRight = settings.Margins.Right;
+            int marginTop = settings.Margins.Top;
+            int marginBottom = settings.Margins.Bottom;
             
-            int pageWidth = (int)(((float)settings.PaperSize.Width / 100) * dpi);
-            int pageHeight = (int)(((float)settings.PaperSize.Height / 100) * dpi);
+            int pageWidth = settings.PaperSize.Width;
+            int pageHeight = settings.PaperSize.Height;
 
-            Point[] pts = new Point[2];
-            pts[0] = new Point(marginLeft, marginTop);
-            pts[1] = new Point(pageWidth - marginRight, pageHeight - marginBottom);
-
-            gfx.TransformPoints(CoordinateSpace.Page, CoordinateSpace.Device, pts);
-
+            // TODO: find out what these are actually supposed to be
+            // the x10 and x20 are completely arbitrary, based on 
+            // what I found fits an A4 portrait page with 1 inch
+            // margins...
             tagRECT rect = new tagRECT();
-            rect.left = pts[0].X;
-            rect.top = pts[0].Y;
-            rect.right = pts[1].X;
-            rect.bottom = pts[1].Y;
+            rect.left = marginLeft;
+            rect.top = marginTop;
+            rect.right = marginRight * 10;
+            rect.bottom = marginBottom * 20;
             return rect;
+
+            /*rect.left = 20;
+            rect.top = 20;
+            rect.right = 400;
+            rect.bottom = 400;
+            return rect;*/
         }
 
         public void webViewShow(WebView sender)
