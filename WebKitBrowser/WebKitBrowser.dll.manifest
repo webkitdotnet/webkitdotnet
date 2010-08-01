@@ -7,30 +7,30 @@
     </dependentAssembly>
   </dependency>
   <file name="WebKit" hashalg="SHA1">
-    <comClass clsid="{D6BCA079-F61C-4E1E-B453-32A0477D02E3}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{66827EC1-3AEF-4241-BAC5-F776B44F030F}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{A062ECC3-BB1B-4694-A569-F59E0AD6BE0C}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{BA590766-0A6F-46C7-B96E-743490D94CB7}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{A4B9B45D-949F-4C8C-9B92-6FBFCC1CAAA2}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{DD653964-4D37-4FB2-9CB6-6A9A97719332}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{6BE190E9-1725-4E4A-88DB-6A9FE242C9E5}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{F71071FD-A51B-4B69-9EB6-44374405E80C}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{1820D883-42FE-4B78-88C8-5456BB19D224}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{67B89F90-F778-438B-ABBF-34D1ACBF8651}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{E93AA8D7-F362-4A4A-A95D-325906BEB5F0}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{6C6AF3F9-36B4-4BF7-8BDE-74DCD4AD75A4}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{7433F53B-7FE9-484A-9432-72909457A646}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{C0F98BD9-3B1C-413D-904A-E2D1453EAF1F}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{2FB5499A-BB5D-4469-8517-789FEC8FD9BA}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{F366A6E8-E43C-4FD4-AAB0-8E6E79C73E6E}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{24A53AD5-AA9F-44E6-AA22-2C7C250B661A}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{715636C4-59E7-4B85-BBC5-B555888787D7}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{AB201196-8DD2-4D45-AEBD-029B6A37AA27}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{24040CD6-AFF4-4A51-9C8B-71539580EE76}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{C2A1BFC2-1E7C-49FE-8592-D0C7FB440BC0}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{1B63D781-9BC4-4A04-899F-C4B05BBD3BE5}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{96B93356-9D61-4B3F-A6CF-A78283AC9649}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
-    <comClass clsid="{3F35F332-BB2B-49B3-AEDD-27B317687E07}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}"></comClass>
+    <comClass clsid="{D6BCA079-F61C-4E1E-B453-32A0477D02E3}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{66827EC1-3AEF-4241-BAC5-F776B44F030F}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{A062ECC3-BB1B-4694-A569-F59E0AD6BE0C}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{BA590766-0A6F-46C7-B96E-743490D94CB7}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{A4B9B45D-949F-4C8C-9B92-6FBFCC1CAAA2}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{DD653964-4D37-4FB2-9CB6-6A9A97719332}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{6BE190E9-1725-4E4A-88DB-6A9FE242C9E5}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{F71071FD-A51B-4B69-9EB6-44374405E80C}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{1820D883-42FE-4B78-88C8-5456BB19D224}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{67B89F90-F778-438B-ABBF-34D1ACBF8651}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{E93AA8D7-F362-4A4A-A95D-325906BEB5F0}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{6C6AF3F9-36B4-4BF7-8BDE-74DCD4AD75A4}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{7433F53B-7FE9-484A-9432-72909457A646}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{C0F98BD9-3B1C-413D-904A-E2D1453EAF1F}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{2FB5499A-BB5D-4469-8517-789FEC8FD9BA}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{F366A6E8-E43C-4FD4-AAB0-8E6E79C73E6E}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{24A53AD5-AA9F-44E6-AA22-2C7C250B661A}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{715636C4-59E7-4B85-BBC5-B555888787D7}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{AB201196-8DD2-4D45-AEBD-029B6A37AA27}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{24040CD6-AFF4-4A51-9C8B-71539580EE76}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{C2A1BFC2-1E7C-49FE-8592-D0C7FB440BC0}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{1B63D781-9BC4-4A04-899F-C4B05BBD3BE5}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{96B93356-9D61-4B3F-A6CF-A78283AC9649}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
+    <comClass clsid="{3F35F332-BB2B-49B3-AEDD-27B317687E07}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
     <typelib tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" version="530.0" helpdir="" flags="HASDISKIMAGE"></typelib>
   </file>
   <comInterfaceExternalProxyStub name="IWebView" iid="{174BBEFD-058E-49C7-91DF-6F110AA4AC28}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>

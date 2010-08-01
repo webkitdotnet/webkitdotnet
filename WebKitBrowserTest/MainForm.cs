@@ -34,6 +34,7 @@ using System.Windows.Forms;
 using System.Collections;
 using WebKit;
 using WebKit.DOM;
+using System.Threading;
 
 namespace WebKitBrowserTest
 {
@@ -217,6 +218,22 @@ namespace WebKitBrowserTest
         private void pageSetupToolStripMenuItem_Click(object sender, EventArgs e)
         {
             currentPage.browser.ShowPageSetupDialog();
+        }
+
+        private void newWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("This is likely to cause a crash. Continue?",
+                "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                var thread = new Thread(new ThreadStart(MyThread));
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+            }
+        }
+
+        private void MyThread()
+        {
+            Application.Run(new MainForm());
         }
     }
 }
