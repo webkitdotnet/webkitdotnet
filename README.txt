@@ -19,4 +19,4 @@ WebKit library (including dependencies) in the following folders:
 The current releases are at a very early stage of development and are not
 recommended for production level use yet.
 
-Please send any questions or feedback to Peter Nelson at charn.opcode@gmail.com
+Please send any questions or feedback to webkitdotnet@peterdn.com.
