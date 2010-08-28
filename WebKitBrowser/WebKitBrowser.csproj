@@ -89,9 +89,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="WebKitBrowser.dll.manifest">
+    <None Include="WebKitBrowser.dll.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -107,6 +107,8 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>echo WebKitBrowser &gt; temp_exclude_files.txt
+echo .tlb &gt;&gt; temp_exclude_files.txt
+echo gitignore &gt;&gt; temp_exclude_files.txt
 xcopy /E /Y /EXCLUDE:temp_exclude_files.txt "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"
 del temp_exclude_files.txt</PostBuildEvent>
     <PreBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
