@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity version="0.4.9.1" name="WebKitBrowser" processorArchitecture="x86" type="win32" />
+  <assemblyIdentity version="0.5.0.0" name="WebKitBrowser" processorArchitecture="x86" type="win32" />
   <file name="WebKit" hashalg="SHA1">
     <comClass clsid="{D6BCA079-F61C-4E1E-B453-32A0477D02E3}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
     <comClass clsid="{66827EC1-3AEF-4241-BAC5-F776B44F030F}" tlbid="{2A748656-625D-4207-B29F-40C95BFEB3A9}" threadingModel="Apartment"></comClass>
