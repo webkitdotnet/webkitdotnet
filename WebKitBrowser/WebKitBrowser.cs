@@ -899,10 +899,14 @@ namespace WebKit
         /// <summary>
         /// Prints the document using the current print and page settings.
         /// </summary>
-        /// <remarks>UNIMPLEMENTED</remarks>
         public void Print()
         {
-            throw new NotImplementedException();
+            PrintDocument doc = new PrintDocument();
+            doc.DocumentName = this.DocumentTitle;
+            doc.DefaultPageSettings = PageSettings;
+            doc.OriginAtMargins = true;
+            PrintManager pm = new PrintManager(doc, this, false);
+            pm.Print();
         }
 
         /// <summary>
@@ -927,7 +931,7 @@ namespace WebKit
             PrintDialog printDlg = new PrintDialog();
             PrintDocument doc = new PrintDocument();
             doc.DocumentName = this.DocumentTitle;
-            doc.DefaultPageSettings.Margins = new Margins(100, 100, 100, 100);
+            doc.DefaultPageSettings = PageSettings;
             doc.OriginAtMargins = true;
             printDlg.Document = doc;
 
@@ -947,7 +951,7 @@ namespace WebKit
             PrintPreviewDialog printDlg = new PrintPreviewDialog();
             PrintDocument doc = new PrintDocument();
             doc.DocumentName = this.DocumentTitle;
-            doc.DefaultPageSettings.Margins = new Margins(100, 100, 100, 100);
+            doc.DefaultPageSettings = PageSettings;
             doc.OriginAtMargins = true;
             printDlg.Document = doc;
             PrintManager pm = new PrintManager(doc, this, true);

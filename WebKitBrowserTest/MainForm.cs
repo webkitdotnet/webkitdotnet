@@ -240,5 +240,10 @@ namespace WebKitBrowserTest
         {
             currentPage.browser.ShowPrintPreviewDialog();
         }
+
+        private void printImmediatelyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.Print();
+        }
     }
 }
