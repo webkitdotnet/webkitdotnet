@@ -90,7 +90,7 @@ namespace WebKit
 
         public int contextMenuItemsForElement(WebView sender, CFDictionaryPropertyBag element, int defaultItemsHMenu)
         {
-            throw new NotImplementedException();
+            return owner.IsWebBrowserContextMenuEnabled ? defaultItemsHMenu : 0;
         }
 
         public WebView createModalDialog(WebView sender, IWebURLRequest request)

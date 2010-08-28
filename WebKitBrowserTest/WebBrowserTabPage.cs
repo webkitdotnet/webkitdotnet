@@ -82,6 +82,7 @@ namespace WebKitBrowserTest
             browser.Visible = true;
             browser.Dock = DockStyle.Fill;
             browser.Name = "browser";
+            //browser.IsWebBrowserContextMenuEnabled = false;
             container.ContentPanel.Controls.Add(browser);
 
             // context menu

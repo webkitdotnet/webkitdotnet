@@ -67,6 +67,7 @@ namespace WebKit
         private bool initialAllowNavigation = true;
         private bool initialAllowDownloads = true;
         private bool initialAllowNewWindows = true;
+        private bool _contextMenuEnabled = true;
         private readonly Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
         // delegates for WebKit events
@@ -489,6 +490,17 @@ namespace WebKit
                     return Rectangle.Empty;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the context menu of the WebKitBrowser is enabled.
+        /// </summary>
+        [Browsable(true), DefaultValue(true), Category("Behavior")]
+        [Description("Specifies whether the default browser context menu is enabled")]
+        public bool IsWebBrowserContextMenuEnabled
+        {
+            get { return _contextMenuEnabled; }
+            set { _contextMenuEnabled = value; }
         }
 
         #endregion
