@@ -75,8 +75,5 @@ namespace WebKit
             public string lpApplicationName;
             public IntPtr hModule;
         }
-
-        [DllImport("WebKit.dll")]
-        public static extern IntPtr WebKitCreateInstance(ref Guid param0, ref IntPtr pUnkOuter, ref Guid param2, ref IntPtr ppvObject);
     }
 }
