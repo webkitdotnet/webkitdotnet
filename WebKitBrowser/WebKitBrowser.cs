@@ -57,6 +57,9 @@ namespace WebKit
         // private member variables...
         private IWebView webView;
         private IntPtr webViewHWND;
+
+        // Note: we do not provide overridden Equals or GetHashCode methods for the
+        // WebDownload interface used as a key here - the default implementations should suffice
         private Dictionary<WebDownload, WebKitDownload> downloads = new Dictionary<WebDownload, WebKitDownload>();
         private bool disposed = false;
 
