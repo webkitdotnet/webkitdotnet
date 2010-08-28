@@ -74,7 +74,7 @@ namespace WebKit
             }
 
             _owner.Invoke(new MethodInvoker(delegate() {
-                _webFramePrivate.spoolPages(_hDC, _page, _page, 0);
+                _webFramePrivate.spoolPages(_hDC, _page, _page, IntPtr.Zero);
             }));
 
             ++_page;

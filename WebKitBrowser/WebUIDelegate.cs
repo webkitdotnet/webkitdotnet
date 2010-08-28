@@ -162,11 +162,11 @@ namespace WebKit
         {
         }
 
-        public void paintCustomScrollCorner(WebView WebView, ref _RemotableHandle hDC, tagRECT rect)
+        public void paintCustomScrollCorner(WebView WebView, int hDC, tagRECT rect)
         {
         }
 
-        public void paintCustomScrollbar(WebView WebView, ref _RemotableHandle hDC, tagRECT rect, WebScrollBarControlSize size, uint state, WebScrollbarControlPart pressedPart, int vertical, float value, float proportion, uint parts)
+        public void paintCustomScrollbar(WebView WebView, int hDC, tagRECT rect, WebScrollBarControlSize size, uint state, WebScrollbarControlPart pressedPart, int vertical, float value, float proportion, uint parts)
         {
         }
 
