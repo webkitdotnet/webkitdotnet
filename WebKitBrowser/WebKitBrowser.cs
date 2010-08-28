@@ -67,6 +67,7 @@ namespace WebKit
         private bool initialAllowNavigation = true;
         private bool initialAllowDownloads = true;
         private bool initialAllowNewWindows = true;
+        private bool initialJavaScriptEnabled = true;
         private bool _contextMenuEnabled = true;
         private readonly Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
@@ -503,6 +504,35 @@ namespace WebKit
             set { _contextMenuEnabled = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether JavaScript is enabled.
+        /// </summary>
+        [Browsable(true), DefaultValue(true), Category("Behavior")]
+        [Description("Specifies whether JavaScript is enabled in the WebKitBrowser")]
+        public bool IsScriptingEnabled
+        {
+            get
+            {
+                if (loaded)
+                    return webView.preferences().isJavaScriptEnabled() != 0;
+                else
+                    return initialJavaScriptEnabled;
+            }
+            set
+            {
+                if (loaded)
+                {
+                    var prefs = webView.preferences();
+                    prefs.setJavaScriptEnabled(value ? 1 : 0);
+                    webView.setPreferences(prefs);
+                }
+                else
+                {
+                    initialJavaScriptEnabled = value;
+                }
+            }
+        }
+
         #endregion
 
         #region Constructors / initialization functions
@@ -621,6 +651,7 @@ namespace WebKit
 
             loaded = webView != null;
 
+            // intialize properties that depend on load
             if (initialUrl != null)
             {
                 Navigate(initialUrl.AbsoluteUri);
@@ -630,6 +661,8 @@ namespace WebKit
                 DocumentText = initialText;
                 policyDelegate.AllowInitialNavigation = false;
             }
+
+            IsScriptingEnabled = initialJavaScriptEnabled;
         }
 
         #endregion
