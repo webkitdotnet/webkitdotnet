@@ -18,14 +18,16 @@ namespace WebKit
         private uint _nPages;
         private uint _page;
         private int _hDC;
+        private bool _preview;
         private bool _printing = false;
 
-        public PrintManager(PrintDocument Document, WebKitBrowser Owner)
+        public PrintManager(PrintDocument Document, WebKitBrowser Owner, bool Preview)
         {
             this._document = Document;
             this._owner = Owner;
             this._webFramePrivate = 
                 (IWebFramePrivate)((IWebView)_owner.GetWebView()).mainFrame();
+            this._preview = Preview;
         }
 
         public void Print()
@@ -43,7 +45,8 @@ namespace WebKit
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             _document.PrintPage += new PrintPageEventHandler(_document_PrintPage);
-            _document.Print();
+            if (!_preview)
+                _document.Print();
 
             _printing = false;
         }
@@ -88,6 +91,8 @@ namespace WebKit
                     _webFramePrivate.setInPrintingMode(0, _hDC);
                 }));
                 e.HasMorePages = false;
+                _printGfx = null;
+                _nPages = 0;
             }
         }
     }

@@ -235,5 +235,10 @@ namespace WebKitBrowserTest
         {
             Application.Run(new MainForm());
         }
+
+        private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.ShowPrintPreviewDialog();
+        }
     }
 }

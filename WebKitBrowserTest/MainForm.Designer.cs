@@ -73,9 +73,10 @@ namespace WebKitBrowserTest
             this.testPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.tToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.navigationBar = new WebKitBrowserTest.NavigationBar();
-            this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.printPreviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,6 +101,7 @@ namespace WebKitBrowserTest
             this.newTabToolStripMenuItem,
             this.toolStripMenuItem2,
             this.pageSetupToolStripMenuItem,
+            this.printPreviewToolStripMenuItem,
             this.printToolStripMenuItem,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
@@ -212,21 +214,28 @@ namespace WebKitBrowserTest
             // testPageToolStripMenuItem
             // 
             this.testPageToolStripMenuItem.Name = "testPageToolStripMenuItem";
-            this.testPageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.testPageToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.testPageToolStripMenuItem.Text = "Test Page";
             this.testPageToolStripMenuItem.Click += new System.EventHandler(this.testPageToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(142, 6);
             // 
             // tToolStripMenuItem
             // 
             this.tToolStripMenuItem.Name = "tToolStripMenuItem";
-            this.tToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.tToolStripMenuItem.Text = "Test 1";
             this.tToolStripMenuItem.Click += new System.EventHandler(this.tToolStripMenuItem_Click);
+            // 
+            // newWindowToolStripMenuItem
+            // 
+            this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
+            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.newWindowToolStripMenuItem.Text = "New &Window";
+            this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
             // 
             // tabControl
             // 
@@ -248,12 +257,12 @@ namespace WebKitBrowserTest
             this.navigationBar.TabIndex = 1;
             this.navigationBar.UrlText = "";
             // 
-            // newWindowToolStripMenuItem
+            // printPreviewToolStripMenuItem
             // 
-            this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
-            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.newWindowToolStripMenuItem.Text = "New &Window";
-            this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
+            this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
+            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.printPreviewToolStripMenuItem.Text = "Print Pre&view";
+            this.printPreviewToolStripMenuItem.Click += new System.EventHandler(this.printPreviewToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -298,6 +307,7 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pageSetupToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem printPreviewToolStripMenuItem;
 
     }
 }

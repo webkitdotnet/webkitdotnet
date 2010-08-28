@@ -913,6 +913,7 @@ namespace WebKit
             PageSetupDialog pageSetupDlg = new PageSetupDialog();
             pageSetupDlg.EnableMetric = true;
             pageSetupDlg.PageSettings = this.PageSettings;
+            pageSetupDlg.AllowPrinter = true;
 
             if (pageSetupDlg.ShowDialog() == DialogResult.OK)
                 this.PageSettings = pageSetupDlg.PageSettings;
@@ -926,13 +927,13 @@ namespace WebKit
             PrintDialog printDlg = new PrintDialog();
             PrintDocument doc = new PrintDocument();
             doc.DocumentName = this.DocumentTitle;
-            doc.DefaultPageSettings.Margins = new Margins(500, 100, 100, 100);
+            doc.DefaultPageSettings.Margins = new Margins(100, 100, 100, 100);
             doc.OriginAtMargins = true;
             printDlg.Document = doc;
 
             if (printDlg.ShowDialog() == DialogResult.OK)
             {
-                PrintManager pm = new PrintManager(doc, this);
+                PrintManager pm = new PrintManager(doc, this, false);
                 pm.Print();
             }
         }
@@ -940,10 +941,18 @@ namespace WebKit
         /// <summary>
         /// Displays a Print Preview dialog box.
         /// </summary>
-        /// <remarks>UNIMPLEMENTED</remarks>
         public void ShowPrintPreviewDialog()
         {
-            throw new NotImplementedException();
+            // TODO: find out why it apparently only shows the first page on the preview...
+            PrintPreviewDialog printDlg = new PrintPreviewDialog();
+            PrintDocument doc = new PrintDocument();
+            doc.DocumentName = this.DocumentTitle;
+            doc.DefaultPageSettings.Margins = new Margins(100, 100, 100, 100);
+            doc.OriginAtMargins = true;
+            printDlg.Document = doc;
+            PrintManager pm = new PrintManager(doc, this, true);
+            pm.Print();
+            printDlg.ShowDialog();
         }
 
         #endregion Public Methods
