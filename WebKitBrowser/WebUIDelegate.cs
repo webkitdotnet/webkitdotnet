@@ -323,7 +323,7 @@ namespace WebKit
         {
             PageSettings settings = owner.PageSettings;
 
-            // WebKit specifies margins in 1000ths of an inch. (???)
+            // WebKit specifies margins in 1000ths of an inch.
             // PrinterResolution.Y returns 0 for some reason,
             // on Adobe distiller anyway, so we'll use X for the moment.
             int dpi = settings.PrinterResolution.X;
@@ -332,25 +332,12 @@ namespace WebKit
             int marginTop = settings.Margins.Top;
             int marginBottom = settings.Margins.Bottom;
             
-            int pageWidth = settings.PaperSize.Width;
-            int pageHeight = settings.PaperSize.Height;
-
-            // TODO: find out what these are actually supposed to be
-            // the x10 and x20 are completely arbitrary, based on 
-            // what I found fits an A4 portrait page with 1 inch
-            // margins...
             tagRECT rect = new tagRECT();
-            rect.left = marginLeft;
-            rect.top = marginTop;
+            rect.left = marginLeft * 10;
+            rect.top = marginTop * 10;
             rect.right = marginRight * 10;
-            rect.bottom = marginBottom * 20;
+            rect.bottom = marginBottom * 10;
             return rect;
-
-            /*rect.left = 20;
-            rect.top = 20;
-            rect.right = 400;
-            rect.bottom = 400;
-            return rect;*/
         }
 
         public void webViewShow(WebView sender)
