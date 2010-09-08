@@ -75,8 +75,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActivationContext.cs" />
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="PrintManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

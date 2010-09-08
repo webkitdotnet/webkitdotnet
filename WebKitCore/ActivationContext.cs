@@ -33,10 +33,7 @@
 // but it can't seem to find the manifest resource.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
-using WebKit;
 using System.ComponentModel;
 
 namespace WebKit
