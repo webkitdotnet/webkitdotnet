@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="WebKit.Interop, Version=533.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\webkit\WebKit.Interop.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -149,12 +150,7 @@ echo .tlb &gt;&gt; temp_exclude_files.txt
 echo gitignore &gt;&gt; temp_exclude_files.txt
 xcopy /E /Y /EXCLUDE:temp_exclude_files.txt "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"
 del temp_exclude_files.txt</PostBuildEvent>
-    <PreBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
-if not exist "$(SolutionDir)tools\TypeNormalizer.exe" csc /out:"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)tools\TypeNormalizer.cs"
-tlbimp "$(SolutionDir)webkit\webkit.tlb" /silent /keyfile:"$(ProjectDir)WebKit .NET.snk" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"
-ildasm "$(SolutionDir)webkit\WebKit.Interop.dll" /out="$(SolutionDir)webkit\temp_webkit_interop.il" /nobar
-"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)webkit\temp_webkit_interop.il"
-ilasm "$(SolutionDir)webkit\temp_webkit_interop.il" /dll /output="$(SolutionDir)webkit\WebKit.Interop.dll" /key="$(ProjectDir)WebKit .NET.snk"
-del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
