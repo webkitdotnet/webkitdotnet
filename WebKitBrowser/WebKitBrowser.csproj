@@ -14,7 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <ApplicationManifest>WebKitBrowser.dll.manifest</ApplicationManifest>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>WebKit .NET.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -75,13 +76,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivationContext.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="PrintManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="WebDownloadDelegate.cs" />
     <Compile Include="WebFrameLoadDelegate.cs" />
     <Compile Include="WebKitBrowser.cs">
@@ -111,13 +112,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\WebKit.NET.snk">
+      <Link>WebKit.NET.snk</Link>
+    </None>
     <None Include="WebKitBrowser.dll.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="WebKit .NET.snk" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
