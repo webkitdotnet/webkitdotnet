@@ -94,7 +94,7 @@ namespace WebKitBrowserTest
 
         void browser_NewWindowCreated(object sender, NewWindowCreatedEventArgs args)
         {
-            tabControl.TabPages.Add(new WebBrowserTabPage(args.WebKitBrowser, false));
+            tabControl.TabPages.Add(new WebBrowserTabPage((WebKitBrowser)args.WebKitBrowser, false));
         }
 
         void browser_NewWindowRequest(object sender, NewWindowRequestEventArgs args)

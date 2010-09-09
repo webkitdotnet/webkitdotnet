@@ -31,13 +31,8 @@
 // do and whether they are actually working in WebKit.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using WebKit.Interop;
-using System.Diagnostics;
 using System.Drawing.Printing;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using WebKit.Interop;
 
 namespace WebKit
 {
@@ -47,9 +42,9 @@ namespace WebKit
     {
         public event CreateWebViewWithRequestEvent CreateWebViewWithRequest;
 
-        private WebKitBrowser owner;
+        private WebKitBrowserCore owner;
 
-        public WebUIDelegate(WebKitBrowser browser)
+        public WebUIDelegate(WebKitBrowserCore browser)
         {
             this.owner = browser;
         }

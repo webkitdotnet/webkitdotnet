@@ -146,13 +146,13 @@ namespace WebKit
         /// <summary>
         /// Gets the WebKitBrowser showing the contents of the new window.
         /// </summary>
-        public WebKitBrowser WebKitBrowser { get; private set; }
+        public IWebKitBrowser WebKitBrowser { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the NewWindowCreatedEventArgs class.
         /// </summary>
         /// <param name="browser">The WebKitBrowser showing the contents of the new window.</param>
-        public NewWindowCreatedEventArgs(WebKitBrowser browser)
+        public NewWindowCreatedEventArgs(IWebKitBrowser browser)
         {
             WebKitBrowser = browser;
         }

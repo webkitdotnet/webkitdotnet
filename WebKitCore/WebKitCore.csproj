@@ -8,7 +8,7 @@
     <ProjectGuid>{D1C8CE15-4279-45DA-989A-54561E0FD842}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebKitCore</RootNamespace>
+    <RootNamespace>WebKit</RootNamespace>
     <AssemblyName>WebKitCore</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -33,12 +33,32 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebKit.Interop">
+      <HintPath>..\webkit\WebKit.Interop.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivationContext.cs" />
+    <Compile Include="IWebKitBrowser.cs" />
+    <Compile Include="IWebKitBrowserHost.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="PrintManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebDownloadDelegate.cs" />
+    <Compile Include="WebFrameLoadDelegate.cs" />
+    <Compile Include="WebKitBrowserCore.cs" />
+    <Compile Include="WebKitBrowserEvents.cs" />
+    <Compile Include="WebKitDOMCoreClasses.cs" />
+    <Compile Include="WebKitDOMHTMLClasses.cs" />
+    <Compile Include="WebKitDownload.cs" />
+    <Compile Include="WebKitDownloadEvents.cs" />
+    <Compile Include="WebPolicyDelegate.cs" />
+    <Compile Include="WebResourceLoadDelegate.cs" />
+    <Compile Include="WebUIDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\WebKit.NET.snk">

@@ -28,12 +28,7 @@
 // makes when handling various data types.  More information can be found at:
 // http://developer.apple.com/documentation/Cocoa/Reference/WebKit/Protocols/WebPolicyDelegate_Protocol
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebKit.Interop;
-using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace WebKit
 {

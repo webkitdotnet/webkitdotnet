@@ -135,6 +135,10 @@
       <Project>{44AFE214-12C7-4280-898D-A7C4AABF1533}</Project>
       <Name>WebKitBrowser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WebKitCore\WebKitCore.csproj">
+      <Project>{D1C8CE15-4279-45DA-989A-54561E0FD842}</Project>
+      <Name>WebKitCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

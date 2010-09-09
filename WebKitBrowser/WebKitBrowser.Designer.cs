@@ -28,6 +28,8 @@ namespace WebKit
 {
     partial class WebKitBrowser
     {
+        private bool disposed;
+
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -45,10 +47,8 @@ namespace WebKit
                 {
                     components.Dispose();
                 }
-                if ((--actCtxRefCount) == 0 && activationContext != null)
-                {
-                    activationContext.Dispose();
-                }
+
+                core.Dispose(disposing);
 
                 disposed = true;
                 base.Dispose(disposing);
