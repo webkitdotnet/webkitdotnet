@@ -62,6 +62,27 @@ namespace WebKit
     /// <param name="e">A NewWindowCreatedEventArgs that contains the event data.</param>
     public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs e);
 
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptAlertPanel event. 
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A ShowJavaScriptAlertPanelEventArgs that contains the event data.</param>
+    public delegate void ShowJavaScriptAlertPanelEventHandler(object sender, ShowJavaScriptAlertPanelEventArgs e);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptConfirmPanel event. 
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A ShowJavaScriptConfirmPanelEventArgs that contains the event data.</param>
+    public delegate void ShowJavaScriptConfirmPanelEventHandler(object sender, ShowJavaScriptConfirmPanelEventArgs e);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptPromptPanel event. 
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A ShowJavaScriptPromptPanelEventArgs that contains the event data.</param>
+    public delegate void ShowJavaScriptPromptPanelEventHandler(object sender, ShowJavaScriptPromptPanelEventArgs e);
+
     #endregion
 
     #region EventArgs classes
@@ -155,6 +176,85 @@ namespace WebKit
         public NewWindowCreatedEventArgs(IWebKitBrowser browser)
         {
             WebKitBrowser = browser;
+        }
+    }
+
+    /// <summary>
+    /// Provides data for the WebKitBrowser.ShowJavaScriptAlertPanel event.
+    /// </summary>
+    public class ShowJavaScriptAlertPanelEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets the message to be shown in the alert panel.
+        /// </summary>
+        public string Message { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the ShowJavaScriptAlertPanelEventArgs class.
+        /// </summary>
+        /// <param name="message">The message to be shown in the alert panel.</param>
+        public ShowJavaScriptAlertPanelEventArgs(string message)
+        {
+            Message = message;
+        }
+    }
+
+    /// <summary>
+    /// Provides data for the WebKitBrowser.ShowJavaScriptConfirmPanel event.
+    /// </summary>
+    public class ShowJavaScriptConfirmPanelEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets the message to be shown in the confirm panel.
+        /// </summary>
+        public string Message { get; private set; }
+        
+        /// <summary>
+        /// Gets or sets the return value for the confirm panel.
+        /// </summary>
+        public bool ReturnValue { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the ShowJavaScriptConfirmPanelEventArgs class.
+        /// </summary>
+        /// <param name="message">The message to be shown in the confirm panel.</param>
+        public ShowJavaScriptConfirmPanelEventArgs(string message)
+        {
+            Message = message;
+            ReturnValue = false;
+        }
+    }
+
+    /// <summary>
+    /// Provides data for the WebKitBrowser.ShowJavaScriptPromptPanel event.
+    /// </summary>
+    public class ShowJavaScriptPromptPanelEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets the message to be shown in the prompt panel.
+        /// </summary>
+        public string Message { get; private set; }
+        
+        /// <summary>
+        /// Gets the default value of the prompt panel.
+        /// </summary>
+        public string DefaultValue { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the return value for the prompt panel.
+        /// </summary>
+        public string ReturnValue { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the ShowJavaScriptConfirmPanelEventArgs class.
+        /// </summary>
+        /// <param name="message">The message to be shown in the prompt panel.</param>
+        /// <param name="defaultValue">The default value to be shown in the prompt panel.</param>
+        public ShowJavaScriptPromptPanelEventArgs(string message, string defaultValue)
+        {
+            Message = message;
+            DefaultValue = defaultValue;
+            ReturnValue = defaultValue;
         }
     }
 

@@ -48,6 +48,21 @@ namespace WebKit
         event NewWindowCreatedEventHandler NewWindowCreated;
 
         /// <summary>
+        /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
+        /// </summary>
+        event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel;
+
+        /// <summary>
+        /// Occurs when JavaScript requests a confirm panel to be displayed via the confirm() function.
+        /// </summary>
+        event ShowJavaScriptConfirmPanelEventHandler ShowJavaScriptConfirmPanel;
+
+        /// <summary>
+        /// Occurs when JavaScript requests a prompt panel to be displayed via the prompt() function.
+        /// </summary>
+        event ShowJavaScriptPromptPanelEventHandler ShowJavaScriptPromptPanel;
+
+        /// <summary>
         /// The current print page settings.
         /// </summary>
         PageSettings PageSettings { get; set; }

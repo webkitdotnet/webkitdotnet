@@ -140,6 +140,33 @@ namespace WebKit
             remove { core.NewWindowCreated -= value; }
         }
 
+        /// <summary>
+        /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
+        /// </summary>
+        public event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel
+        {
+            add { core.ShowJavaScriptAlertPanel += value; }
+            remove { core.ShowJavaScriptAlertPanel -= value; }
+        }
+
+        /// <summary>
+        /// Occurs when JavaScript requests a confirm panel to be displayed via the confirm() function.
+        /// </summary>
+        public event ShowJavaScriptConfirmPanelEventHandler ShowJavaScriptConfirmPanel
+        {
+            add { core.ShowJavaScriptConfirmPanel += value; }
+            remove { core.ShowJavaScriptConfirmPanel -= value; }
+        }
+
+        /// <summary>
+        /// Occurs when JavaScript requests a prompt panel to be displayed via the prompt() function.
+        /// </summary>
+        public event ShowJavaScriptPromptPanelEventHandler ShowJavaScriptPromptPanel
+        {
+            add { core.ShowJavaScriptPromptPanel += value; }
+            remove { core.ShowJavaScriptPromptPanel -= value; }
+        }
+
         #endregion
 
         #region Public properties
@@ -364,6 +391,9 @@ namespace WebKit
             Navigated += delegate { };
             DocumentCompleted += delegate { };
             DocumentTitleChanged += delegate { };
+            ShowJavaScriptAlertPanel += delegate { }; 
+            ShowJavaScriptConfirmPanel += delegate { }; 
+            ShowJavaScriptPromptPanel += delegate { };
             InitializeComponent();
 
             core.Initialize(this);

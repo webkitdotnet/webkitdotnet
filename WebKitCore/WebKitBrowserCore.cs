@@ -88,6 +88,12 @@ namespace WebKit
         /// </summary>
         public event NewWindowCreatedEventHandler NewWindowCreated = delegate { };
 
+        public event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel = delegate { };
+
+        public event ShowJavaScriptConfirmPanelEventHandler ShowJavaScriptConfirmPanel = delegate { };
+
+        public event ShowJavaScriptPromptPanelEventHandler ShowJavaScriptPromptPanel = delegate { };
+
         #endregion
 
         #region Public properties
@@ -580,6 +586,9 @@ namespace WebKit
 
             // UIDelegate events
             uiDelegate.CreateWebViewWithRequest += new CreateWebViewWithRequestEvent(uiDelegate_CreateWebViewWithRequest);
+            uiDelegate.RunJavaScriptAlertPanelWithMessage += new RunJavaScriptAlertPanelWithMessageEvent(uiDelegate_RunJavaScriptAlertPanelWithMessage);
+            uiDelegate.RunJavaScriptConfirmPanelWithMessage += new RunJavaScriptConfirmPanelWithMessageEvent(uiDelegate_RunJavaScriptConfirmPanelWithMessage);
+            uiDelegate.RunJavaScriptTextInputPanelWithPrompt += new RunJavaScriptTextInputPanelWithPromptEvent(uiDelegate_RunJavaScriptTextInputPanelWithPrompt);
 
             activationContext.Deactivate();
         }
@@ -736,6 +745,25 @@ namespace WebKit
             {
                 webView = null;
             }
+        }
+
+        private void uiDelegate_RunJavaScriptAlertPanelWithMessage(WebView sender, string message)
+        {
+            ShowJavaScriptAlertPanel(this, new ShowJavaScriptAlertPanelEventArgs(message));
+        }
+
+        private int uiDelegate_RunJavaScriptConfirmPanelWithMessage(WebView sender, string message)
+        {
+            var args = new ShowJavaScriptConfirmPanelEventArgs(message);
+            ShowJavaScriptConfirmPanel(this, args);
+            return args.ReturnValue ? 1 : 0;
+        }
+
+        private string uiDelegate_RunJavaScriptTextInputPanelWithPrompt(WebView sender, string message, string defaultText)
+        {
+            var args = new ShowJavaScriptPromptPanelEventArgs(message, defaultText);
+            ShowJavaScriptPromptPanel(this, args);
+            return args.ReturnValue;
         }
 
         #endregion

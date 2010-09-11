@@ -37,10 +37,16 @@ using WebKit.Interop;
 namespace WebKit
 {
     internal delegate void CreateWebViewWithRequestEvent(IWebURLRequest request, out WebView webView);
+    internal delegate void RunJavaScriptAlertPanelWithMessageEvent(WebView sender, string message);
+    internal delegate int RunJavaScriptConfirmPanelWithMessageEvent(WebView sender, string message);
+    internal delegate string RunJavaScriptTextInputPanelWithPromptEvent(WebView sender, string message, string defaultText);
 
     internal class WebUIDelegate : IWebUIDelegate
     {
         public event CreateWebViewWithRequestEvent CreateWebViewWithRequest;
+        public event RunJavaScriptAlertPanelWithMessageEvent RunJavaScriptAlertPanelWithMessage;
+        public event RunJavaScriptConfirmPanelWithMessageEvent RunJavaScriptConfirmPanelWithMessage;
+        public event RunJavaScriptTextInputPanelWithPromptEvent RunJavaScriptTextInputPanelWithPrompt;
 
         private WebKitBrowserCore owner;
 
@@ -193,16 +199,17 @@ namespace WebKit
 
         public void runJavaScriptAlertPanelWithMessage(WebView sender, string message)
         {
+            RunJavaScriptAlertPanelWithMessage(sender, message);
         }
 
         public int runJavaScriptConfirmPanelWithMessage(WebView sender, string message)
         {
-            throw new NotImplementedException();
+            return RunJavaScriptConfirmPanelWithMessage(sender, message);
         }
 
         public string runJavaScriptTextInputPanelWithPrompt(WebView sender, string message, string defaultText)
         {
-            throw new NotImplementedException();
+            return RunJavaScriptTextInputPanelWithPrompt(sender, message, defaultText);
         }
 
         public void runModal(WebView WebView)
