@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\JSWrappers.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Stdafx.cpp"
 				>
 				<FileConfiguration
@@ -221,6 +225,10 @@
 			>
 			<File
 				RelativePath=".\JSCore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JSWrappers.h"
 				>
 			</File>
 			<File
