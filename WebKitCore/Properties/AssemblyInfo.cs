@@ -35,4 +35,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: InternalsVisibleTo("WebKitBrowser")]
+[assembly: InternalsVisibleTo("WebKitBrowser, " + 
+    "PublicKey=0024000004800000940000000602000" +
+    "000240000525341310004000001000100cff88c56" +
+    "d89cfae20d5672626ace14878532288e53bdc7d25" +
+    "2639be2bdf650169f0a885f468564241befbe60bd" + 
+    "3e3b0c4adf570dcce7d78fe6b4f819df669f3f417" +
+    "bf6ac7eedbfadf066d9769a5c53505925bd87ff7f" + 
+    "75b45f4df5c5700e0b500d066e943c9858b71acd0" + 
+    "58971c4a00dfccc23a76747dd5e33281de8d8eb32ac")]
