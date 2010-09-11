@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D1C8CE15-4279-45DA-989A-54561E0FD842}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -12,12 +12,14 @@
     <AssemblyName>WebKitCore</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\WebKit.NET.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -73,4 +75,18 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>echo WebKitBrowser &gt; temp_exclude_files.txt
+echo .tlb &gt;&gt; temp_exclude_files.txt
+echo gitignore &gt;&gt; temp_exclude_files.txt
+xcopy /E /Y /EXCLUDE:temp_exclude_files.txt "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"
+del temp_exclude_files.txt</PostBuildEvent>
+    <PreBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
+if not exist "$(SolutionDir)tools\TypeNormalizer.exe" csc /out:"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)tools\TypeNormalizer.cs"
+tlbimp "$(SolutionDir)webkit\webkit.tlb" /silent /keyfile:"$(SolutionDir)WebKit.NET.snk" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"
+ildasm "$(SolutionDir)webkit\WebKit.Interop.dll" /out="$(SolutionDir)webkit\temp_webkit_interop.il" /nobar
+"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)webkit\temp_webkit_interop.il"
+ilasm "$(SolutionDir)webkit\temp_webkit_interop.il" /dll /output="$(SolutionDir)webkit\WebKit.Interop.dll" /key="$(SolutionDir)WebKit.NET.snk"
+del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

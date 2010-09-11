@@ -14,8 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <ApplicationManifest>WebKitBrowser.dll.manifest</ApplicationManifest>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\WebKit.NET.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -141,11 +140,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>echo WebKitBrowser &gt; temp_exclude_files.txt
-echo .tlb &gt;&gt; temp_exclude_files.txt
-echo gitignore &gt;&gt; temp_exclude_files.txt
-xcopy /E /Y /EXCLUDE:temp_exclude_files.txt "$(SolutionDir)webkit\*" "$(SolutionDir)bin\$(ConfigurationName)"
-del temp_exclude_files.txt</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
