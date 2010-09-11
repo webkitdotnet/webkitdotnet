@@ -92,6 +92,18 @@ namespace WebKitBrowserTest
             browser.DocumentCompleted += (s, e) => { statusLabel.Text = "Done"; };
             if (goHome)
                 browser.Navigate("http://www.google.com");
+
+            browser.ShowJavaScriptAlertPanel += (s, e) => MessageBox.Show(e.Message, "[JavaScript Alert]");
+            browser.ShowJavaScriptConfirmPanel += (s, e) =>
+            {
+                e.ReturnValue = MessageBox.Show(e.Message, "[JavaScript Confirm]", MessageBoxButtons.YesNo) == DialogResult.Yes;
+            };
+            browser.ShowJavaScriptPromptPanel += (s, e) =>
+            {
+                var frm = new JSPromptForm(e.Message, e.DefaultValue);
+                if (frm.ShowDialog() == DialogResult.OK)
+                    e.ReturnValue = frm.Value;
+            };
         }
 
         public void Stop()

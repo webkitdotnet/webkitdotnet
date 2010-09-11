@@ -201,7 +201,7 @@ namespace WebKitBrowserTest
                 "<p id=\"testelement\" style=\"color: red\">Hello, World!</p>" +
                 "<div><p>A</p><p>B</p><p>C</p></div>" +
                 "<script type=\"text/javascript\">" + 
-                "function f() { window.open('http://www.google.com', 'myWindow'); }</script>" + 
+                "function f() { if (confirm(\"show dlgs?\")) { var txt=prompt(\"enter:\", \"nothing\"); alert(\"You entered \"+txt); } }</script>" + 
                 "</body></html>";
         }
 
