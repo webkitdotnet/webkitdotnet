@@ -487,7 +487,11 @@ namespace WebKit
         public object ObjectForScripting
         {
             get { return _scriptObject; }
-            set { _scriptObject = value; }
+            set 
+            { 
+                _scriptObject = value; 
+                CreateWindowScriptObject((JSContext)GetGlobalScriptContext()); 
+            }
         }
 
         #endregion
@@ -701,7 +705,7 @@ namespace WebKit
 
         private void frameLoadDelegate_DidClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, webFrame frame)
         {
-            
+            CreateWindowScriptObject(new JSContext(context));
         }
 
         #endregion
@@ -908,7 +912,10 @@ namespace WebKit
         /// <returns>A JSCore.JSContext object representing the script context.</returns>
         public object GetGlobalScriptContext()
         {
-            return new JSContext(webView.mainFrame());
+            if (loaded)
+                return new JSContext(webView.mainFrame());
+            else
+                return null;
         }
 
         // printing methods
@@ -989,6 +996,14 @@ namespace WebKit
             }
 
             disposed = true;
+        }
+
+        private void CreateWindowScriptObject(JSContext context)
+        {
+            if (ObjectForScripting != null && context != null)
+            {
+                MessageBox.Show("Need to create object again!");
+            }
         }
     }
 }
