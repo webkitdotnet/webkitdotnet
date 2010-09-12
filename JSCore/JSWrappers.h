@@ -1,32 +1,78 @@
 #pragma once
 
 using namespace System;
+using namespace System::Runtime::InteropServices;
+using namespace WebKit::Interop;
 
 namespace WebKit {
 namespace JSCore {
 
-    public ref class Context
+    ref class JSContext;
+    ref class JSObject;
+    ref class JSValue;
+
+
+    public ref class JSContext
     {
     protected:
-        ::JSContextRef _context;
+        JSContextRef _context;
 
     public:
-        ~Context();
+        JSContext(WebKit::Interop::IWebFrame ^ webFrame);
+        ~JSContext();
+
+        /* JSBase.h functions */
+
+        JSValue ^ EvaluateScript(String ^ script);
+        JSValue ^ EvaluateScript(String ^ script, Object ^ thisObject);
+        JSValue ^ EvaluateScript(String ^ script, Object ^ thisObject, String ^ sourceUrl, int startingLineNumber);
+
+        bool CheckScriptSyntax(String ^ script);
+        bool CheckScriptSyntax(String ^ script, Object ^ thisObject);
+        bool CheckScriptSyntax(String ^ script, Object ^ thisObject, String ^ sourceUrl, int startingLineNumber);
+
+        void GarbageCollect();
+
+        /* JSValueRef.h functions */
+
+        JSValue ^ MakeUndefined();
+        JSValue ^ MakeNull();
+        JSValue ^ MakeBoolean(bool boolean);
+        JSValue ^ MakeNumber(double number);
+        JSValue ^ MakeString(String ^ string);
+        JSValue ^ MakeValueFromJSONString(String ^ jsonString);
+
+        /* JSObjectRef.h functions */
+
+        JSObject ^ MakeObject(Object ^ object);
+
 
     internal:
-        Context(::JSContextRef context);
+        JSContext(JSContextRef context);
     };
 
-    public ref class Value
+    
+    public ref class JSValue
     {
     protected:
-        ::JSValueRef _value;
+        JSValueRef _value;
+        JSContextRef _context;
 
     public:
-        ~Value();
+        ~JSValue();
+
+        virtual String ^ ToString() override;
 
     internal:
-        Value(::JSValueRef value);
+        JSValue(JSContextRef context, JSValueRef value);
+        JSValue(JSContextRef context, String ^ string);
+    };
+
+
+    public ref class JSObject : public JSValue
+    {
+    internal:
+        JSObject(JSContextRef context, Object ^ object);
     };
 
 }}

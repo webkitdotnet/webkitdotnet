@@ -5,3 +5,4 @@
 #pragma once
 
 #include <JavaScriptCore/JavaScriptCore.h>
+#include <WebKit/WebKit.h>
