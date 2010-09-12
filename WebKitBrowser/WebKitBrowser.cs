@@ -475,6 +475,15 @@ namespace WebKit
             return core.GetWebView();
         }
 
+        /// <summary>
+        /// Gets the script context for the WebView.
+        /// </summary>
+        /// <returns>A JSCore.JSContext object representing the script context.</returns>
+        public object GetGlobalScriptContext()
+        {
+            return core.GetGlobalScriptContext();
+        }
+
         // printing methods
 
         /// <summary>

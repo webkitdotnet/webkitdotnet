@@ -212,6 +212,12 @@ namespace WebKit
         object GetWebView();
 
         /// <summary>
+        /// Gets the script context for the WebView.
+        /// </summary>
+        /// <returns>A JSCore.JSContext object representing the script context.</returns>
+        object GetGlobalScriptContext();
+
+        /// <summary>
         /// Prints the document using the current print and page settings.
         /// </summary>
         void Print();
