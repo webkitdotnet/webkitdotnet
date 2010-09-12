@@ -88,10 +88,19 @@ namespace WebKit
         /// </summary>
         public event NewWindowCreatedEventHandler NewWindowCreated = delegate { };
 
+        /// <summary>
+        /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
+        /// </summary>
         public event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel = delegate { };
 
+        /// <summary>
+        /// Occurs when JavaScript requests a confirm panel to be displayed via the confirm() function.
+        /// </summary>
         public event ShowJavaScriptConfirmPanelEventHandler ShowJavaScriptConfirmPanel = delegate { };
 
+        /// <summary>
+        /// Occurs when JavaScript requests a prompt panel to be displayed via the prompt() function.
+        /// </summary>
         public event ShowJavaScriptPromptPanelEventHandler ShowJavaScriptPromptPanel = delegate { };
 
         #endregion
