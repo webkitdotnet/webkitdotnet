@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using WebKit.Interop;
+using WebKit.JSCore;
 
 namespace WebKit
 {
@@ -866,7 +867,13 @@ namespace WebKit
         /// <returns></returns>
         public string StringByEvaluatingJavaScriptFromString(string Script)
         {
-            return webView.stringByEvaluatingJavaScriptFromString(Script);
+            /* return webView.stringByEvaluatingJavaScriptFromString(Script); */
+
+            // Instead of relying on the barely-implemented method in webkit above,
+            // we can talk directly to JavaScriptCore via JSCore wrapper:
+
+            JSValue val = ((JSContext)GetGlobalScriptContext()).EvaluateScript(Script);
+            return val != null ? val.ToString() : "";
         }
 
         /// <summary>
@@ -884,7 +891,7 @@ namespace WebKit
         /// <returns>A JSCore.JSContext object representing the script context.</returns>
         public object GetGlobalScriptContext()
         {
-            return new JSCore.JSContext(webView.mainFrame());
+            return new JSContext(webView.mainFrame());
         }
 
         // printing methods
