@@ -164,6 +164,11 @@ namespace WebKit
         bool IsScriptingEnabled { get; set; }
 
         /// <summary>
+        /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
+        /// </summary>
+        object ObjectForScripting { get; set; }
+
+        /// <summary>
         /// Navigates to the specified Url.
         /// </summary>
         /// <param name="url">Url to navigate to.</param>

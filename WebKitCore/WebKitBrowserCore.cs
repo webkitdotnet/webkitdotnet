@@ -37,6 +37,7 @@ namespace WebKit
         private bool initialJavaScriptEnabled = true;
         private bool _contextMenuEnabled = true;
         private readonly Version version = Assembly.GetExecutingAssembly().GetName().Version;
+        private object _scriptObject = null;
 
         // delegates for WebKit events
         private WebFrameLoadDelegate frameLoadDelegate;
@@ -479,6 +480,16 @@ namespace WebKit
             get { return webViewHWND; }
         }
 
+        /// <summary>
+        /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
+        /// </summary>
+        /// <value>The object to be exposed to JavaScript.</value>
+        public object ObjectForScripting
+        {
+            get { return _scriptObject; }
+            set { _scriptObject = value; }
+        }
+
         #endregion
 
         #region Constructors / initialization functions
@@ -585,6 +596,7 @@ namespace WebKit
             frameLoadDelegate.DidCommitLoadForFrame += new DidCommitLoadForFrameEvent(frameLoadDelegate_DidCommitLoadForFrame);
             frameLoadDelegate.DidFailLoadWithError += new DidFailLoadWithErrorEvent(frameLoadDelegate_DidFailLoadWithError);
             frameLoadDelegate.DidFailProvisionalLoadWithError += new DidFailProvisionalLoadWithErrorEvent(frameLoadDelegate_DidFailProvisionalLoadWithError);
+            frameLoadDelegate.DidClearWindowObject += new DidClearWindowObjectEvent(frameLoadDelegate_DidClearWindowObject);
 
             // DownloadDelegate events
             downloadDelegate.DidReceiveResponse += new DidReceiveResponseEvent(downloadDelegate_DidReceiveResponse);
@@ -685,6 +697,11 @@ namespace WebKit
         private void frameLoadDelegate_DidFailLoadWithError(WebView WebView, IWebError error, IWebFrame frame)
         {
             Error(this, new WebKitBrowserErrorEventArgs(error.localizedDescription())); 
+        }
+
+        private void frameLoadDelegate_DidClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, webFrame frame)
+        {
+            
         }
 
         #endregion

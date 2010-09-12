@@ -374,6 +374,16 @@ namespace WebKit
             set { core.IsScriptingEnabled = value; }
         }
 
+        /// <summary>
+        /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public object ObjectForScripting
+        {
+            get { return core.ObjectForScripting; }
+            set { core.ObjectForScripting = value; }
+        }
+
         #endregion
 
         #region Constructors / initialization functions
