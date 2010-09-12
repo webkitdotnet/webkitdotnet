@@ -24,18 +24,48 @@ WebKit::JSCore::JSContext::~JSContext()
 
 WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::EvaluateScript(System::String ^ script)
 {
-    return nullptr;
+    return EvaluateScript(script, nullptr, nullptr, 0);
 }
 
 WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::EvaluateScript(System::String ^ script, System::Object ^ thisObject)
 {
-    return nullptr;
+    return EvaluateScript(script, thisObject, nullptr, 0);
 }
 
 WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::EvaluateScript(System::String ^ script, System::Object ^ thisObject,
     System::String ^ sourceUrl, int startingLineNumber)
-{
-    return nullptr;
+{    
+    // TODO: lets not worry about exceptions just yet...
+    
+    JSStringRef jsScript = NULL;
+    if (script != nullptr)
+    {
+        BSTR unmgdScript = (BSTR) Marshal::StringToBSTR(script).ToPointer();
+        jsScript = JSStringCreateWithCharacters((const JSChar *)unmgdScript, wcslen(unmgdScript));
+        Marshal::FreeBSTR(IntPtr(unmgdScript));
+    }
+
+    // TODO: marshal thisObject to JSObject
+    JSObjectRef jsObj = NULL;
+    
+    JSStringRef jsSrc = NULL;
+    if (sourceUrl != nullptr)
+    {
+        BSTR unmgdSrc = (BSTR) Marshal::StringToBSTR(sourceUrl).ToPointer();
+        jsSrc = JSStringCreateWithCharacters((const JSChar *)unmgdSrc, wcslen(unmgdSrc));
+        Marshal::FreeBSTR(IntPtr(unmgdSrc));
+    }
+
+    JSValueRef result = JSEvaluateScript(_context, jsScript, jsObj, jsSrc, 0, NULL);
+    JSValue ^ retval = result != NULL ? gcnew JSValue(this, result) : nullptr;
+
+    // clean up
+    if (jsScript != NULL)
+        JSStringRelease(jsScript);
+    if (jsSrc != NULL)
+        JSStringRelease(jsSrc);
+
+    return retval;
 }
 
 bool WebKit::JSCore::JSContext::CheckScriptSyntax(System::String ^ script)
@@ -56,6 +86,7 @@ bool WebKit::JSCore::JSContext::CheckScriptSyntax(System::String ^script, System
 
 void WebKit::JSCore::JSContext::GarbageCollect()
 {
+    JSGarbageCollect(_context);
 }
 
 WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::MakeUndefined()
@@ -93,21 +124,18 @@ WebKit::JSCore::JSObject ^ WebKit::JSCore::JSContext::MakeObject(System::Object 
     return nullptr;
 }
 
+JSContextRef WebKit::JSCore::JSContext::context()
+{
+    return _context;
+}
+
 
 
 // Value
 
-WebKit::JSCore::JSValue::JSValue(JSContextRef context, JSValueRef value)
+WebKit::JSCore::JSValue::JSValue(JSContext ^ context, JSValueRef value)
 : _context(context), _value(value)
 {
-}
-
-WebKit::JSCore::JSValue::JSValue(JSContextRef context, String ^ string)
-: _context(context)
-{
-    BSTR str = (BSTR) Marshal::StringToBSTR(string).ToPointer();
-    JSStringRef jsStr = JSStringCreateWithCharacters((JSChar *) str, wcslen(str));
-    _value = JSValueMakeString(context, jsStr);
 }
 
 WebKit::JSCore::JSValue::~JSValue()
@@ -116,7 +144,7 @@ WebKit::JSCore::JSValue::~JSValue()
 
 String ^ WebKit::JSCore::JSValue::ToString()
 {
-    JSStringRef jsStr = JSValueToStringCopy(_context, _value, NULL);
+    JSStringRef jsStr = JSValueToStringCopy(_context->context(), _value, NULL);
     int len = JSStringGetLength(jsStr);
     JSChar * cStr = (JSChar *) JSStringGetCharactersPtr(jsStr);
     cStr[len] = L'\0';
@@ -125,10 +153,70 @@ String ^ WebKit::JSCore::JSValue::ToString()
     return Marshal::PtrToStringBSTR(IntPtr((void *) cStr));
 }
 
+bool WebKit::JSCore::JSValue::IsBoolean::get()
+{
+    return JSValueIsBoolean(_context->context(), _value);
+}
+
+bool WebKit::JSCore::JSValue::IsNull::get()
+{
+    return JSValueIsNull(_context->context(), _value);
+}
+
+bool WebKit::JSCore::JSValue::IsNumber::get()
+{
+    return JSValueIsNumber(_context->context(), _value);
+}
+
+bool WebKit::JSCore::JSValue::IsObject::get()
+{
+    return JSValueIsObject(_context->context(), _value);
+}
+
+bool WebKit::JSCore::JSValue::IsString::get()
+{
+    return JSValueIsString(_context->context(), _value);
+}
+
+bool WebKit::JSCore::JSValue::IsUndefined::get()
+{
+    return JSValueIsUndefined(_context->context(), _value);
+}
+
+System::String ^ WebKit::JSCore::JSValue::ToJSONString()
+{
+    return "";
+}
+
+bool WebKit::JSCore::JSValue::ToBoolean()
+{
+    return JSValueToBoolean(_context->context(), _value);
+}
+
+double WebKit::JSCore::JSValue::ToNumber()
+{
+    return JSValueToNumber(_context->context(), _value, NULL);
+}
+
+System::Object ^ WebKit::JSCore::JSValue::ToObject()
+{
+    return nullptr;
+}
+
+void WebKit::JSCore::JSValue::Protect()
+{
+}
+
+void WebKit::JSCore::JSValue::Unprotect()
+{
+}
+
+
+
 
 // JSObject
 
-WebKit::JSCore::JSObject::JSObject(JSContextRef context, System::Object ^object)
-: WebKit::JSCore::JSValue(context, "")
+WebKit::JSCore::JSObject::JSObject(JSContext ^ context, System::Object ^object)
+: WebKit::JSCore::JSValue(context, NULL)
 {
 }

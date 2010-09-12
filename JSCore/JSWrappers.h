@@ -49,6 +49,8 @@ namespace JSCore {
 
     internal:
         JSContext(JSContextRef context);
+
+        JSContextRef context();
     };
 
     
@@ -56,23 +58,42 @@ namespace JSCore {
     {
     protected:
         JSValueRef _value;
-        JSContextRef _context;
+        JSContext ^ _context;
 
     public:
         ~JSValue();
 
         virtual String ^ ToString() override;
 
+        // JSValueRef.h functions
+
+        // properties
+        property bool IsUndefined { bool get(); };
+        property bool IsNull { bool get(); };
+        property bool IsBoolean { bool get(); };
+        property bool IsNumber { bool get(); };
+        property bool IsString { bool get(); };
+        property bool IsObject { bool get(); };
+
+        // conversion methods
+        String ^ ToJSONString();
+        bool ToBoolean();
+        double ToNumber();
+        Object ^ ToObject();
+
+        void Protect();
+        void Unprotect();
+
+
     internal:
-        JSValue(JSContextRef context, JSValueRef value);
-        JSValue(JSContextRef context, String ^ string);
+        JSValue(JSContext ^ context, JSValueRef value);
     };
 
 
     public ref class JSObject : public JSValue
     {
     internal:
-        JSObject(JSContextRef context, Object ^ object);
+        JSObject(JSContext ^ context, Object ^ object);
     };
 
 }}
