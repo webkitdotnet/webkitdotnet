@@ -9,12 +9,17 @@ WebKit::JSCore::JSContext::JSContext(JSContextRef context)
 {
 }
 
+WebKit::JSCore::JSContext::JSContext(System::IntPtr context)
+: _context((JSContextRef) context.ToPointer())
+{
+}
+
 WebKit::JSCore::JSContext::JSContext(WebKit::Interop::IWebFrame ^ webFrame)
 {
     ::IWebFrame * unmgdFrame = (::IWebFrame *) Marshal::GetComInterfaceForObject(webFrame, 
         WebKit::Interop::IWebFrame::typeid).ToPointer();
 
-    _context = unmgdFrame->globalContext();    
+    _context = unmgdFrame->globalContext();
 }
 
 WebKit::JSCore::JSContext::~JSContext()
