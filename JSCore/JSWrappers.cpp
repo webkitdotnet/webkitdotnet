@@ -150,7 +150,7 @@ String ^ WebKit::JSCore::JSValue::ToString()
     cStr[len] = L'\0';
 
     // TODO: clean up
-    return Marshal::PtrToStringBSTR(IntPtr((void *) cStr));
+    return Marshal::PtrToStringAuto(IntPtr((void *) cStr));
 }
 
 bool WebKit::JSCore::JSValue::IsBoolean::get()
