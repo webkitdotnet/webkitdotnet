@@ -32,9 +32,11 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections;
+using System.Threading;
+
 using WebKit;
 using WebKit.DOM;
-using System.Threading;
+using WebKit.JSCore;
 
 namespace WebKitBrowserTest
 {
@@ -201,7 +203,7 @@ namespace WebKitBrowserTest
                 "<p id=\"testelement\" style=\"color: red\">Hello, World!</p>" +
                 "<div><p>A</p><p>B</p><p>C</p></div>" +
                 "<script type=\"text/javascript\">" + 
-                "function f() { if (confirm(\"show dlgs?\")) { var txt=prompt(\"enter:\", \"nothing\"); alert(\"You entered \"+txt); } }</script>" + 
+                "function f() { return 'Hello, C#!'; }</script>" + 
                 "</body></html>";
         }
 
@@ -244,6 +246,13 @@ namespace WebKitBrowserTest
         private void printImmediatelyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             currentPage.browser.Print();
+        }
+
+        private void test2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
+            JSValue val = ctx.EvaluateScript("f()");
+            MessageBox.Show(val.ToString());
         }
     }
 }

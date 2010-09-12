@@ -140,6 +140,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\JSCore\JSCore.vcproj">
+      <Project>{287EEE45-1390-44D5-982F-0B96D4A077DA}</Project>
+      <Name>JSCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebKitBrowser\WebKitBrowser.csproj">
       <Project>{44AFE214-12C7-4280-898D-A7C4AABF1533}</Project>
       <Name>WebKitBrowser</Name>
