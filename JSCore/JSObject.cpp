@@ -4,6 +4,7 @@
 #include "JSObject.h"
 #include "JSContext.h"
 #include "JSCoreMarshal.h"
+#include "JSCoreObjectWrapper.h"
 
 
 JSObject::JSObject(JSContext ^ context, JSObjectRef object)
@@ -41,6 +42,13 @@ void JSObject::SetProperty(String ^ propertyName, double value)
 
 void JSObject::SetProperty(String ^ propertyName, System::Object ^ value)
 {
+    JSClassRef wrap = JSClassCreate(&wrapperClass);
+    
+    GCHandle handle = GCHandle::Alloc(value, GCHandleType::Normal);
+    void * ptr = GCHandle::ToIntPtr(handle).ToPointer();
+
+    JSObjectRef jsObj = JSObjectMake(_context->context(), wrap, ptr);
+    SetProperty(propertyName, (JSValueRef)jsObj);
 }
 
 void JSObject::SetProperty(String ^ propertyName, System::String ^ value)
