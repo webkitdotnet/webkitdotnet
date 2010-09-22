@@ -1002,7 +1002,10 @@ namespace WebKit
         {
             if (ObjectForScripting != null && context != null)
             {
-                MessageBox.Show("Need to create object again!");
+                JSObject global = context.GetGlobalObject();
+                JSObject window = global.GetProperty("window") as JSObject;
+                if (window != null)
+                    window.SetProperty("external", (object)ObjectForScripting);
             }
         }
     }
