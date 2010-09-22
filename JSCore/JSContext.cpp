@@ -1,20 +1,22 @@
 #include "stdafx.h"
 
+#include "JSCoreMarshal.h"
 #include "JSValue.h"
+#include "JSObject.h"
 #include "JSContext.h"
 
 
-WebKit::JSCore::JSContext::JSContext(JSContextRef context)
+JSContext::JSContext(JSContextRef context)
 : _context(context)
 {
 }
 
-WebKit::JSCore::JSContext::JSContext(System::IntPtr context)
+JSContext::JSContext(IntPtr context)
 : _context((JSContextRef) context.ToPointer())
 {
 }
 
-WebKit::JSCore::JSContext::JSContext(WebKit::Interop::IWebFrame ^ webFrame)
+JSContext::JSContext(WebKit::Interop::IWebFrame ^ webFrame)
 {
     ::IWebFrame * unmgdFrame = (::IWebFrame *) Marshal::GetComInterfaceForObject(webFrame, 
         WebKit::Interop::IWebFrame::typeid).ToPointer();
@@ -22,46 +24,37 @@ WebKit::JSCore::JSContext::JSContext(WebKit::Interop::IWebFrame ^ webFrame)
     _context = unmgdFrame->globalContext();
 }
 
-WebKit::JSCore::JSContext::~JSContext()
+JSContext::~JSContext()
 {
     // TODO: clean up
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::EvaluateScript(System::String ^ script)
+JSValue ^ JSContext::EvaluateScript(String ^ script)
 {
     return EvaluateScript(script, nullptr, nullptr, 0);
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::EvaluateScript(System::String ^ script, System::Object ^ thisObject)
+JSValue ^ JSContext::EvaluateScript(String ^ script, Object ^ thisObject)
 {
     return EvaluateScript(script, thisObject, nullptr, 0);
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::EvaluateScript(System::String ^ script, System::Object ^ thisObject,
-    System::String ^ sourceUrl, int startingLineNumber)
+JSValue ^ JSContext::EvaluateScript(String ^ script, Object ^ thisObject,
+    String ^ sourceUrl, int startingLineNumber)
 {    
     // TODO: lets not worry about exceptions just yet...
     
-    JSStringRef jsScript = NULL;
-    if (script != nullptr)
-    {
-        BSTR unmgdScript = (BSTR) Marshal::StringToBSTR(script).ToPointer();
-        jsScript = JSStringCreateWithCharacters((const JSChar *)unmgdScript, wcslen(unmgdScript));
-        Marshal::FreeBSTR(IntPtr(unmgdScript));
-    }
+    JSStringRef jsScript = JSCoreMarshal::StringToJSString(script);
 
     // TODO: marshal thisObject to JSObject
     JSObjectRef jsObj = NULL;
     
-    JSStringRef jsSrc = NULL;
-    if (sourceUrl != nullptr)
-    {
-        BSTR unmgdSrc = (BSTR) Marshal::StringToBSTR(sourceUrl).ToPointer();
-        jsSrc = JSStringCreateWithCharacters((const JSChar *)unmgdSrc, wcslen(unmgdSrc));
-        Marshal::FreeBSTR(IntPtr(unmgdSrc));
-    }
+    // TODO: handle nulls and stuff
+    JSStringRef jsSrc = JSCoreMarshal::StringToJSString(sourceUrl);
 
-    JSValueRef result = JSEvaluateScript(_context, jsScript, jsObj, jsSrc, 0, NULL);
+    JSValueRef exception = NULL;
+    
+    JSValueRef result = JSEvaluateScript(_context, jsScript, jsObj, jsSrc, 0, &exception);
     JSValue ^ retval = result != NULL ? gcnew JSValue(this, result) : nullptr;
 
     // clean up
@@ -73,64 +66,68 @@ WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::EvaluateScript(System::Stri
     return retval;
 }
 
-bool WebKit::JSCore::JSContext::CheckScriptSyntax(System::String ^ script)
+bool JSContext::CheckScriptSyntax(String ^ script)
 {
     return false;
 }
 
-bool WebKit::JSCore::JSContext::CheckScriptSyntax(System::String ^ script, System::Object ^ thisObject)
+bool JSContext::CheckScriptSyntax(String ^ script, Object ^ thisObject)
 {
     return false;
 }
 
-bool WebKit::JSCore::JSContext::CheckScriptSyntax(System::String ^script, System::Object ^ thisObject, 
-    System::String ^sourceUrl, int startingLineNumber)
+bool JSContext::CheckScriptSyntax(String ^ script, Object ^ thisObject, 
+    String ^ sourceUrl, int startingLineNumber)
 {
     return false;
 }
 
-void WebKit::JSCore::JSContext::GarbageCollect()
+void JSContext::GarbageCollect()
 {
     JSGarbageCollect(_context);
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::MakeUndefined()
+JSValue ^ JSContext::MakeUndefined()
 {
     return nullptr;
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::MakeNull()
+JSValue ^ JSContext::MakeNull()
 {
     return nullptr;
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::MakeBoolean(bool boolean)
+JSValue ^ JSContext::MakeBoolean(bool boolean)
 {
     return nullptr;
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::MakeNumber(double number)
+JSValue ^ JSContext::MakeNumber(double number)
 {
     return nullptr;
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::MakeString(System::String ^ string)
+JSValue ^ JSContext::MakeString(String ^ string)
 {
     return nullptr;
 }
 
-WebKit::JSCore::JSValue ^ WebKit::JSCore::JSContext::MakeValueFromJSONString(System::String ^ jsonString)
+JSValue ^ JSContext::MakeValueFromJSONString(String ^ jsonString)
 {
     return nullptr;
 }
 
-WebKit::JSCore::JSObject ^ WebKit::JSCore::JSContext::MakeObject(System::Object ^ object)
+JSObject ^ JSContext::MakeObject(Object ^ object)
 {
     return nullptr;
 }
 
-JSContextRef WebKit::JSCore::JSContext::context()
+JSContextRef JSContext::context()
 {
     return _context;
 }
 
+JSObject ^ JSContext::GetGlobalObject()
+{
+    return gcnew JSObject(this, ::JSContextGetGlobalObject(_context));
+}

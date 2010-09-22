@@ -66,6 +66,7 @@
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
+				KeyFile="&quot;$(SolutionDir)WebKit.NET.snk&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -100,6 +101,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -138,6 +140,7 @@
 				AdditionalLibraryDirectories="$(SolutionDir)lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
+				KeyFile="&quot;$(SolutionDir)WebKit.NET.snk&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -178,6 +181,11 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 			MinFrameworkVersion="131072"
 		/>
+		<AssemblyReference
+			RelativePath="..\webkit\WebKit.Interop.dll"
+			AssemblyName="WebKit.Interop, Version=533.0.0.0, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL"
+			MinFrameworkVersion="0"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -190,11 +198,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\JSContext.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\JSCore.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\JSWrappers.cpp"
+				RelativePath=".\JSCoreMarshal.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\JSObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\JSValue.cpp"
 				>
 			</File>
 			<File
@@ -224,11 +244,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\JSContext.h"
+				>
+			</File>
+			<File
 				RelativePath=".\JSCore.h"
 				>
 			</File>
 			<File
-				RelativePath=".\JSWrappers.h"
+				RelativePath=".\JSCoreMarshal.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JSObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JSValue.h"
 				>
 			</File>
 			<File

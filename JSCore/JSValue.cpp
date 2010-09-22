@@ -1,84 +1,89 @@
 #include "stdafx.h"
 
+#include "JSCoreMarshal.h"
 #include "JSContext.h"
 #include "JSValue.h"
+#include "JSObject.h"
 
 
-WebKit::JSCore::JSValue::JSValue(JSContext ^ context, JSValueRef value)
+JSValue::JSValue(JSContext ^ context, JSValueRef value)
 : _context(context), _value(value)
 {
+    // TODO: is this necessary (probably...)?
+    JSValueProtect(_context->context(), _value);
 }
 
-WebKit::JSCore::JSValue::~JSValue()
+JSValue::~JSValue()
 {
+    // TODO: would probably be nicer to implement IDisposable instead
+    // erm......
+    if (_context != nullptr && _context->context() != NULL)
+        JSValueUnprotect(_context->context(), _value);
 }
 
-String ^ WebKit::JSCore::JSValue::ToString()
+String ^ JSValue::ToString()
 {
     JSStringRef jsStr = JSValueToStringCopy(_context->context(), _value, NULL);
-    int len = JSStringGetLength(jsStr);
-    JSChar * cStr = (JSChar *) JSStringGetCharactersPtr(jsStr);
-    cStr[len] = L'\0';
-
-    // TODO: clean up
-    return Marshal::PtrToStringAuto(IntPtr((void *) cStr));
+    String ^ str = JSCoreMarshal::JSStringToString(jsStr);
+    JSStringRelease(jsStr);
+    return str;
 }
 
-bool WebKit::JSCore::JSValue::IsBoolean::get()
+bool JSValue::IsBoolean::get()
 {
     return JSValueIsBoolean(_context->context(), _value);
 }
 
-bool WebKit::JSCore::JSValue::IsNull::get()
+bool JSValue::IsNull::get()
 {
     return JSValueIsNull(_context->context(), _value);
 }
 
-bool WebKit::JSCore::JSValue::IsNumber::get()
+bool JSValue::IsNumber::get()
 {
     return JSValueIsNumber(_context->context(), _value);
 }
 
-bool WebKit::JSCore::JSValue::IsObject::get()
+bool JSValue::IsObject::get()
 {
     return JSValueIsObject(_context->context(), _value);
 }
 
-bool WebKit::JSCore::JSValue::IsString::get()
+bool JSValue::IsString::get()
 {
     return JSValueIsString(_context->context(), _value);
 }
 
-bool WebKit::JSCore::JSValue::IsUndefined::get()
+bool JSValue::IsUndefined::get()
 {
     return JSValueIsUndefined(_context->context(), _value);
 }
 
-System::String ^ WebKit::JSCore::JSValue::ToJSONString()
+String ^ JSValue::ToJSONString()
 {
     return "";
 }
 
-bool WebKit::JSCore::JSValue::ToBoolean()
+bool JSValue::ToBoolean()
 {
     return JSValueToBoolean(_context->context(), _value);
 }
 
-double WebKit::JSCore::JSValue::ToNumber()
+double JSValue::ToNumber()
 {
     return JSValueToNumber(_context->context(), _value, NULL);
 }
 
-System::Object ^ WebKit::JSCore::JSValue::ToObject()
+JSObject ^ JSValue::ToObject()
 {
-    return nullptr;
+    return gcnew JSObject(_context, (JSObjectRef)_value);
 }
 
-void WebKit::JSCore::JSValue::Protect()
+void JSValue::Protect()
 {
 }
 
-void WebKit::JSCore::JSValue::Unprotect()
+void JSValue::Unprotect()
 {
 }
 

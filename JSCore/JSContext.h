@@ -3,12 +3,14 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace WebKit::Interop;
+using namespace WebKit::JSCore;
 
 namespace WebKit {
 namespace JSCore {
 
 ref class JSValue;
 ref class JSObject;
+class JSCoreMarshal;
 
 public ref class JSContext
 {
@@ -44,6 +46,10 @@ public:
     /* JSObjectRef.h functions */
 
     JSObject ^ MakeObject(Object ^ object);
+
+    /* JSContextRef.h functions */
+
+    JSObject ^ GetGlobalObject();
 
 
 internal:

@@ -3,11 +3,13 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace WebKit::Interop;
+using namespace WebKit::JSCore;
 
 namespace WebKit {
 namespace JSCore {
 
 ref class JSContext;
+ref class JSObject;
 
 public ref class JSValue
 {
@@ -34,7 +36,7 @@ public:
     String ^ ToJSONString();
     bool ToBoolean();
     double ToNumber();
-    Object ^ ToObject();
+    JSObject ^ ToObject();
 
     void Protect();
     void Unprotect();

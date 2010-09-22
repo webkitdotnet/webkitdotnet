@@ -6,3 +6,7 @@
 
 #include <JavaScriptCore/JavaScriptCore.h>
 #include <WebKit/WebKit.h>
+
+namespace WebKit {
+namespace JSCore {
+}}
