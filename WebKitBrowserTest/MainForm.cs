@@ -286,6 +286,9 @@ function printDog(dog) {
   alert(txt);
   document.getElementById(""dog"").innerHTML = txt;
 }
+function testtest(dog) {
+  alert(dog.test.x);
+}
 </script>
 </head>
 <body>
@@ -309,9 +312,15 @@ function printDog(dog) {
                     dog.SetProperty("name", "Holly");
                     MessageBox.Show("name = " + dog.GetProperty("name").ToString());
                     ctx.EvaluateScript("printDog(myDog)");
+                    dog.SetProperty("test", new TestClass());
+                    ctx.EvaluateScript("testtest(myDog)");
                     //ctx.GarbageCollect();
                 }
             }
+        }
+
+        private class TestClass
+        {
         }
     }
 }
