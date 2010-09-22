@@ -210,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\JSCoreObjectWrapper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\JSObject.cpp"
 				>
 			</File>
@@ -253,6 +257,10 @@
 			</File>
 			<File
 				RelativePath=".\JSCoreMarshal.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JSCoreObjectWrapper.h"
 				>
 			</File>
 			<File
