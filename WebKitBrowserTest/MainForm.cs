@@ -122,12 +122,14 @@ namespace WebKitBrowserTest
 
         void browser_Navigated(object sender, WebBrowserNavigatedEventArgs e)
         {
-            navigationBar.UrlText = currentPage.browser.Url.ToString();            
+            if (currentPage.browser.Url != null)
+                navigationBar.UrlText = currentPage.browser.Url.ToString();            
         }
 
         void browser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            navigationBar.UrlText = currentPage.browser.Url.ToString();
+            if (currentPage.browser.Url != null)
+                navigationBar.UrlText = currentPage.browser.Url.ToString();
 
             navigationBar.CanGoBack = currentPage.browser.CanGoBack;
             navigationBar.CanGoForward = currentPage.browser.CanGoForward;
@@ -253,6 +255,63 @@ namespace WebKitBrowserTest
             JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
             JSValue val = ctx.EvaluateScript("f()");
             MessageBox.Show(val.ToString());
+        }
+
+        private void jSTestPageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.DocumentText = @"<!DOCTYPE html>
+<html lang=""eng"">
+<head>
+<script>
+var myDog;
+
+window.onload = function() {
+  
+}
+function dog(age, breed) {
+  this.age = age;
+  this.breed = breed;
+}
+dog.prototype.woof = function(wat) {
+  document.getElementById(""dog"").innerHTML = ""woof! "" + wat;
+}
+function someDog(age, breed) {
+  myDog = new dog(age, breed);
+  return myDog;
+}
+function printDog(dog) {
+  var txt = """";
+  for (var p in dog)
+    txt += p + "": "" + dog[p] + ""<br />"";
+  alert(txt);
+  document.getElementById(""dog"").innerHTML = txt;
+}
+</script>
+</head>
+<body>
+<p id=""dog"">Hi!</p>
+</body>
+</html>
+";
+        }
+
+        private void test3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
+            JSObject dog = ctx.EvaluateScript("someDog(12, \"Golden Retriever\");").ToObject();
+            if (dog != null)
+            {
+                if (dog.HasProperty("breed"))
+                {
+                    MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
+                    dog.SetProperty("breed", "Border Collie");
+                    MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
+                    dog.SetProperty("name", "Holly");
+                    MessageBox.Show("name = " + dog.GetProperty("name").ToString());
+                    ctx.EvaluateScript("printDog(myDog)");
+                    //ctx.GarbageCollect();
+                }
+            }
         }
     }
 }

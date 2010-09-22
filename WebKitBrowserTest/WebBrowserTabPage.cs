@@ -29,6 +29,14 @@ using WebKit;
 
 namespace WebKitBrowserTest
 {
+    public class TestScriptObject
+    {
+        public void f()
+        {
+            MessageBox.Show("Hey!");
+        }
+    }
+
     public partial class WebBrowserTabPage : TabPage
     {
         public WebKitBrowser browser;
@@ -79,6 +87,8 @@ namespace WebKitBrowserTest
             //browser.IsWebBrowserContextMenuEnabled = false;
             //browser.IsScriptingEnabled = false;
             container.ContentPanel.Controls.Add(browser);
+
+            browser.ObjectForScripting = new TestScriptObject();
 
             // context menu
 

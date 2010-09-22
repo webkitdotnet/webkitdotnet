@@ -76,9 +76,11 @@ namespace WebKitBrowserTest
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.tToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl = new System.Windows.Forms.TabControl();
-            this.navigationBar = new WebKitBrowserTest.NavigationBar();
             this.test2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.jSTestPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.test3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.navigationBar = new WebKitBrowserTest.NavigationBar();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -213,7 +215,7 @@ namespace WebKitBrowserTest
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -224,7 +226,9 @@ namespace WebKitBrowserTest
             this.toolStripMenuItem1,
             this.tToolStripMenuItem,
             this.newWindowToolStripMenuItem,
-            this.test2ToolStripMenuItem});
+            this.test2ToolStripMenuItem,
+            this.jSTestPageToolStripMenuItem,
+            this.test3ToolStripMenuItem});
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
             this.testToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.testToolStripMenuItem.Text = "Test";
@@ -255,6 +259,13 @@ namespace WebKitBrowserTest
             this.newWindowToolStripMenuItem.Text = "New &Window";
             this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
             // 
+            // test2ToolStripMenuItem
+            // 
+            this.test2ToolStripMenuItem.Name = "test2ToolStripMenuItem";
+            this.test2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.test2ToolStripMenuItem.Text = "Test 2";
+            this.test2ToolStripMenuItem.Click += new System.EventHandler(this.test2ToolStripMenuItem_Click);
+            // 
             // tabControl
             // 
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -266,6 +277,20 @@ namespace WebKitBrowserTest
             this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl.TabIndex = 2;
             // 
+            // jSTestPageToolStripMenuItem
+            // 
+            this.jSTestPageToolStripMenuItem.Name = "jSTestPageToolStripMenuItem";
+            this.jSTestPageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.jSTestPageToolStripMenuItem.Text = "JS Test Page";
+            this.jSTestPageToolStripMenuItem.Click += new System.EventHandler(this.jSTestPageToolStripMenuItem_Click);
+            // 
+            // test3ToolStripMenuItem
+            // 
+            this.test3ToolStripMenuItem.Name = "test3ToolStripMenuItem";
+            this.test3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.test3ToolStripMenuItem.Text = "Test 3";
+            this.test3ToolStripMenuItem.Click += new System.EventHandler(this.test3ToolStripMenuItem_Click);
+            // 
             // navigationBar
             // 
             this.navigationBar.Dock = System.Windows.Forms.DockStyle.Top;
@@ -274,13 +299,6 @@ namespace WebKitBrowserTest
             this.navigationBar.Size = new System.Drawing.Size(662, 49);
             this.navigationBar.TabIndex = 1;
             this.navigationBar.UrlText = "";
-            // 
-            // test2ToolStripMenuItem
-            // 
-            this.test2ToolStripMenuItem.Name = "test2ToolStripMenuItem";
-            this.test2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.test2ToolStripMenuItem.Text = "Test 2";
-            this.test2ToolStripMenuItem.Click += new System.EventHandler(this.test2ToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -328,6 +346,8 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem printPreviewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem printImmediatelyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem test2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem jSTestPageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem test3ToolStripMenuItem;
 
     }
 }
