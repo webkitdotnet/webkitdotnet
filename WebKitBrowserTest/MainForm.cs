@@ -288,6 +288,9 @@ function printDog(dog) {
 }
 function testtest(dog) {
   alert(dog.test.x);
+  dog.test.y = ""TESTSTRING"";
+  dog.test.i = 42.55;
+  dog.test.b = true;
 }
 </script>
 </head>
@@ -306,21 +309,28 @@ function testtest(dog) {
             {
                 if (dog.HasProperty("breed"))
                 {
-                    MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
+                    /*MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
                     dog.SetProperty("breed", "Border Collie");
                     MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
                     dog.SetProperty("name", "Holly");
-                    MessageBox.Show("name = " + dog.GetProperty("name").ToString());
+                    MessageBox.Show("name = " + dog.GetProperty("name").ToString());*/
                     ctx.EvaluateScript("printDog(myDog)");
-                    dog.SetProperty("test", new TestClass());
+                    TestClass myTest = new TestClass() { x = "testing" };
+                    dog.SetProperty("test", myTest);
                     ctx.EvaluateScript("testtest(myDog)");
                     //ctx.GarbageCollect();
+
+                    MessageBox.Show(String.Format("y = {0}, i = {1}, b = {2}", myTest.y, myTest.i, myTest.b));
                 }
             }
         }
 
         private class TestClass
         {
+            public string x { get; set; }
+            public string y { get; set; }
+            public double i { get; set; }
+            public bool b { get; set; }
         }
     }
 }
