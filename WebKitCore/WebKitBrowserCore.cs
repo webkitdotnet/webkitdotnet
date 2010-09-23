@@ -918,17 +918,16 @@ namespace WebKit
                 return null;
         }
 
-        // printing methods
+        #endregion Public Methods
+
+        #region Printing Methods
 
         /// <summary>
         /// Prints the document using the current print and page settings.
         /// </summary>
         public void Print()
         {
-            PrintDocument doc = new PrintDocument();
-            doc.DocumentName = this.DocumentTitle;
-            doc.DefaultPageSettings = PageSettings;
-            doc.OriginAtMargins = true;
+            PrintDocument doc = this.GetCommonPrintDocument();
             PrintManager pm = new PrintManager(doc, this, false);
             pm.Print();
         }
@@ -953,10 +952,7 @@ namespace WebKit
         public void ShowPrintDialog()
         {
             PrintDialog printDlg = new PrintDialog();
-            PrintDocument doc = new PrintDocument();
-            doc.DocumentName = this.DocumentTitle;
-            doc.DefaultPageSettings = PageSettings;
-            doc.OriginAtMargins = true;
+            PrintDocument doc = this.GetCommonPrintDocument();
             printDlg.Document = doc;
 
             if (printDlg.ShowDialog() == DialogResult.OK)
@@ -973,17 +969,24 @@ namespace WebKit
         {
             // TODO: find out why it apparently only shows the first page on the preview...
             PrintPreviewDialog printDlg = new PrintPreviewDialog();
-            PrintDocument doc = new PrintDocument();
-            doc.DocumentName = this.DocumentTitle;
-            doc.DefaultPageSettings = PageSettings;
-            doc.OriginAtMargins = true;
+            PrintDocument doc = this.GetCommonPrintDocument();
             printDlg.Document = doc;
             PrintManager pm = new PrintManager(doc, this, true);
             pm.Print();
             printDlg.ShowDialog();
         }
 
-        #endregion Public Methods
+        // Gets a PrintDocument with the current default settings.
+        private PrintDocument GetCommonPrintDocument()
+        {
+            PrintDocument doc = new PrintDocument();
+            doc.DocumentName = this.DocumentTitle;
+            doc.DefaultPageSettings = PageSettings;
+            doc.OriginAtMargins = true;
+            return doc;
+        }
+
+        #endregion
 
         public void Dispose(bool disposing)
         {
