@@ -34,6 +34,69 @@ GCHandle getHandleFromJSObjectRef(JSObjectRef object)
 	return GCHandle::FromIntPtr(IntPtr(ptr));
 }
 
+Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception)
+{
+	Object ^ val;
+
+    if (type == double::typeid)
+    {
+        val = JSValueToNumber(ctx, value, exception);
+    }
+    else if (type == bool::typeid)
+    {
+        val = JSValueToBoolean(ctx, value);
+    }
+    else if (type == String::typeid)
+    {
+        JSStringRef temp = JSValueToStringCopy(ctx, value, exception);
+        if (!*exception)
+        {
+            val = JSCoreMarshal::JSStringToString(temp);
+            JSStringRelease(temp);
+        }
+    }
+	return val;
+}
+
+
+JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef * exception)
+{
+    Type ^ type = object->GetType();
+    JSValueRef val;
+    if(object == nullptr)
+    {
+        return JSValueMakeUndefined(ctx);
+    }
+    if(type == double::typeid)
+    {
+        return JSValueMakeNumber(ctx, (double)object);
+    }
+    if(type == bool::typeid)
+    {
+        return JSValueMakeBoolean(ctx, (bool)object);
+    }
+    if(type == String::typeid)
+    {
+        JSStringRef temp = JSCoreMarshal::StringToJSString((String ^)object);
+        val = JSValueMakeString(ctx, temp);
+        JSStringRelease(temp);
+        return val;
+    }
+    else
+    {
+        JSClassRef wrap = JSClassCreate(&wrapperClass);
+
+        GCHandle handle = GCHandle::Alloc(object, GCHandleType::Normal);
+        void * ptr = GCHandle::ToIntPtr(handle).ToPointer();
+
+        val = JSObjectMake(ctx, wrap, ptr);
+
+        JSClassRelease(wrap);
+        return val;
+    }
+}
+
+
 Object ^ getObjectFromJSObjectRef(JSObjectRef object)
 {
     GCHandle handle = getHandleFromJSObjectRef(object);
@@ -47,11 +110,12 @@ void wrapper_Finalize(JSObjectRef object)
 }
 
 bool wrapper_HasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName)
-{    
+{
     Object ^ obj = getObjectFromJSObjectRef(object);
 
     String ^ propName = JSCoreMarshal::JSStringToString(propertyName);
-    return obj->GetType()->GetProperty(propName) != nullptr;
+    MethodInfo ^ method = obj->GetType()->GetMethod(propName);
+    return obj->GetType()->GetProperty(propName) != nullptr || obj->GetType()->GetMethod(propName) != nullptr;
 }
 
 JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)
@@ -75,6 +139,11 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
         }
     }
 
+	MethodInfo ^ method = obj->GetType()->GetMethod(propName);
+	if(method != nullptr)
+	{
+		return JSObjectMakeFunctionWithCallback(ctx, propertyName, wrapper_CallAsFunction);
+	}
     return NULL;
 }
 
@@ -89,27 +158,7 @@ bool wrapper_SetProperty(JSContextRef ctx, JSObjectRef object,
     {
         if (prop->CanWrite)
         {
-            Type ^ type = prop->PropertyType;
-            Object ^ val;
-            JSValueRef exception = NULL;
-
-            if (type == double::typeid)
-            {
-                val = JSValueToNumber(ctx, value, &exception);
-            }
-            else if (type == bool::typeid)
-            {
-                val = JSValueToBoolean(ctx, value);
-            }
-            else if (type == String::typeid)
-            {
-                JSStringRef temp = JSValueToStringCopy(ctx, value, &exception);
-                if (!exception)
-                {
-                    val = JSCoreMarshal::JSStringToString(temp);
-                    JSStringRelease(temp);
-                }
-            }
+            Object ^ val = getObjectFromJSValueRef(ctx, prop->PropertyType, value, exception);
 
             if (!exception)
             {
@@ -129,5 +178,44 @@ bool wrapper_SetProperty(JSContextRef ctx, JSObjectRef object,
 JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, 
                                    size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
 {
-    return NULL;
+    Object ^ obj = getObjectFromJSObjectRef(thisObject);
+
+    JSStringRef nameProperty = JSCoreMarshal::StringToJSString("name");
+    JSValueRef val = JSObjectGetProperty(ctx, function, nameProperty, exception);
+    JSStringRelease(nameProperty);
+
+    if(*exception)
+    {
+        return NULL;
+    }
+
+    JSStringRef functionName = JSValueToStringCopy(ctx, val, exception);
+    if(*exception)
+    {
+        return NULL;
+    }
+
+    String ^ methName = JSCoreMarshal::JSStringToString(functionName);
+    JSStringRelease(functionName);
+
+    MethodInfo ^ method = obj->GetType()->GetMethod(methName);
+    cli::array<ParameterInfo ^,1> ^ parameters = method->GetParameters();
+
+    if(parameters->Length != argumentCount)
+    {
+        *exception = getJSValueRefFromObject(ctx, String::Format("{0}.{1} called with wrong argument number.", obj->GetType()->Name, methName), exception);
+        return JSValueMakeUndefined(ctx);
+    }
+
+    cli::array<Object ^, 1> ^ args = gcnew cli::array<Object ^, 1>(parameters->Length);
+    for(int i = 0; i < argumentCount; i++)
+    {
+        ParameterInfo ^ parameter = (ParameterInfo ^)parameters->GetValue(i);
+        Object ^ val = getObjectFromJSValueRef(ctx, parameter->ParameterType, arguments[i], exception);
+        args->SetValue(val, i);
+    }
+
+    Object ^ ret = method->Invoke(obj, args);
+    JSValueRef jsVal = getJSValueRefFromObject(ctx, ret, exception);
+    return jsVal;
 }
