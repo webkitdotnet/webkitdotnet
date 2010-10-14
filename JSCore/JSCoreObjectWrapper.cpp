@@ -16,7 +16,7 @@ JSClassDefinition wrapperClass =
     NULL,                    /* const JSStaticFunction* staticFunctions; */
     
     NULL,                    /* JSObjectInitializeCallback initialize; */
-    NULL,                    /* JSObjectFinalizeCallback finalize; */
+    wrapper_Finalize,        /* JSObjectFinalizeCallback finalize; */
     wrapper_HasProperty,     /* JSObjectHasPropertyCallback hasProperty; */
     wrapper_GetProperty,     /* JSObjectGetPropertyCallback getProperty; */
     wrapper_SetProperty,     /* JSObjectSetPropertyCallback setProperty; */
@@ -28,11 +28,22 @@ JSClassDefinition wrapperClass =
                              /* JSObjectConvertToTypeCallback convertToType; */
 };
 
+GCHandle getHandleFromJSObjectRef(JSObjectRef object)
+{
+	void * ptr = JSObjectGetPrivate(object);
+	return GCHandle::FromIntPtr(IntPtr(ptr));
+}
+
 Object ^ getObjectFromJSObjectRef(JSObjectRef object)
 {
-    void * ptr = JSObjectGetPrivate(object);
-    GCHandle handle = GCHandle::FromIntPtr(IntPtr(ptr));
+    GCHandle handle = getHandleFromJSObjectRef(object);
     return handle.Target;
+}
+
+void wrapper_Finalize(JSObjectRef object)
+{
+	GCHandle handle = getHandleFromJSObjectRef(object);
+	handle.Free();
 }
 
 bool wrapper_HasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName)
