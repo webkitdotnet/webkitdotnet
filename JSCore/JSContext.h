@@ -16,8 +16,9 @@ public ref class JSContext
 {
 protected:
     JSContextRef _context;
-
+    bool _contextCreated;
 public:
+    JSContext();
     JSContext(IntPtr context);
     JSContext(WebKit::Interop::IWebFrame ^ webFrame);
     ~JSContext();
