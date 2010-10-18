@@ -928,7 +928,7 @@ namespace WebKit
         public void Print()
         {
             PrintDocument doc = this.GetCommonPrintDocument();
-            PrintManager pm = new PrintManager(doc, this, false);
+            PrintManager pm = new PrintManager(doc, this.host, this, false);
             pm.Print();
         }
 
@@ -957,7 +957,7 @@ namespace WebKit
 
             if (printDlg.ShowDialog() == DialogResult.OK)
             {
-                PrintManager pm = new PrintManager(doc, this, false);
+                PrintManager pm = new PrintManager(doc, this.host, this, false);
                 pm.Print();
             }
         }
@@ -971,7 +971,7 @@ namespace WebKit
             PrintPreviewDialog printDlg = new PrintPreviewDialog();
             PrintDocument doc = this.GetCommonPrintDocument();
             printDlg.Document = doc;
-            PrintManager pm = new PrintManager(doc, this, true);
+            PrintManager pm = new PrintManager(doc, this.host, this, true);
             pm.Print();
             printDlg.ShowDialog();
         }
