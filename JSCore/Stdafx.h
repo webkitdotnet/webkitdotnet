@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <JavaScriptCore/JavaScriptCore.h>
+#include <JavaScriptCore/JavaScript.h>
 #include <WebKit/WebKit.h>
 
 namespace WebKit {
