@@ -26,7 +26,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="call &quot;$(DevEnvDir)..\..\VC\vcvarsall.bat&quot; x86&#x0D;&#x0A;if not exist &quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; csc /out:&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)tools\TypeNormalizer.cs&quot;&#x0D;&#x0A;tlbimp &quot;$(SolutionDir)webkit\webkit.tlb&quot; /silent /keyfile:&quot;$(SolutionDir)WebKit.NET.snk&quot; /namespace:WebKit.Interop /out:&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot;&#x0D;&#x0A;ildasm &quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /out=&quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /nobar&#x0D;&#x0A;&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot;&#x0D;&#x0A;ilasm &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /dll /output=&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /key=&quot;$(SolutionDir)WebKit.NET.snk&quot;&#x0D;&#x0A;del /F /Q &quot;$(SolutionDir)webkit\temp_webkit_interop.*&quot;"
+				CommandLine="call &quot;$(DevEnvDir)..\..\VC\vcvarsall.bat&quot; x86&#x0D;&#x0A;if exist &quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; goto after_build_interop&#x0D;&#x0A;if not exist &quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; csc /out:&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)tools\TypeNormalizer.cs&quot;&#x0D;&#x0A;tlbimp &quot;$(SolutionDir)webkit\webkit.tlb&quot; /silent /keyfile:&quot;$(SolutionDir)WebKit.NET.snk&quot; /namespace:WebKit.Interop /out:&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot;&#x0D;&#x0A;ildasm &quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /out=&quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /nobar&#x0D;&#x0A;&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot;&#x0D;&#x0A;ilasm &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /dll /output=&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /key=&quot;$(SolutionDir)WebKit.NET.snk&quot;&#x0D;&#x0A;del /F /Q &quot;$(SolutionDir)webkit\temp_webkit_interop.*&quot;&#x0D;&#x0A;:after_build_interop"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -102,7 +102,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="call &quot;$(DevEnvDir)..\..\VC\vcvarsall.bat&quot; x86&#x0D;&#x0A;if not exist &quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; csc /out:&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)tools\TypeNormalizer.cs&quot;&#x0D;&#x0A;tlbimp &quot;$(SolutionDir)webkit\webkit.tlb&quot; /silent /keyfile:&quot;$(ProjectDir)WebKit .NET.snk&quot; /namespace:WebKit.Interop /out:&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot;&#x0D;&#x0A;ildasm &quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /out=&quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /nobar&#x0D;&#x0A;&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot;&#x0D;&#x0A;ilasm &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /dll /output=&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /key=&quot;$(ProjectDir)WebKit .NET.snk&quot;&#x0D;&#x0A;del /F /Q &quot;$(SolutionDir)webkit\temp_webkit_interop.*&quot;"
+				CommandLine="call &quot;$(DevEnvDir)..\..\VC\vcvarsall.bat&quot; x86&#x0D;&#x0A;if exist &quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; goto after_build_interop&#x0D;&#x0A;if not exist &quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; csc /out:&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)tools\TypeNormalizer.cs&quot;&#x0D;&#x0A;tlbimp &quot;$(SolutionDir)webkit\webkit.tlb&quot; /silent /keyfile:&quot;$(SolutionDir)WebKit.NET.snk&quot; /namespace:WebKit.Interop /out:&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot;&#x0D;&#x0A;ildasm &quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /out=&quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /nobar&#x0D;&#x0A;&quot;$(SolutionDir)tools\TypeNormalizer.exe&quot; &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot;&#x0D;&#x0A;ilasm &quot;$(SolutionDir)webkit\temp_webkit_interop.il&quot; /dll /output=&quot;$(SolutionDir)webkit\WebKit.Interop.dll&quot; /key=&quot;$(SolutionDir)WebKit.NET.snk&quot;&#x0D;&#x0A;del /F /Q &quot;$(SolutionDir)webkit\temp_webkit_interop.*&quot;&#x0D;&#x0A;:after_build_interop"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -183,7 +183,7 @@
 			MinFrameworkVersion="131072"
 		/>
 		<AssemblyReference
-			RelativePath="..\webkit\webkit.interop.dll"
+			RelativePath="..\webkit\WebKit.Interop.dll"
 			AssemblyName="WebKit.Interop, Version=533.0.0.0, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL"
 			MinFrameworkVersion="0"
 		/>
