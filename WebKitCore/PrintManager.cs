@@ -13,7 +13,8 @@ namespace WebKit
     {
         private PrintDocument _document;
         private IWebFramePrivate _webFramePrivate;
-        private IWebKitBrowser _owner;
+        private IWebKitBrowserHost _owner;
+        private IWebKitBrowser _browser;
         private Graphics _printGfx;
         private uint _nPages;
         private uint _page;
@@ -21,12 +22,13 @@ namespace WebKit
         private bool _preview;
         private bool _printing = false;
 
-        public PrintManager(PrintDocument Document, IWebKitBrowser Owner, bool Preview)
+        public PrintManager(PrintDocument Document, IWebKitBrowserHost Owner, IWebKitBrowser Browser, bool Preview)
         {
             this._document = Document;
             this._owner = Owner;
-            this._webFramePrivate = 
-                (IWebFramePrivate)((IWebView)_owner.GetWebView()).mainFrame();
+            this._browser = Browser;
+            this._webFramePrivate =
+                (IWebFramePrivate)((IWebView)_browser.GetWebView()).mainFrame();
             this._preview = Preview;
         }
 
@@ -57,28 +59,24 @@ namespace WebKit
         {
             // running on a seperate thread, so we invoke _webFramePrivate
             // methods on the owners ui thread
-            
+
             if (_printGfx == null)
             {
                 // initialise printing
                 _printGfx = e.Graphics;
                 _hDC = _printGfx.GetHdc().ToInt32();
 
-                _owner.Host.Invoke(new MethodInvoker(delegate() {
-                    _webFramePrivate.setInPrintingMode(1, _hDC);
-                }));
+                _ownerInvoke(() => _webFramePrivate.setInPrintingMode(1, _hDC));
 
-                _nPages = (uint)_owner.Host.Invoke(
-                    new GetPrintedPageCountDelegate(delegate() {
+                _nPages = _ownerInvoke(() =>
+                {
                     return _webFramePrivate.getPrintedPageCount(_hDC);
-                }));
+                });
 
                 _page = 1;
             }
 
-            _owner.Host.Invoke(new MethodInvoker(delegate() {
-                _webFramePrivate.spoolPages(_hDC, _page, _page, IntPtr.Zero);
-            }));
+            _ownerInvoke(() => _webFramePrivate.spoolPages(_hDC, _page, _page, IntPtr.Zero));
 
             ++_page;
             if (_page <= _nPages)
@@ -87,13 +85,30 @@ namespace WebKit
             }
             else
             {
-                _owner.Host.Invoke(new MethodInvoker(delegate() {
-                    _webFramePrivate.setInPrintingMode(0, _hDC);
-                }));
+                _ownerInvoke(() => _webFramePrivate.setInPrintingMode(0, _hDC));
                 e.HasMorePages = false;
                 _printGfx = null;
                 _nPages = 0;
             }
+        }
+
+        private delegate TResult Fn<TResult>();
+        private delegate void Fn();
+
+        private TResult _ownerInvoke<TResult>(Fn<TResult> method)
+        {
+            if (_owner.InvokeRequired)
+                return (TResult)_owner.Invoke(method);
+            else
+                return method();
+        }
+
+        private void _ownerInvoke(Fn method)
+        {
+            if (_owner.InvokeRequired)
+                _owner.Invoke(method);
+            else
+                method();
         }
     }
 }
