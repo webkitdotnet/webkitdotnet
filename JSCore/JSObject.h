@@ -20,7 +20,7 @@ public:
     void SetProperty(String ^ propertyName, double value);
     void SetProperty(String ^ propertyName, System::Object ^ value);
     void SetProperty(String ^ propertyName, System::String ^ value);
-
+    JSValue ^ CallFunction(String ^ methodName, ... array<Object ^> ^ variableArgs);
 internal:
     JSObject(JSContext ^ context, JSObjectRef object);
 

@@ -67,3 +67,28 @@ void JSObject::SetProperty(String ^ propertyName, JSValueRef value)
     JSObjectSetProperty(_context->context(), (JSObjectRef)_value, jsStr, value, NULL, NULL);
     JSStringRelease(jsStr);
 }
+
+JSValue ^ JSObject::CallFunction(String ^ methodName, ... array<Object ^> ^ variableArgs)
+{
+    JSStringRef str = JSCoreMarshal::StringToJSString(methodName);
+
+    JSObjectRef val = (JSObjectRef)JSObjectGetProperty(_context->context(), (JSObjectRef)_value, str, NULL);
+
+    bool x = JSValueIsObject(_context->context(), val);
+    JSStringRelease(str);
+
+    JSValueRef * args = new JSValueRef[variableArgs->Length];
+    for(int i = 0; i < variableArgs->Length; i++)
+    {
+        args[i] = getJSValueRefFromObject(_context->context(), variableArgs[i], NULL);
+    }
+
+    JSValueRef ret = JSObjectCallAsFunction(_context->context(), val, (JSObjectRef)_value, variableArgs->Length, args, NULL);
+
+    for(int i = 0; i < variableArgs->Length; i++)
+    {
+        JSValueUnprotect(_context->context(), args[i]);
+    }
+    delete[] args;
+    return gcnew JSValue(_context, ret);
+}

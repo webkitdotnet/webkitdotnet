@@ -11,7 +11,10 @@ namespace JSCore {
 ref class JSContext;
 ref class JSObject;
 
-public ref class JSValue
+public ref class JSValue 
+#ifdef DOTNET4
+    : System::Dynamic::DynamicObject
+#endif
 {
 protected:
     JSValueRef _value;
@@ -41,6 +44,12 @@ public:
     void Protect();
     void Unprotect();
 
+#ifdef DOTNET4
+    virtual bool TryConvert(System::Dynamic::ConvertBinder^ binder, [OutAttribute] Object ^% result) override;
+    virtual bool TryGetMember(System::Dynamic::GetMemberBinder^ binder, [OutAttribute] Object ^% result) override;
+    virtual bool TrySetMember(System::Dynamic::SetMemberBinder^ binder, Object ^ result) override;
+    virtual bool TryInvokeMember(System::Dynamic::InvokeMemberBinder^ binder, array<Object ^> ^ args, [OutAttribute] Object ^% result) override;
+#endif
 
 internal:
     JSValue(JSContext ^ context, JSValueRef value);
