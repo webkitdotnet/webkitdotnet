@@ -1,0 +1,16 @@
+Used following technique to make compatible with Visual Studio Express versions
+- Converted JSCore.vcproj to JSCore.vcxproj
+- Created separate JSCore solution in root folder
+
+Performed the following to make C# projects build successfully by changing member signatures to what C# Express is "expecting"
+- Removed and added again JSCore and WebKit.Interop references to all three projects (references to WebKit.Interop must have "Embed Interop Types" set to False)
+- Added explicit cast from WebMutableURLRequest to WebURLRequest in call to webView.mainFrame().loadRequest in Navigate() public method of WebKitBrowserCore class
+- Changed odd "Does not implement inteface member"
+	- Changed IWebURLRequest to WebURLRequest in members decidePolicyForMIMEType, decidePolicyForNewWindowAction, decidePolicyForNavigationAction, willSendRequest, identifierForInitialRequest, createModalDialog, createWebViewWithRequest
+
+- Changed all framework targets to .NET Framework 4
+	(Because the application I'm working on is built on .NET Framework 4. VB.NET users my want to change this to the VB.NET default, .NET Framework 4 Client Profile, or change their projects to not target the client profile.)
+	
+Notes for usaging the control in .NET applications
+	- Bear in mind that when you include this control in your projects, it will cause your project to start throwing a NotImplementedException exception all over the place. My workaround for this is to go to Exceptions under the Debug menu and disable System.NotImplementedException by unchecking the User-unhandled box. I call this a "workaround" because I'm not sure if I should by doing something with that exception programmatically or not.
+	- You now must add the WebKitCore reference to your solution since the main code for the browser control is now split between the WebKitBrowser and WebKitCore projects (a move I still do not fully comprehend the purpose of, but I am nobody's genius).

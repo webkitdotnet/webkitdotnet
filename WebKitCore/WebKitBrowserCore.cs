@@ -819,7 +819,7 @@ namespace WebKit
                 request.initWithURL(url, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
                 request.setHTTPMethod("GET");
 
-                webView.mainFrame().loadRequest(request);
+                webView.mainFrame().loadRequest((WebURLRequest)request);
 
                 activationContext.Deactivate();
             }
