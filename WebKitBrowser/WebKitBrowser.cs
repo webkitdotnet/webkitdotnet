@@ -141,6 +141,15 @@ namespace WebKit
         }
 
         /// <summary>
+        /// Occurs when the WebKitBrowser control has updated information on the download progress of a document it is navigating to.
+        /// </summary>
+        public event ProgressChangedEventHandler ProgressChanged
+        {
+            add { core.ProgressChanged += value; }
+            remove { core.ProgressChanged -= value; }
+        }
+
+        /// <summary>
         /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
         /// </summary>
         public event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel
@@ -166,6 +175,7 @@ namespace WebKit
             add { core.ShowJavaScriptPromptPanel += value; }
             remove { core.ShowJavaScriptPromptPanel -= value; }
         }
+
 
         #endregion
 

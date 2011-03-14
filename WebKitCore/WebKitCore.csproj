@@ -63,6 +63,7 @@
     <Compile Include="WebKitDOMHTMLClasses.cs" />
     <Compile Include="WebKitDownload.cs" />
     <Compile Include="WebKitDownloadEvents.cs" />
+    <Compile Include="WebNotificationObserver.cs" />
     <Compile Include="WebPolicyDelegate.cs" />
     <Compile Include="WebResourceLoadDelegate.cs" />
     <Compile Include="WebUIDelegate.cs" />

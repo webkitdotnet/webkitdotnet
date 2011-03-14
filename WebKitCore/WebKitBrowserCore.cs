@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
@@ -21,6 +22,8 @@ namespace WebKit
         private IWebView webView;
         private IntPtr webViewHWND;
         private IWebKitBrowserHost host;
+        private WebNotificationObserver webNotificationObserver;
+        private WebNotificationCenter webNotificationCenter;
 
         // Note: we do not provide overridden Equals or GetHashCode methods for the
         // WebDownload interface used as a key here - the default implementations should suffice
@@ -89,6 +92,11 @@ namespace WebKit
         /// Occurs when the WebKitBrowser control creates a new window.
         /// </summary>
         public event NewWindowCreatedEventHandler NewWindowCreated = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser control has updated information on the download progress of a document it is navigating to.
+        /// </summary>
+        public event ProgressChangedEventHandler ProgressChanged = delegate { };
 
         /// <summary>
         /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
@@ -577,6 +585,11 @@ namespace WebKit
             uiDelegate = new WebUIDelegate(this);
             Marshal.AddRef(Marshal.GetIUnknownForObject(uiDelegate));
 
+            webNotificationCenter = new WebNotificationCenter();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(webNotificationCenter)); // TODO: find out if this is really needed
+            webNotificationObserver = new WebNotificationObserver();
+            webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressEstimateChangedNotification", webView);
+
             webView.setPolicyDelegate(policyDelegate);
             webView.setFrameLoadDelegate(frameLoadDelegate);
             webView.setDownloadDelegate(downloadDelegate);
@@ -616,6 +629,9 @@ namespace WebKit
             uiDelegate.RunJavaScriptConfirmPanelWithMessage += new RunJavaScriptConfirmPanelWithMessageEvent(uiDelegate_RunJavaScriptConfirmPanelWithMessage);
             uiDelegate.RunJavaScriptTextInputPanelWithPrompt += new RunJavaScriptTextInputPanelWithPromptEvent(uiDelegate_RunJavaScriptTextInputPanelWithPrompt);
 
+            // Notification events
+            webNotificationObserver.OnNotify += new OnNotifyEvent(webNotificationObserver_OnNotify);
+
             activationContext.Deactivate();
         }
 
@@ -648,6 +664,11 @@ namespace WebKit
             }
 
             IsScriptingEnabled = initialJavaScriptEnabled;
+        }
+
+        private void WebKitBrowser_HandleDestroyed(object sender, EventArgs e)
+        {
+            webNotificationCenter.defaultCenter().removeObserver(webNotificationObserver, "WebProgressEstimateChangedNotification", webView);
         }
 
         #endregion
@@ -795,6 +816,16 @@ namespace WebKit
             var args = new ShowJavaScriptPromptPanelEventArgs(message, defaultText);
             ShowJavaScriptPromptPanel(this, args);
             return args.ReturnValue;
+        }
+
+        #endregion
+
+        #region WebNotificationObserver event handlers
+
+        private void webNotificationObserver_OnNotify(IWebNotification notification)
+        {
+            ProgressChangedEventArgs args = new ProgressChangedEventArgs((int)(webView.estimatedProgress() * 100), null);
+            ProgressChanged(this, args);
         }
 
         #endregion
