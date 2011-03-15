@@ -28,6 +28,7 @@
 // communicate with the client.
 
 using System;
+using System.ComponentModel;
 using WebKit.Interop;
 
 namespace WebKit
@@ -61,6 +62,9 @@ namespace WebKit
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">A NewWindowCreatedEventArgs that contains the event data.</param>
     public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs e);
+
+    public delegate void ProgressStartedEventHandler (object sender, EventArgs e);
+    public delegate void ProgressChangedEventHandler (object sender, ProgressChangedEventArgs e);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptAlertPanel event. 

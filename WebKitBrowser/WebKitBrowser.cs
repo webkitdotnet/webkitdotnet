@@ -150,6 +150,15 @@ namespace WebKit
         }
 
         /// <summary>
+        /// Occures when WebKitBrowser control has begun to provide information on the download progress of a document it si navigating to.
+        /// </summary>
+        public event ProgressStartedEventHandler ProgressStarted
+        {
+            add { core.ProgressStarted += value; }
+            remove { core.ProgressStarted -= value; }
+        }
+
+        /// <summary>
         /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
         /// </summary>
         public event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel

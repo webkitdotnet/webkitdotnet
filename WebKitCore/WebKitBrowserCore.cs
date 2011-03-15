@@ -99,6 +99,11 @@ namespace WebKit
         public event ProgressChangedEventHandler ProgressChanged = delegate { };
 
         /// <summary>
+        /// Occures when WebKitBrowser control has begun to provide information on the download progress of a document it si navigating to.
+        /// </summary>
+        public event ProgressStartedEventHandler ProgressStarted = delegate { };
+
+        /// <summary>
         /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
         /// </summary>
         public event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel = delegate { };
@@ -112,7 +117,7 @@ namespace WebKit
         /// Occurs when JavaScript requests a prompt panel to be displayed via the prompt() function.
         /// </summary>
         public event ShowJavaScriptPromptPanelEventHandler ShowJavaScriptPromptPanel = delegate { };
-
+        
         #endregion
 
         #region Public properties
@@ -589,6 +594,8 @@ namespace WebKit
             Marshal.AddRef(Marshal.GetIUnknownForObject(webNotificationCenter)); // TODO: find out if this is really needed
             webNotificationObserver = new WebNotificationObserver();
             webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressEstimateChangedNotification", webView);
+            webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressStartedNotification", webView);
+            webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressFinishedNotification", webView);
 
             webView.setPolicyDelegate(policyDelegate);
             webView.setFrameLoadDelegate(frameLoadDelegate);
@@ -669,6 +676,8 @@ namespace WebKit
         private void WebKitBrowser_HandleDestroyed(object sender, EventArgs e)
         {
             webNotificationCenter.defaultCenter().removeObserver(webNotificationObserver, "WebProgressEstimateChangedNotification", webView);
+            webNotificationCenter.defaultCenter().removeObserver(webNotificationObserver, "WebProgressStartedNotification", webView);
+            webNotificationCenter.defaultCenter().removeObserver(webNotificationObserver, "WebProgressFinishedNotification", webView);
         }
 
         #endregion
@@ -824,8 +833,18 @@ namespace WebKit
 
         private void webNotificationObserver_OnNotify(IWebNotification notification)
         {
-            ProgressChangedEventArgs args = new ProgressChangedEventArgs((int)(webView.estimatedProgress() * 100), null);
-            ProgressChanged(this, args);
+            switch (notification.name())
+            {
+                case "WebProgressEstimateChangedNotification":
+                    ProgressChangedEventArgs args = new ProgressChangedEventArgs((int)(webView.estimatedProgress() * 100), null);
+                    ProgressChanged(this, args);
+                    break;
+                case "WebProgressStartedNotification":
+                case "WebProgressFinishedNotification":
+                    break;
+                default:
+                    break;
+            }
         }
 
         #endregion
