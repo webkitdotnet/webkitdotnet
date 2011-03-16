@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebKit</RootNamespace>
     <AssemblyName>WebKitBrowser</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationManifest>WebKitBrowser.dll.manifest</ApplicationManifest>
     <SignAssembly>true</SignAssembly>
