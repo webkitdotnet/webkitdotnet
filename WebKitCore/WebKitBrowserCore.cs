@@ -94,14 +94,19 @@ namespace WebKit
         public event NewWindowCreatedEventHandler NewWindowCreated = delegate { };
 
         /// <summary>
+        /// Occures when WebKitBrowser control has begun to provide information on the download progress of a document it is navigating to.
+        /// </summary>
+        public event ProgressStartedEventHandler ProgressStarted = delegate { };
+
+        /// <summary>
+        /// Occures when WebKitBrowser control is no longer providing information on the download progress of a document it is navigating to.
+        /// </summary>
+        public event ProgressFinishedEventHandler ProgressFinished = delegate { };
+
+        /// <summary>
         /// Occurs when the WebKitBrowser control has updated information on the download progress of a document it is navigating to.
         /// </summary>
         public event ProgressChangedEventHandler ProgressChanged = delegate { };
-
-        /// <summary>
-        /// Occures when WebKitBrowser control has begun to provide information on the download progress of a document it si navigating to.
-        /// </summary>
-        public event ProgressStartedEventHandler ProgressStarted = delegate { };
 
         /// <summary>
         /// Occurs when JavaScript requests an alert panel to be displayed via the alert() function.
@@ -835,12 +840,17 @@ namespace WebKit
         {
             switch (notification.name())
             {
-                case "WebProgressEstimateChangedNotification":
-                    ProgressChangedEventArgs args = new ProgressChangedEventArgs((int)(webView.estimatedProgress() * 100), null);
-                    ProgressChanged(this, args);
-                    break;
                 case "WebProgressStartedNotification":
+                    EventArgs started_args = new EventArgs();
+                    ProgressStarted(this, started_args);
+                    break;
                 case "WebProgressFinishedNotification":
+                    EventArgs finished_args = new EventArgs();
+                    ProgressFinished(this, finished_args);
+                    break;
+                case "WebProgressEstimateChangedNotification":
+                    ProgressChangedEventArgs changed_args = new ProgressChangedEventArgs((int)(webView.estimatedProgress() * 100), null);
+                    ProgressChanged(this, changed_args);
                     break;
                 default:
                     break;

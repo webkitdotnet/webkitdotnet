@@ -63,8 +63,26 @@ namespace WebKit
     /// <param name="e">A NewWindowCreatedEventArgs that contains the event data.</param>
     public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs e);
 
-    public delegate void ProgressStartedEventHandler (object sender, EventArgs e);
-    public delegate void ProgressChangedEventHandler (object sender, ProgressChangedEventArgs e);
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.ProgressStartedEventHandler event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An EventArgs that contains the event data.</param>
+    public delegate void ProgressStartedEventHandler(object sender, EventArgs e);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.ProgressFinishedEventHandler event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An EventArgs that contains the event data.</param>
+    public delegate void ProgressFinishedEventHandler(object sender, EventArgs e);
+
+    /// <summary>
+    /// Represents the method that will handle the WebKitBrowser.ProgressChangedEventHandler event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A ProgressChangedEventArgs that contains the event data.</param>
+    public delegate void ProgressChangedEventHandler(object sender, ProgressChangedEventArgs e);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptAlertPanel event. 

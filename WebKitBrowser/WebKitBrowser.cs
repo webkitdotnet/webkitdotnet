@@ -141,21 +141,30 @@ namespace WebKit
         }
 
         /// <summary>
+        /// Occures when WebKitBrowser control has begun to provide information on the download progress of a document it is navigating to.
+        /// </summary>
+        public event ProgressStartedEventHandler ProgressStarted
+        {
+            add { core.ProgressStarted += value; }
+            remove { core.ProgressStarted -= value; }
+        }
+
+        /// <summary>
+        /// Occures when WebKitBrowser control is no longer providing information on the download progress of a document it is navigating to.
+        /// </summary>
+        public event ProgressFinishedEventHandler ProgressFinished
+        {
+            add { core.ProgressFinished += value; }
+            remove { core.ProgressFinished -= value; }
+        }
+
+        /// <summary>
         /// Occurs when the WebKitBrowser control has updated information on the download progress of a document it is navigating to.
         /// </summary>
         public event ProgressChangedEventHandler ProgressChanged
         {
             add { core.ProgressChanged += value; }
             remove { core.ProgressChanged -= value; }
-        }
-
-        /// <summary>
-        /// Occures when WebKitBrowser control has begun to provide information on the download progress of a document it si navigating to.
-        /// </summary>
-        public event ProgressStartedEventHandler ProgressStarted
-        {
-            add { core.ProgressStarted += value; }
-            remove { core.ProgressStarted -= value; }
         }
 
         /// <summary>
