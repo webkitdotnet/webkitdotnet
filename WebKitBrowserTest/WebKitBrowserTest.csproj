@@ -32,6 +32,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,7 +57,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JSCore, Version=1.0.4090.818, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=x86">
+    <Reference Include="JSCore, Version=1.0.4092.42699, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\bin\Debug\JSCore.dll</HintPath>
     </Reference>
@@ -65,6 +67,14 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebKitBrowser, Version=0.5.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\Debug\WebKitBrowser.dll</HintPath>
+    </Reference>
+    <Reference Include="WebKitCore, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\Debug\WebKitCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DownloadForm.cs">
@@ -143,16 +153,6 @@
     <Compile Include="WebBrowserTabPage.Designer.cs">
       <DependentUpon>WebBrowserTabPage.cs</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WebKitBrowser\WebKitBrowser.csproj">
-      <Project>{44AFE214-12C7-4280-898D-A7C4AABF1533}</Project>
-      <Name>WebKitBrowser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebKitCore\WebKitCore.csproj">
-      <Project>{D1C8CE15-4279-45DA-989A-54561E0FD842}</Project>
-      <Name>WebKitCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

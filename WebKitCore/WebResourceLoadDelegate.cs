@@ -69,7 +69,7 @@ namespace WebKit
             throw new NotImplementedException();
         }
 
-        public void identifierForInitialRequest(WebView WebView, WebURLRequest request, IWebDataSource dataSource, uint identifier)
+        public void identifierForInitialRequest(WebView WebView, IWebURLRequest request, IWebDataSource dataSource, uint identifier)
         {
             throw new NotImplementedException();
         }
@@ -79,13 +79,12 @@ namespace WebKit
             throw new NotImplementedException();
         }
 
-        public WebURLRequest willSendRequest(WebView WebView, uint identifier, WebURLRequest request, WebURLResponse redirectResponse, IWebDataSource dataSource)
+        public IWebURLRequest willSendRequest(WebView WebView, uint identifier, IWebURLRequest request, WebURLResponse redirectResponse, IWebDataSource dataSource)
         {
             throw new NotImplementedException();
         }
 
         #endregion
-
 
     }
 }

@@ -44,6 +44,7 @@ namespace WebKitBrowserTest
         private StatusStrip statusStrip;
         private ToolStripLabel statusLabel;
         private ToolStripLabel iconLabel;
+        private ToolStripProgressBar progressBar;
         private ToolStripContainer container;
         
         public WebBrowserTabPage() : this(new WebKitBrowser(), true)
@@ -74,8 +75,13 @@ namespace WebKitBrowserTest
             iconLabel.Text = "No Icon";
             iconLabel.Visible = true;
 
+            progressBar = new ToolStripProgressBar();
+            progressBar.Name = "progressBar";
+            progressBar.Visible = true;
+
             statusStrip.Items.Add(statusLabel);
             statusStrip.Items.Add(iconLabel);
+            statusStrip.Items.Add(progressBar);
 
             container.BottomToolStripPanel.Controls.Add(statusStrip);
 
@@ -100,6 +106,9 @@ namespace WebKitBrowserTest
             browser.Navigating += (s, e) => statusLabel.Text = "Loading...";
             browser.Navigated += (s, e) => { statusLabel.Text = "Downloading..."; };
             browser.DocumentCompleted += (s, e) => { statusLabel.Text = "Done"; };
+            browser.ProgressStarted += (s, e) => { progressBar.Visible = true; };
+            browser.ProgressChanged += (s, e) => { progressBar.Value = e.ProgressPercentage; };
+            browser.ProgressFinished += (s, e) => { progressBar.Visible = false; };
             if (goHome)
                 browser.Navigate("http://www.google.com");
 
