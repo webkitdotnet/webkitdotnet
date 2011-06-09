@@ -128,6 +128,16 @@ namespace WebKit
         #region Public properties
 
         /// <summary>
+        /// The HTTP Basic Authentication UserName
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// The HTTP Basic Authentication Password
+        /// </summary>
+        public string Password { private get; set; }
+
+        /// <summary>
         /// The current print page settings.
         /// </summary>
         public PageSettings PageSettings { get; set; }
@@ -878,6 +888,11 @@ namespace WebKit
                 WebMutableURLRequest request = new WebMutableURLRequestClass();
                 request.initWithURL(url, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
                 request.setHTTPMethod("GET");
+
+                //use basic authentication if username and password are supplied.
+                if (!string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(Password))
+                    request.setValue("Basic " + Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(
+                        string.Format("{0}:{1}", UserName, Password))), "Authorization");
 
                 webView.mainFrame().loadRequest((WebURLRequest)request);
 

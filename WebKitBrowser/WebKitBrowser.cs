@@ -200,6 +200,25 @@ namespace WebKit
         #region Public properties
 
         /// <summary>
+        /// The HTTP Basic Authentication UserName
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string UserName
+        {
+            get { return core.UserName; }
+            set { core.UserName = value; }
+        }
+
+        /// <summary>
+        /// The HTTP Basic Authentication Password
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string Password
+        {
+            set { core.Password = value; }
+        }
+
+        /// <summary>
         /// The current print page settings.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
