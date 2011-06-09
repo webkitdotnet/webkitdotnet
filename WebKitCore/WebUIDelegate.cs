@@ -94,12 +94,12 @@ namespace WebKit
             return owner.IsWebBrowserContextMenuEnabled ? defaultItemsHMenu : 0;
         }
 
-        public WebView createModalDialog(WebView sender, IWebURLRequest request)
+        public WebView createModalDialog(WebView sender, WebURLRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public WebView createWebViewWithRequest(WebView sender, IWebURLRequest request)
+        public WebView createWebViewWithRequest(WebView sender, WebURLRequest request)
         {
             // this should be caught in the WebPolicyDelegate, but isn't in the Cairo build
             if (owner.AllowNewWindows)
@@ -365,6 +365,5 @@ namespace WebKit
         }
 
         #endregion
-
     }
 }

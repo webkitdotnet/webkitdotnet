@@ -50,8 +50,14 @@ class TypeNormalizer
             Console.WriteLine("No file specified");
             return 1;
         }
+        
         string file = File.ReadAllText(args[0]);
-        file = file.Replace("valuetype WebKit.Interop._RemotableHandle&", "int32");
+        
+        file = file
+            .Replace("valuetype WebKit.Interop._RemotableHandle&", "int32")
+            .Replace("[in] class WebKit.Interop.IWebURLRequest", "[in] class WebKit.Interop.WebURLRequest")
+            .Replace("instance class WebKit.Interop.IWebURLRequest", "instance class WebKit.Interop.WebURLRequest");
+
         File.WriteAllText(args[0], file);
         return 0;
     }
