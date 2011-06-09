@@ -36,10 +36,13 @@ namespace WebKitBrowserTest
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            List<string> largs = new List<string>(args);
+            if (largs.Contains("/IgnoreSSL"))
+                Environment.SetEnvironmentVariable("WEBKIT_IGNORE_SSL_ERRORS", "1");
             Application.Run(new MainForm());
         }
     }

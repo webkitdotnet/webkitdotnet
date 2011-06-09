@@ -101,6 +101,12 @@
     <Compile Include="NavigationBar.Designer.cs">
       <DependentUpon>NavigationBar.cs</DependentUpon>
     </Compile>
+    <Compile Include="PasswordDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PasswordDialog.designer.cs">
+      <DependentUpon>PasswordDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DownloadForm.resx">
@@ -114,6 +120,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="NavigationBar.resx">
       <DependentUpon>NavigationBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PasswordDialog.resx">
+      <DependentUpon>PasswordDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -170,6 +179,16 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebKitBrowser\WebKitBrowser.csproj">
+      <Project>{44AFE214-12C7-4280-898D-A7C4AABF1533}</Project>
+      <Name>WebKitBrowser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebKitCore\WebKitCore.csproj">
+      <Project>{D1C8CE15-4279-45DA-989A-54561E0FD842}</Project>
+      <Name>WebKitCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -332,5 +332,15 @@ function testtest(dog) {
             public double i { get; set; }
             public bool b { get; set; }
         }
+
+        private void setPasswordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PasswordDialog passDG = new PasswordDialog();
+            if (passDG.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                currentPage.browser.Password = passDG.Password;
+                currentPage.browser.UserName = passDG.Username;
+            }
+        }
     }
 }
