@@ -37,9 +37,13 @@ namespace WebKit
         public bool AllowDownloads;
         public bool AllowNewWindows;
         public bool AllowNavigation;
+        private WebKitBrowserCore wbc;
+        public bool pwdEnabled;
 
         // so that we can load and display the first page
         public bool AllowInitialNavigation;
+
+        
 
         public WebPolicyDelegate(bool AllowNavigation, bool AllowDownloads, bool AllowNewWindows)
         {
@@ -47,6 +51,11 @@ namespace WebKit
             this.AllowNavigation = AllowNavigation;
             this.AllowNewWindows = AllowNewWindows;
             AllowInitialNavigation = true;
+        }
+
+        public WebPolicyDelegate(bool AllowNavigation, bool AllowDownloads, bool AllowNewWindows, WebKitBrowserCore b) : this(AllowNavigation, AllowDownloads, AllowNewWindows)
+        {
+            wbc = b;
         }
 
         #region IWebPolicyDelegate Members
@@ -68,10 +77,22 @@ namespace WebKit
             }
         }
 
+
         public void decidePolicyForNavigationAction(WebView WebView, CFDictionaryPropertyBag actionInformation, IWebURLRequest request, webFrame frame, IWebPolicyDecisionListener listener)
         {
             if (AllowNavigation || AllowInitialNavigation)
+            {
+                //use basic authentication if username and password are supplied.
+                if (pwdEnabled && string.IsNullOrEmpty(request.valueForHTTPHeaderField("Authorization")) && wbc!=null)
+                {
+                    
+                    wbc.Navigate(request.url());
+                    listener.ignore();
+                    return;
+                }
+
                 listener.use();
+            }
             else
                 listener.ignore();
         }

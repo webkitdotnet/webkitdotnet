@@ -47,6 +47,7 @@ namespace WebKit
         private WebDownloadDelegate downloadDelegate;
         private WebPolicyDelegate policyDelegate;
         private WebUIDelegate uiDelegate;
+        private WebResourceLoadDelegate resourceLoadDelegate;
 
         #region WebKitBrowser events
 
@@ -127,10 +128,28 @@ namespace WebKit
 
         #region Public properties
 
+        private string userName;
+        private string password;
+        private bool pdPasswordEnabled;
+
         /// <summary>
         /// The HTTP Basic Authentication UserName
         /// </summary>
-        public string UserName { get; set; }
+        public string UserName
+        {
+            get
+            {
+                return userName;
+            }
+            set
+            {
+                if (policyDelegate == null)
+                    pdPasswordEnabled = true;
+                else
+                    this.policyDelegate.pwdEnabled = (!string.IsNullOrEmpty(value));
+                userName = value;
+            }
+        }
 
         /// <summary>
         /// The HTTP Basic Authentication Password
@@ -599,11 +618,14 @@ namespace WebKit
             downloadDelegate = new WebDownloadDelegate();
             Marshal.AddRef(Marshal.GetIUnknownForObject(downloadDelegate));
 
-            policyDelegate = new WebPolicyDelegate(AllowNavigation, AllowDownloads, AllowNewWindows);
+            policyDelegate = new WebPolicyDelegate(AllowNavigation, AllowDownloads, AllowNewWindows, this) { pwdEnabled = pdPasswordEnabled };
             Marshal.AddRef(Marshal.GetIUnknownForObject(policyDelegate));
 
             uiDelegate = new WebUIDelegate(this);
             Marshal.AddRef(Marshal.GetIUnknownForObject(uiDelegate));
+
+            resourceLoadDelegate = new WebResourceLoadDelegate();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(resourceLoadDelegate));
 
             webNotificationCenter = new WebNotificationCenter();
             Marshal.AddRef(Marshal.GetIUnknownForObject(webNotificationCenter)); // TODO: find out if this is really needed
@@ -616,6 +638,7 @@ namespace WebKit
             webView.setFrameLoadDelegate(frameLoadDelegate);
             webView.setDownloadDelegate(downloadDelegate);
             webView.setUIDelegate(uiDelegate);
+            webView.setResourceLoadDelegate(resourceLoadDelegate);
 
             webView.setHostWindow(this.host.Handle.ToInt32());
 
@@ -893,6 +916,9 @@ namespace WebKit
                 if (!string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(Password))
                     request.setValue("Basic " + Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(
                         string.Format("{0}:{1}", UserName, Password))), "Authorization");
+
+                
+                
 
                 webView.mainFrame().loadRequest((WebURLRequest)request);
 

@@ -29,13 +29,7 @@ using WebKit;
 
 namespace WebKitBrowserTest
 {
-    public class TestScriptObject
-    {
-        public void f()
-        {
-            MessageBox.Show("Hey!");
-        }
-    }
+   
 
     public partial class WebBrowserTabPage : TabPage
     {
@@ -129,6 +123,14 @@ namespace WebKitBrowserTest
         {
             browser.Stop();
             statusLabel.Text = "Stopped";
+        }
+    }
+
+    public class TestScriptObject
+    {
+        public void f()
+        {
+            MessageBox.Show("Hey!");
         }
     }
 }
