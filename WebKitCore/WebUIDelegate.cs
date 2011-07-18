@@ -37,6 +37,7 @@ using WebKit.Interop;
 namespace WebKit
 {
     internal delegate void CreateWebViewWithRequestEvent(IWebURLRequest request, out WebView webView);
+    internal delegate string FTPDirectoryTemplatePath(WebView WebView);
     internal delegate void RunJavaScriptAlertPanelWithMessageEvent(WebView sender, string message);
     internal delegate int RunJavaScriptConfirmPanelWithMessageEvent(WebView sender, string message);
     internal delegate string RunJavaScriptTextInputPanelWithPromptEvent(WebView sender, string message, string defaultText);
@@ -44,6 +45,7 @@ namespace WebKit
     internal class WebUIDelegate : IWebUIDelegate
     {
         public event CreateWebViewWithRequestEvent CreateWebViewWithRequest;
+        public event FTPDirectoryTemplatePath FTPDirectoryTemplatePath;
         public event RunJavaScriptAlertPanelWithMessageEvent RunJavaScriptAlertPanelWithMessage;
         public event RunJavaScriptConfirmPanelWithMessageEvent RunJavaScriptConfirmPanelWithMessage;
         public event RunJavaScriptTextInputPanelWithPromptEvent RunJavaScriptTextInputPanelWithPrompt;
@@ -136,9 +138,15 @@ namespace WebKit
         {
         }
 
+        // TODO: Um, what does this do? I can't figure it out from the source code and can't find it
+        // in the docs.
+        // From: https://trac.webkit.org/timeline?from=2007-07-15&daysback=4
+        // --> Set the path to the FTP listing document template
         public string ftpDirectoryTemplatePath(WebView WebView)
         {
-            throw new NotImplementedException();
+            //return FTPDirectoryTemplatePath(WebView);
+            // You'd think the above would work but it's returning NullReferenceException
+            return "";
         }
 
         public int hasCustomMenuImplementation()

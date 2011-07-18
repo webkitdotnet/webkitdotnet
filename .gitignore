@@ -5,3 +5,7 @@ StyleCop.Cache
 *.suo
 bin/
 obj/
+JSCore/Debug
+TypeNormalizer.exe
+WebKit.Interop.dll
+
