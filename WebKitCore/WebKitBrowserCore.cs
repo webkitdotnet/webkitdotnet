@@ -684,7 +684,8 @@ namespace WebKit
                 DocumentText = initialText;
                 policyDelegate.AllowInitialNavigation = false;
             }
-
+            if (_scriptObject !=null)
+                CreateWindowScriptObject((JSContext)GetGlobalScriptContext()); 
             IsScriptingEnabled = initialJavaScriptEnabled;
         }
 
