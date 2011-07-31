@@ -216,6 +216,11 @@ JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObj
     }
 
     Object ^ ret = method->Invoke(obj, args);
+	if (!ret)
+	{
+		return NULL;
+	}
+
     JSValueRef jsVal = getJSValueRefFromObject(ctx, ret, exception);
     return jsVal;
 }
