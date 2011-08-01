@@ -5,3 +5,8 @@ StyleCop.Cache
 *.suo
 bin/
 obj/
+Release/
+Debug/
+*.ncb
+TypeNormalizer.exe
+WebKit.interop.dll
