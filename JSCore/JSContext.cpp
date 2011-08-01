@@ -6,6 +6,12 @@
 #include "JSContext.h"
 
 
+JSContext::JSContext()
+{
+    _context = JSGlobalContextCreate(NULL);
+    _contextCreated = true;
+}
+
 JSContext::JSContext(JSContextRef context)
 : _context(context)
 {
@@ -26,6 +32,10 @@ JSContext::JSContext(WebKit::Interop::IWebFrame ^ webFrame)
 
 JSContext::~JSContext()
 {
+    if(_contextCreated)
+    {
+        JSGlobalContextRelease((JSGlobalContextRef)_context);
+    }
     // TODO: clean up
 }
 
@@ -41,14 +51,14 @@ JSValue ^ JSContext::EvaluateScript(String ^ script, Object ^ thisObject)
 
 JSValue ^ JSContext::EvaluateScript(String ^ script, Object ^ thisObject,
     String ^ sourceUrl, int startingLineNumber)
-{    
+{
     // TODO: lets not worry about exceptions just yet...
-    
+
     JSStringRef jsScript = JSCoreMarshal::StringToJSString(script);
 
     // TODO: marshal thisObject to JSObject
     JSObjectRef jsObj = NULL;
-    
+
     // TODO: handle nulls and stuff
     JSStringRef jsSrc = JSCoreMarshal::StringToJSString(sourceUrl);
 
