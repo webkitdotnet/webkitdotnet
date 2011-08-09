@@ -119,7 +119,7 @@ namespace WebKit
 
         public WebDragDestinationAction dragDestinationActionMaskForDraggingInfo(WebView WebView, IDataObject draggingInfo)
         {
-            throw new NotImplementedException();
+            return WebDragDestinationAction.WebDragDestinationActionNone;
         }
 
         public WebDragSourceAction dragSourceActionMaskForPoint(WebView WebView, ref tagPOINT point)
