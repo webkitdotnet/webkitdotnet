@@ -173,16 +173,6 @@
 			MinFrameworkVersion="131072"
 		/>
 		<AssemblyReference
-			RelativePath="System.Data.dll"
-			AssemblyName="System.Data, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86"
-			MinFrameworkVersion="131072"
-		/>
-		<AssemblyReference
-			RelativePath="System.XML.dll"
-			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-			MinFrameworkVersion="131072"
-		/>
-		<AssemblyReference
 			RelativePath="..\webkit\WebKit.Interop.dll"
 			AssemblyName="WebKit.Interop, Version=533.0.0.0, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL"
 			MinFrameworkVersion="0"
