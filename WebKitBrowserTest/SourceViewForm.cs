@@ -24,17 +24,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using WebKit;
-
 namespace WebKitBrowserTest
 {
+    using System;
+    using System.Windows.Forms;
+
+    using WebKit;
+
     public partial class SourceViewForm : Form
     {
         WebKitBrowser current;

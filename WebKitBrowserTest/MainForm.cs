@@ -24,22 +24,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using System.Collections;
-using System.Threading;
-
-using WebKit;
-using WebKit.DOM;
-using WebKit.JSCore;
-
 namespace WebKitBrowserTest
 {
+    using System;
+    using System.Threading;
+    using System.Windows.Forms;
+
+    using WebKit;
+    using WebKit.JSCore;
+
     public partial class MainForm : Form
     {
         WebBrowserTabPage currentPage;

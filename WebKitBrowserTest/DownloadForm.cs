@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using WebKit;
-
-namespace WebKitBrowserTest
+﻿namespace WebKitBrowserTest
 {
+    using System;
+    using System.Windows.Forms;
+
+    using WebKit;
+
     public partial class DownloadForm : Form
     {
         private WebKitDownload Download;
