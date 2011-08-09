@@ -5,6 +5,7 @@ using namespace System::Runtime::InteropServices;
 using namespace System::Reflection;
 
 extern JSClassDefinition wrapperClass;
+delegate void callbackFunction(Object^ object);
 
 void wrapper_Finalize(JSObjectRef object);
 bool wrapper_HasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
