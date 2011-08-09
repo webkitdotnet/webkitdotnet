@@ -5,6 +5,7 @@ using namespace System::Runtime::InteropServices;
 using namespace System::Reflection;
 
 extern JSClassDefinition wrapperClass;
+delegate void callbackFunction(Object^ object);
 
 JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef * exception);
 

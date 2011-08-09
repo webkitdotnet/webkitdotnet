@@ -268,34 +268,15 @@ var myDog;
 window.onload = function() {
   
 }
-function dog(age, breed) {
-  this.age = age;
-  this.breed = breed;
-}
-dog.prototype.woof = function(wat) {
-  document.getElementById(""dog"").innerHTML = ""woof! "" + wat;
-}
-function someDog(age, breed) {
-  myDog = new dog(age, breed);
-  return myDog;
-}
-function printDog(dog) {
-  var txt = """";
-  for (var p in dog)
-    txt += p + "": "" + dog[p] + ""<br />"";
-  alert(txt);
-  document.getElementById(""dog"").innerHTML = txt;
-}
-function testtest(dog) {
-  alert(dog.test.x);
-  dog.test.y = ""TESTSTRING"";
-  dog.test.i = 42.55;
-  dog.test.b = true;
+function test() {
+    window.external.callback(function(x) { 
+        alert('hello ' + x); 
+    });
 }
 </script>
 </head>
 <body>
-<p id=""dog"">Hi!</p>
+<p id=""dog"">Testing callbacks...</p>
 </body>
 </html>
 ";
@@ -304,29 +285,21 @@ function testtest(dog) {
         private void test3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
-            JSObject dog = ctx.EvaluateScript("someDog(12, \"Golden Retriever\");").ToObject();
-            if (dog != null)
-            {
-                if (dog.HasProperty("breed"))
-                {
-                    /*MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
-                    dog.SetProperty("breed", "Border Collie");
-                    MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
-                    dog.SetProperty("name", "Holly");
-                    MessageBox.Show("name = " + dog.GetProperty("name").ToString());*/
-                    ctx.EvaluateScript("printDog(myDog)");
-                    TestClass myTest = new TestClass() { x = "testing" };
-                    dog.SetProperty("test", myTest);
-                    ctx.EvaluateScript("testtest(myDog)");
-                    //ctx.GarbageCollect();
-
-                    MessageBox.Show(String.Format("y = {0}, i = {1}, b = {2}", myTest.y, myTest.i, myTest.b));
-                }
-            }
+            
+            TestClass myTest = new TestClass();
+            currentPage.browser.ObjectForScripting = myTest;
+            
+            ctx.EvaluateScript("test()");
+   
+            //ctx.GarbageCollect();
         }
 
         private class TestClass
         {
+            public void callback(Delegate callback)
+            {                
+                callback.DynamicInvoke("world");                
+            }
             public string x { get; set; }
             public string y { get; set; }
             public double i { get; set; }

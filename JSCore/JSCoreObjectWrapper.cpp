@@ -3,7 +3,6 @@
 #include "JSCoreObjectWrapper.h"
 #include "JSCoreMarshal.h"
 
-
 JSClassDefinition wrapperClass = 
 {
     0,                       /* int version; */
@@ -28,11 +27,35 @@ JSClassDefinition wrapperClass =
                              /* JSObjectConvertToTypeCallback convertToType; */
 };
 
+ref class CallbackClass
+{
+public:
+	CallbackClass(JSContextRef ctx, JSObjectRef jsFunction) : ctx_(ctx), jsFunction_(jsFunction)
+	{
+	}   
+	
+	void callbackFunction(Object^ object)
+	{
+		if (object == NULL) {
+			JSObjectCallAsFunction(ctx_, jsFunction_, NULL, 0, NULL, NULL);	   
+		} else {
+			JSValueRef arg = getJSValueRefFromObject(ctx_, object, NULL);
+			JSValueRef arguments[] = {arg};
+			JSObjectCallAsFunction(ctx_, jsFunction_, NULL, 1, arguments, NULL);	   
+		}
+   }
+
+private:
+	JSObjectRef jsFunction_;
+	JSContextRef ctx_;
+};
+
 GCHandle getHandleFromJSObjectRef(JSObjectRef object)
 {
 	void * ptr = JSObjectGetPrivate(object);
 	return GCHandle::FromIntPtr(IntPtr(ptr));
 }
+
 
 Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception)
 {
@@ -55,6 +78,12 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
             JSStringRelease(temp);
         }
     }
+	else if (JSObjectIsFunction(ctx, (JSObjectRef) value)) {	
+		// FIXME: Only supports one argument, void functions
+		CallbackClass^ cls = gcnew CallbackClass(ctx, JSValueToObject(ctx, value, NULL));
+		callbackFunction^ myCallback = gcnew callbackFunction(cls, &CallbackClass::callbackFunction);
+		val = myCallback;		
+	}
 	return val;
 }
 
