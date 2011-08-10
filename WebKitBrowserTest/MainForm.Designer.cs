@@ -82,6 +82,7 @@ namespace WebKitBrowserTest
             this.test3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.navigationBar = new WebKitBrowserTest.NavigationBar();
+            this.objectForScriptingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             //
@@ -187,14 +188,14 @@ namespace WebKitBrowserTest
             // copyToolStripMenuItem
             //
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.copyToolStripMenuItem.Text = "&Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             //
             // setPasswordToolStripMenuItem
             //
             this.setPasswordToolStripMenuItem.Name = "setPasswordToolStripMenuItem";
-            this.setPasswordToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setPasswordToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.setPasswordToolStripMenuItem.Text = "&Set Password";
             this.setPasswordToolStripMenuItem.Click += new System.EventHandler(this.setPasswordToolStripMenuItem_Click);
             //
@@ -237,7 +238,8 @@ namespace WebKitBrowserTest
             this.newWindowToolStripMenuItem,
             this.test2ToolStripMenuItem,
             this.jSTestPageToolStripMenuItem,
-            this.test3ToolStripMenuItem});
+            this.test3ToolStripMenuItem,
+            this.objectForScriptingToolStripMenuItem});
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
             this.testToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.testToolStripMenuItem.Text = "Test";
@@ -245,47 +247,47 @@ namespace WebKitBrowserTest
             // testPageToolStripMenuItem
             //
             this.testPageToolStripMenuItem.Name = "testPageToolStripMenuItem";
-            this.testPageToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.testPageToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.testPageToolStripMenuItem.Text = "Test Page";
             this.testPageToolStripMenuItem.Click += new System.EventHandler(this.testPageToolStripMenuItem_Click);
             //
             // toolStripMenuItem1
             //
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(142, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(170, 6);
             //
             // tToolStripMenuItem
             //
             this.tToolStripMenuItem.Name = "tToolStripMenuItem";
-            this.tToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.tToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.tToolStripMenuItem.Text = "Test 1";
             this.tToolStripMenuItem.Click += new System.EventHandler(this.tToolStripMenuItem_Click);
             //
             // newWindowToolStripMenuItem
             //
             this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
-            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.newWindowToolStripMenuItem.Text = "New &Window";
             this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
             //
             // test2ToolStripMenuItem
             //
             this.test2ToolStripMenuItem.Name = "test2ToolStripMenuItem";
-            this.test2ToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.test2ToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.test2ToolStripMenuItem.Text = "Test 2";
             this.test2ToolStripMenuItem.Click += new System.EventHandler(this.test2ToolStripMenuItem_Click);
             //
             // jSTestPageToolStripMenuItem
             //
             this.jSTestPageToolStripMenuItem.Name = "jSTestPageToolStripMenuItem";
-            this.jSTestPageToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.jSTestPageToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.jSTestPageToolStripMenuItem.Text = "JS Test Page";
             this.jSTestPageToolStripMenuItem.Click += new System.EventHandler(this.jSTestPageToolStripMenuItem_Click);
             //
             // test3ToolStripMenuItem
             //
             this.test3ToolStripMenuItem.Name = "test3ToolStripMenuItem";
-            this.test3ToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.test3ToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.test3ToolStripMenuItem.Text = "Test 3";
             this.test3ToolStripMenuItem.Click += new System.EventHandler(this.test3ToolStripMenuItem_Click);
             //
@@ -309,6 +311,13 @@ namespace WebKitBrowserTest
             this.navigationBar.TabIndex = 1;
             this.navigationBar.UrlText = "";
             //
+            // objectForScriptingToolStripMenuItem
+            // 
+            this.objectForScriptingToolStripMenuItem.Name = "objectForScriptingToolStripMenuItem";
+            this.objectForScriptingToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.objectForScriptingToolStripMenuItem.Text = "ObjectForScripting";
+            this.objectForScriptingToolStripMenuItem.Click += new System.EventHandler(this.objectForScriptingToolStripMenuItem_Click);
+            // 
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -358,6 +367,7 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem jSTestPageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem test3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setPasswordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem objectForScriptingToolStripMenuItem;
     }
 }
 

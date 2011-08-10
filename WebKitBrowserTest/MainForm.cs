@@ -335,5 +335,27 @@ function testtest(dog) {
                 currentPage.browser.UserName = passDG.Username;
             }
         }
+
+        private void objectForScriptingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.DocumentText = @"<!DOCTYPE html>
+<html>
+<head>
+<script>
+alert('typeof external.propName='  + typeof external.propName);
+alert('result of getting external.propName='  + external.propName);
+alert('typeof external.foo='  + typeof external.foo);
+try {
+    alert('result from calling external.foo(\'bar\'):' + external.foo('bar'));
+}catch(e){
+alert('exception when calling external.foo(\'bar\'):' + e.message);
+}
+</script>
+</head>
+<body>
+</body>
+</html>
+";
+        }
     }
 }
