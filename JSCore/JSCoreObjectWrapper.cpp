@@ -27,28 +27,7 @@ JSClassDefinition wrapperClass =
                              /* JSObjectConvertToTypeCallback convertToType; */
 };
 
-ref class CallbackClass
-{
-public:
-	CallbackClass(JSContextRef ctx, JSObjectRef jsFunction) : ctx_(ctx), jsFunction_(jsFunction)
-	{
-	}   
-	
-	void callbackFunction(Object^ object)
-	{
-		if (object == NULL) {
-			JSObjectCallAsFunction(ctx_, jsFunction_, NULL, 0, NULL, NULL);	   
-		} else {
-			JSValueRef arg = getJSValueRefFromObject(ctx_, object, NULL);
-			JSValueRef arguments[] = {arg};
-			JSObjectCallAsFunction(ctx_, jsFunction_, NULL, 1, arguments, NULL);	   
-		}
-   }
-
-private:
-	JSObjectRef jsFunction_;
-	JSContextRef ctx_;
-};
+Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception);
 
 GCHandle getHandleFromJSObjectRef(JSObjectRef object)
 {
@@ -56,10 +35,64 @@ GCHandle getHandleFromJSObjectRef(JSObjectRef object)
 	return GCHandle::FromIntPtr(IntPtr(ptr));
 }
 
+public delegate Object^ EventDelegate(array<Object^>^ args);
+
+ref class DelegateFunctionWrapper
+{
+public:
+	DelegateFunctionWrapper(JSObjectRef _func) : func(_func)
+    {       
+        nativeCallback_ = gcnew EventDelegate(this, &DelegateFunctionWrapper::Callback);
+        delegateHandle_ = GCHandle::Alloc(nativeCallback_);
+    }
+
+    ~DelegateFunctionWrapper()
+    {
+        if (delegateHandle_.IsAllocated)
+			delegateHandle_.Free();
+    }
+
+	EventDelegate^ CallbackFunction() {
+		return nativeCallback_;
+	}
+
+
+private:
+	GCHandle delegateHandle_;
+    EventDelegate^ nativeCallback_;
+	JSObjectRef func;
+	
+    Object^ Callback(array<Object^>^ args)
+    {							
+		JSContextRef context = JSGlobalContextCreate(NULL);
+
+		JSValueRef *arguments = new JSValueRef[args->Length];
+		for(int i = 0; i < args->Length; i++)
+		{
+			arguments[i] = getJSValueRefFromObject(context, args[i], NULL);
+		}
+
+		JSValueRef ret = JSObjectCallAsFunction(context, func, NULL, args->Length, arguments, NULL);	   
+		Object^ retObj = nullptr;
+		if (ret) {
+			Type^ t = nullptr;
+			retObj = getObjectFromJSValueRef(context, t, ret, NULL);			
+		}
+
+		JSGlobalContextRelease((JSGlobalContextRef) context);		
+
+		return retObj;
+    }
+};
 
 Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception)
 {
 	Object ^ val;
+	if (type == nullptr) {
+		type = JSValueIsString(ctx, value) ? String::typeid :
+			JSValueIsBoolean(ctx, value) ? bool::typeid :
+			JSValueIsNumber(ctx, value) ? double::typeid : nullptr;
+	}
 
     if (type == double::typeid)
     {
@@ -72,17 +105,14 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
     else if (type == String::typeid)
     {
         JSStringRef temp = JSValueToStringCopy(ctx, value, exception);
-        if (!*exception)
-        {
-            val = JSCoreMarshal::JSStringToString(temp);
-            JSStringRelease(temp);
-        }
+        val = JSCoreMarshal::JSStringToString(temp);
+        JSStringRelease(temp);
     }
 	else if (JSObjectIsFunction(ctx, (JSObjectRef) value)) {	
-		// FIXME: Only supports one argument, void functions
-		CallbackClass^ cls = gcnew CallbackClass(ctx, JSValueToObject(ctx, value, NULL));
-		callbackFunction^ myCallback = gcnew callbackFunction(cls, &CallbackClass::callbackFunction);
-		val = myCallback;		
+		// Create a delegate wrapper around function
+		JSObjectRef functionObj = JSValueToObject(ctx, value, exception);
+		DelegateFunctionWrapper^ ni = gcnew DelegateFunctionWrapper(functionObj);				
+		val = ni->CallbackFunction();
 	}
 	return val;
 }
@@ -105,8 +135,8 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
         return JSValueMakeBoolean(ctx, (bool)object);
     }
     if(type == String::typeid)
-    {
-        JSStringRef temp = JSCoreMarshal::StringToJSString((String ^)object);
+    {		
+        JSStringRef temp = JSCoreMarshal::StringToJSString((String ^)object);		
         val = JSValueMakeString(ctx, temp);
         JSStringRelease(temp);
         return val;

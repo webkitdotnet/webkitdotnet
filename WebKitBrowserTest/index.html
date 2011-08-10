@@ -1,0 +1,23 @@
+﻿<html>
+<head>
+</head>
+<body>
+Test JS Function callback
+<div id="time"></div>
+<div id="log"></div>
+<script>
+setInterval(function() {
+document.getElementById("time").innerHTML = new Date().toString();
+}, 250);
+
+setTimeout(function() {
+var start = new Date().getTime();
+document.getElementById("log").innerHTML = "Calling function...";
+var f = window.external.callback(function(x) { alert('hello ' + x); return ('' + new Date()); });
+document.getElementById("log").innerHTML = "Done. elapsed: " + (new Date().getTime() - start);
+}, 1000);
+
+</script>
+
+</body>
+</html>

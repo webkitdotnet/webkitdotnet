@@ -26,6 +26,12 @@
 
 using System.Windows.Forms;
 using WebKit;
+using WebKit.JSCore;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using System.IO;
+using System.Reflection;
 
 namespace WebKitBrowserTest
 {
@@ -34,8 +40,36 @@ namespace WebKitBrowserTest
         public void f()
         {
             MessageBox.Show("Hey!");
-        }
+        }    
     }
+
+    public class TestClass
+    {
+        public JSContext ctx { get; set; }
+
+        public void callback(Delegate callback)
+        {            
+            object[] x = { "first" };
+            
+            string result = (string) callback.DynamicInvoke(new object[] {x});
+            MessageBox.Show(result);
+            var worker = new BackgroundWorker();
+            worker.DoWork += delegate
+            {
+                Thread.Sleep(1000);
+            };
+            worker.RunWorkerCompleted += delegate
+            {
+                callback.DynamicInvoke(new object[] {x});
+            };
+            worker.RunWorkerAsync();
+        }
+        public string x { get; set; }
+        public string y { get; set; }
+        public double i { get; set; }
+        public bool b { get; set; }
+    }
+
 
     public partial class WebBrowserTabPage : TabPage
     {
@@ -88,7 +122,7 @@ namespace WebKitBrowserTest
             //browser.IsScriptingEnabled = false;
             container.ContentPanel.Controls.Add(browser);
 
-            browser.ObjectForScripting = new TestScriptObject();
+            browser.ObjectForScripting = new TestClass();
 
             // context menu
 
@@ -101,8 +135,11 @@ namespace WebKitBrowserTest
             browser.Navigated += (s, e) => { statusLabel.Text = "Downloading..."; };
             browser.DocumentCompleted += (s, e) => { statusLabel.Text = "Done"; };
             if (goHome)
-                browser.Navigate("http://www.google.com");
-
+            {
+                string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+                string htmlPath = Path.Combine(appPath, "index.html");
+                browser.Navigate(Uri.EscapeUriString(new Uri(htmlPath).ToString()));
+            }
             browser.ShowJavaScriptAlertPanel += (s, e) => MessageBox.Show(e.Message, "[JavaScript Alert]");
             browser.ShowJavaScriptConfirmPanel += (s, e) =>
             {
