@@ -713,6 +713,10 @@ namespace WebKit
             if (frame == webView.mainFrame())
             {
                 string url = frame.provisionalDataSource().request().url();
+                if (url == "")
+                {
+                    url = "about:blank";
+                }
                 Navigating(this, new WebBrowserNavigatingEventArgs(new Uri(url), frame.name()));
             }
         }
