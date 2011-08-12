@@ -121,7 +121,7 @@ namespace WebKit
 
         public WebDragSourceAction dragSourceActionMaskForPoint(WebView WebView, ref tagPOINT point)
         {
-            throw new NotImplementedException();
+            return WebDragSourceAction.WebDragSourceActionNone;
         }
 
         public void drawCustomMenuItem(WebView sender, IntPtr drawItem)
@@ -143,7 +143,7 @@ namespace WebKit
 
         public int hasCustomMenuImplementation()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public int isMenuBarVisible(WebView WebView)

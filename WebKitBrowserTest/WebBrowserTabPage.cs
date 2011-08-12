@@ -47,6 +47,21 @@ namespace WebKitBrowserTest
     {
         public JSContext ctx { get; set; }
 
+        public class InnerClass
+        {
+            public string Testing { get; set; }
+        }
+
+        public InnerClass getInner()
+        {
+            return new InnerClass() { Testing = "testing" };              
+        }
+
+        public float[] getArray()
+        {
+            return new float[] { 1, 2, 5 };
+        }
+
         public void callback(Delegate callback)
         {            
             object[] x = { "first" };

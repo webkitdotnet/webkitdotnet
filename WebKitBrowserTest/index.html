@@ -13,7 +13,9 @@ document.getElementById("time").innerHTML = new Date().toString();
 setTimeout(function() {
 var start = new Date().getTime();
 document.getElementById("log").innerHTML = "Calling function...";
-var f = window.external.callback(function(x) { alert('hello ' + x); return ('' + new Date()); });
+//var f = window.external.callback(function(x) { alert('hello ' + x); return ('' + new Date()); });
+//alert(window.external.getInner().Testing);
+alert(window.external.getArray()[1]);
 document.getElementById("log").innerHTML = "Done. elapsed: " + (new Date().getTime() - start);
 }, 1000);
 

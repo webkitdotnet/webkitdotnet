@@ -122,14 +122,20 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
 {
     Type ^ type = object->GetType();
     JSValueRef val;
+
     if(object == nullptr)
     {
         return JSValueMakeUndefined(ctx);
     }
+	if (type == float::typeid)
+	{
+		float floatVal = (float)object;
+		return JSValueMakeNumber(ctx, (double)floatVal);
+	}
     if(type == double::typeid)
-    {
+    {				
         return JSValueMakeNumber(ctx, (double)object);
-    }
+    }	
     if(type == bool::typeid)
     {
         return JSValueMakeBoolean(ctx, (bool)object);
@@ -141,6 +147,16 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
         JSStringRelease(temp);
         return val;
     }
+	if (type->IsArray) {
+		Array ^arr = (Array^)object;
+		JSValueRef *arguments = new JSValueRef[arr->Length];
+		for(int i = 0; i < arr->Length; i++)
+		{
+			arguments[i] = getJSValueRefFromObject(ctx, arr->GetValue(i), NULL);
+		}
+		val = JSObjectMakeArray(ctx, arr->Length, arguments, NULL);
+		return val;
+	}
     else
     {
         JSClassRef wrap = JSClassCreate(&wrapperClass);
@@ -267,11 +283,11 @@ JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObj
     }
 
     cli::array<Object ^, 1> ^ args = gcnew cli::array<Object ^, 1>(parameters->Length);
-    for(int i = 0; i < argumentCount; i++)
+    for(size_t i = 0; i < argumentCount; i++)
     {
-        ParameterInfo ^ parameter = (ParameterInfo ^)parameters->GetValue(i);
+        ParameterInfo ^ parameter = (ParameterInfo ^)parameters->GetValue((int)i);
         Object ^ val = getObjectFromJSValueRef(ctx, parameter->ParameterType, arguments[i], exception);
-        args->SetValue(val, i);
+        args->SetValue(val, (int)i);
     }
 
     Object ^ ret = method->Invoke(obj, args);
