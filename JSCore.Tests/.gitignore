@@ -1,7 +1,0 @@
-_ReSharper.*
-StyleCop.Cache
-*.cache
-*.user
-*.suo
-bin/
-obj/

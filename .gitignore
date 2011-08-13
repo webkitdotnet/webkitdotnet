@@ -10,3 +10,4 @@ Debug/
 *.ncb
 TypeNormalizer.exe
 WebKit.interop.dll
+TestResults

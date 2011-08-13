@@ -45,18 +45,35 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</EmbedManifest>
+    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
+if exist "$(SolutionDir)webkit\WebKit.Interop.dll" goto after_build_interop
+if not exist "$(SolutionDir)tools\TypeNormalizer.exe" csc /out:"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)tools\TypeNormalizer.cs"
+tlbimp "$(SolutionDir)webkit\webkit.tlb" /silent /keyfile:"$(SolutionDir)WebKit.NET.snk" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"
+ildasm "$(SolutionDir)webkit\WebKit.Interop.dll" /out="$(SolutionDir)webkit\temp_webkit_interop.il" /nobar
+"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)webkit\temp_webkit_interop.il"
+ilasm "$(SolutionDir)webkit\temp_webkit_interop.il" /dll /output="$(SolutionDir)webkit\WebKit.Interop.dll" /key="$(SolutionDir)WebKit.NET.snk"
+del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
+:after_build_interop</Command>
+    </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions);DOTNET4</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>JavaScriptCore.lib</AdditionalDependencies>
@@ -64,13 +81,23 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
       <TargetMachine>MachineX86</TargetMachine>
-      <KeyFile>"$(SolutionDir)WebKit.NET.snk"</KeyFile>
+      <KeyFile>$(SolutionDir)WebKit.NET.snk</KeyFile>
     </Link>
+    <PostBuildEvent>
+      <Command>sn.exe –R "$(TargetPath)" "$(SolutionDir)WebKit.NET.snk"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
+if exist "$(SolutionDir)webkit\WebKit.Interop.dll" goto after_build_interop
+if not exist "$(SolutionDir)tools\TypeNormalizer.exe" csc /out:"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)tools\TypeNormalizer.cs"
+tlbimp "$(SolutionDir)webkit\webkit.tlb" /silent /keyfile:"$(SolutionDir)WebKit.NET.snk" /namespace:WebKit.Interop /out:"$(SolutionDir)webkit\WebKit.Interop.dll"
+ildasm "$(SolutionDir)webkit\WebKit.Interop.dll" /out="$(SolutionDir)webkit\temp_webkit_interop.il" /nobar
+"$(SolutionDir)tools\TypeNormalizer.exe" "$(SolutionDir)webkit\temp_webkit_interop.il"
+ilasm "$(SolutionDir)webkit\temp_webkit_interop.il" /dll /output="$(SolutionDir)webkit\WebKit.Interop.dll" /key="$(SolutionDir)WebKit.NET.snk"
+del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
+:after_build_interop</Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -93,7 +120,6 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
-    <Reference Include="System.Core" />
     <Reference Include="System.Data">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -102,7 +128,7 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
-    <Reference Include="WebKit.Interop, Version=533.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be">
+    <Reference Include="WebKit.Interop, Version=534.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be">
       <HintPath>..\webkit\WebKit.Interop.dll</HintPath>
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>

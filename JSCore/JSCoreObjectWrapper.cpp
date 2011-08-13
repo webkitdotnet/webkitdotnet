@@ -109,7 +109,15 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 			JSValueIsNumber(ctx, value) ? double::typeid : nullptr;
 	}
 
-    if (type == double::typeid)
+	if (type == int::typeid)
+	{
+		val = (int)JSValueToNumber(ctx, value, exception);
+	}
+	else if (type == float::typeid)
+	{
+		val = (float)JSValueToNumber(ctx, value, exception);
+	}
+	else if (type == double::typeid)
     {
         val = JSValueToNumber(ctx, value, exception);
     }
@@ -123,12 +131,15 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
         val = JSCoreMarshal::JSStringToString(temp);
         JSStringRelease(temp);
     }
-	else if (JSObjectIsFunction(ctx, (JSObjectRef) value)) {	
+	else if (JSObjectIsFunction(ctx, (JSObjectRef) value))
+	{	
 		// Create a delegate wrapper around function
 		JSObjectRef functionObj = JSValueToObject(ctx, value, exception);
 		DelegateFunctionWrapper^ ni = gcnew DelegateFunctionWrapper(functionObj);				
 		val = ni->CallbackFunction();
-	} else if (JSValueIsArray(ctx, value)) {
+	}
+	else if (JSValueIsArray(ctx, value)) 
+	{
 		JSObjectRef o = JSValueToObject(ctx, value, NULL);	
 		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
 		size_t count =  JSPropertyNameArrayGetCount(properties);
@@ -144,7 +155,9 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 		}
 
 		val = results;
-	} else if (JSValueIsObject(ctx, value)) {
+	} 
+	else if (JSValueIsObject(ctx, value))
+	{
 		JSObjectRef o = JSValueToObject(ctx, value, NULL);
 		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
 		size_t count = JSPropertyNameArrayGetCount(properties);
