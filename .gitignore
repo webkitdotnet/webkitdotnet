@@ -8,6 +8,8 @@ obj/
 Release/
 Debug/
 *.ncb
+*.sdf
+*.opensdf
 TypeNormalizer.exe
 WebKit.interop.dll
 TestResults
