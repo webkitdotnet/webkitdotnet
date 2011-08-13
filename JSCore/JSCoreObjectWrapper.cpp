@@ -85,6 +85,21 @@ private:
     }
 };
 
+bool JSValueIsArray(JSContextRef ctx, JSValueRef value) {
+
+	JSObjectRef global = JSContextGetGlobalObject(ctx);
+	JSValueRef arrayVal = JSObjectGetProperty(ctx, global, JSCoreMarshal::StringToJSString("Array"), NULL);
+
+	if (JSValueIsObject(ctx, arrayVal)) {
+		JSObjectRef arrayObj = JSValueToObject(ctx, arrayVal, NULL);
+		if (JSObjectIsFunction(ctx, arrayObj) || JSObjectIsConstructor(ctx, arrayObj)) {
+			return JSValueIsInstanceOfConstructor(ctx, value, arrayObj, NULL);
+		}
+	}
+	
+	return false;
+};
+
 Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception)
 {
 	Object ^ val;
@@ -113,6 +128,42 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 		JSObjectRef functionObj = JSValueToObject(ctx, value, exception);
 		DelegateFunctionWrapper^ ni = gcnew DelegateFunctionWrapper(functionObj);				
 		val = ni->CallbackFunction();
+	} else if (JSValueIsArray(ctx, value)) {
+		JSObjectRef o = JSValueToObject(ctx, value, NULL);	
+		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
+		size_t count =  JSPropertyNameArrayGetCount(properties);
+		JSPropertyNameArrayRelease(properties);
+		
+		array<Object^>^ results = gcnew array<Object^>(count);
+
+		for (size_t i = 0; i < count; i++) {						
+			JSValueRef propertyValue = JSObjectGetPropertyAtIndex(ctx, o, i, NULL);
+			Object^ value = getObjectFromJSValueRef(ctx, nullptr, propertyValue, NULL);
+
+			results->SetValue(value, (int) i);
+		}
+
+		val = results;
+	} else if (JSValueIsObject(ctx, value)) {
+		JSObjectRef o = JSValueToObject(ctx, value, NULL);
+		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
+		size_t count = JSPropertyNameArrayGetCount(properties);
+		
+		System::Collections::Generic::Dictionary<Object^, Object^>^ results = gcnew System::Collections::Generic::Dictionary<Object^, Object^>();
+
+		for (size_t i = 0; i < count; i++) {
+			JSStringRef jsNameRef = JSPropertyNameArrayGetNameAtIndex(properties, i);
+			
+			String^ name = JSCoreMarshal::JSStringToString(jsNameRef);
+			JSValueRef propertyValue = JSObjectGetProperty(ctx, o, jsNameRef, NULL);
+			Object^ value = getObjectFromJSValueRef(ctx, nullptr, propertyValue, NULL);
+
+			results->Add((Object^)name, value);
+		}
+
+		JSPropertyNameArrayRelease(properties);
+
+		val = results;
 	}
 	return val;
 }

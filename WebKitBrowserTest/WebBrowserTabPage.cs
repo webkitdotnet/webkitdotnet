@@ -27,11 +27,13 @@
 using System.Windows.Forms;
 using WebKit;
 using WebKit.JSCore;
+using WebKit.Interop;
 using System;
 using System.ComponentModel;
 using System.Threading;
 using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace WebKitBrowserTest
 {
@@ -60,6 +62,12 @@ namespace WebKitBrowserTest
         public float[] getArray()
         {
             return new float[] { 1, 2, 5 };
+        }
+
+        public void associativeArray(Dictionary<object, object> x)
+        {
+            object[] a = (object[]) x["y"];
+            MessageBox.Show("" + x["x"] + " " + a[0] + " " + a[1] + " l=" + a.GetLength(0));
         }
 
         public void callback(Delegate callback)
@@ -129,6 +137,9 @@ namespace WebKitBrowserTest
             container.BottomToolStripPanel.Controls.Add(statusStrip);
 
             // create webbrowser control
+
+            //IWebView wv = (IWebView)browserControl.GetWebView();
+            
             browser = browserControl;
             browser.Visible = true;
             browser.Dock = DockStyle.Fill;

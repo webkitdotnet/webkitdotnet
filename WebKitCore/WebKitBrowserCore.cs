@@ -703,7 +703,7 @@ namespace WebKit
             Error(this, new WebKitBrowserErrorEventArgs(error.localizedDescription())); 
         }
 
-        private void frameLoadDelegate_DidClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, webFrame frame)
+        private void frameLoadDelegate_DidClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, IWebFrame frame)
         {
             CreateWindowScriptObject(new JSContext(context));
         }

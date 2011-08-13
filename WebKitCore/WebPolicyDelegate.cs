@@ -51,7 +51,7 @@ namespace WebKit
 
         #region IWebPolicyDelegate Members
 
-        public void decidePolicyForMIMEType(WebView WebView, string type, IWebURLRequest request, webFrame frame, IWebPolicyDecisionListener listener)
+        public void decidePolicyForMIMEType(WebView WebView, string type, IWebURLRequest request, IWebFrame frame, IWebPolicyDecisionListener listener)
         {
             // todo: add support for showing custom MIME type documents
             // and for changing which MIME types are handled here
@@ -68,7 +68,7 @@ namespace WebKit
             }
         }
 
-        public void decidePolicyForNavigationAction(WebView WebView, CFDictionaryPropertyBag actionInformation, IWebURLRequest request, webFrame frame, IWebPolicyDecisionListener listener)
+        public void decidePolicyForNavigationAction(WebView WebView, CFDictionaryPropertyBag actionInformation, IWebURLRequest request, IWebFrame frame, IWebPolicyDecisionListener listener)
         {
             if (AllowNavigation || AllowInitialNavigation)
                 listener.use();
@@ -84,7 +84,7 @@ namespace WebKit
                 listener.ignore();
         }
 
-        public void unableToImplementPolicyWithError(WebView WebView, WebError error, webFrame frame)
+        public void unableToImplementPolicyWithError(WebView WebView, WebError error, IWebFrame frame)
         {
         }
 

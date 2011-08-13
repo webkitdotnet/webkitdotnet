@@ -37,20 +37,20 @@ using System.Diagnostics;
 namespace WebKit
 {
     // Delegate definitions WebFrameLoadDelegate events
-    internal delegate void DidCancelClientRedirectForFrameEvent(WebView WebView, webFrame frame);
-    internal delegate void DidChangeLocationWithinPageForFrameEvent(WebView WebView, webFrame frame);
-    internal delegate void DidCommitLoadForFrameEvent(WebView WebView, webFrame frame);
-    internal delegate void DidFailLoadWithErrorEvent(WebView WebView, IWebError error, webFrame frame);
-    internal delegate void DidFailProvisionalLoadWithErrorEvent(WebView WebView, IWebError error, webFrame frame);
-    internal delegate void DidFinishLoadForFrameEvent(WebView WebView, webFrame frame);
-    internal delegate void DidRecieveIconEvent(WebView WebView, int hBitMap, webFrame frame);
-    internal delegate void DidRecieveServerRedirectForProvisionalLoadForFrameEvent(WebView WebView, webFrame frame);
-    internal delegate void DidRecieveTitleEvent(WebView WebView, string title, webFrame frame);
-    internal delegate void DidStartProvisionalLoadForFrameEvent(WebView WebView, webFrame frame);
-    internal delegate void WillCloseFrameEvent(WebView WebView, webFrame frame);
-    internal delegate void WillPerformClientRedirectToURLEvent(WebView WebView, string url, double delaySeconds, DateTime fireDate, webFrame frame);
+    internal delegate void DidCancelClientRedirectForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidChangeLocationWithinPageForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidCommitLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidFailLoadWithErrorEvent(WebView WebView, IWebError error, IWebFrame frame);
+    internal delegate void DidFailProvisionalLoadWithErrorEvent(WebView WebView, IWebError error, IWebFrame frame);
+    internal delegate void DidFinishLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidRecieveIconEvent(WebView WebView, int hBitMap, IWebFrame frame);
+    internal delegate void DidRecieveServerRedirectForProvisionalLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void DidRecieveTitleEvent(WebView WebView, string title, IWebFrame frame);
+    internal delegate void DidStartProvisionalLoadForFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void WillCloseFrameEvent(WebView WebView, IWebFrame frame);
+    internal delegate void WillPerformClientRedirectToURLEvent(WebView WebView, string url, double delaySeconds, DateTime fireDate, IWebFrame frame);
     internal delegate void WindowScriptObjectAvailableEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject);
-    internal delegate void DidClearWindowObjectEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject, webFrame frame);
+    internal delegate void DidClearWindowObjectEvent(WebView WebView, IntPtr context, IntPtr windowScriptObject, IWebFrame frame);
 
     internal class WebFrameLoadDelegate : IWebFrameLoadDelegate
     {
@@ -71,62 +71,62 @@ namespace WebKit
 
         #region webFrameLoadDelegate Members
 
-        public void didCancelClientRedirectForFrame(WebView WebView, webFrame frame)
+        public void didCancelClientRedirectForFrame(WebView WebView, IWebFrame frame)
         {
             DidCancelClientRedirectForFrame(WebView, frame);
         }
 
-        public void didChangeLocationWithinPageForFrame(WebView WebView, webFrame frame)
+        public void didChangeLocationWithinPageForFrame(WebView WebView, IWebFrame frame)
         {
             DidChangeLocationWithinPageForFrame(WebView, frame);
         }
 
-        public void didCommitLoadForFrame(WebView WebView, webFrame frame)
+        public void didCommitLoadForFrame(WebView WebView, IWebFrame frame)
         {
             DidCommitLoadForFrame(WebView, frame);
         }
 
-        public void didFailLoadWithError(WebView WebView, WebError error, webFrame forFrame)
+        public void didFailLoadWithError(WebView WebView, WebError error, IWebFrame forFrame)
         {
             DidFailLoadWithError(WebView, error, forFrame);
         }
 
-        public void didFailProvisionalLoadWithError(WebView WebView, WebError error, webFrame frame)
+        public void didFailProvisionalLoadWithError(WebView WebView, WebError error, IWebFrame frame)
         {
             DidFailProvisionalLoadWithError(WebView, error, frame);
         }
 
-        public void didFinishLoadForFrame(WebView WebView, webFrame frame)
+        public void didFinishLoadForFrame(WebView WebView, IWebFrame frame)
         {
             DidFinishLoadForFrame(WebView, frame);
         }
 
-        public void didReceiveIcon(WebView WebView, int hBitmap, webFrame frame)
+        public void didReceiveIcon(WebView WebView, int hBitmap, IWebFrame frame)
         {
             DidRecieveIcon(WebView, hBitmap, frame);
         }
 
-        public void didReceiveServerRedirectForProvisionalLoadForFrame(WebView WebView, webFrame frame)
+        public void didReceiveServerRedirectForProvisionalLoadForFrame(WebView WebView, IWebFrame frame)
         {
             DidRecieveServerRedirectForProvisionalLoadForFrame(WebView, frame);
         }
 
-        public void didReceiveTitle(WebView WebView, string title, webFrame frame)
+        public void didReceiveTitle(WebView WebView, string title, IWebFrame frame)
         {
             DidRecieveTitle(WebView, title, frame);
         }
 
-        public void didStartProvisionalLoadForFrame(WebView WebView, webFrame frame)
+        public void didStartProvisionalLoadForFrame(WebView WebView, IWebFrame frame)
         {
             DidStartProvisionalLoadForFrame(WebView, frame);
         }
 
-        public void willCloseFrame(WebView WebView, webFrame frame)
+        public void willCloseFrame(WebView WebView, IWebFrame frame)
         {
             WillCloseFrame(WebView, frame);
         }
 
-        public void willPerformClientRedirectToURL(WebView WebView, string url, double delaySeconds, DateTime fireDate, webFrame frame)
+        public void willPerformClientRedirectToURL(WebView WebView, string url, double delaySeconds, DateTime fireDate, IWebFrame frame)
         {
             WillPerformClientRedirectToURL(WebView, url, delaySeconds, fireDate, frame);
         }
@@ -136,7 +136,7 @@ namespace WebKit
             WindowScriptObjectAvailable(WebView, context, windowScriptObject);
         }
 
-        public void didClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, webFrame frame)
+        public void didClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, IWebFrame frame)
         {
             DidClearWindowObject(WebView, context, windowScriptObject, frame);
         }

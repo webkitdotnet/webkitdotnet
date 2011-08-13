@@ -12,13 +12,14 @@ namespace WebKit
     internal class PrintManager
     {
         private PrintDocument _document;
-        private IWebFramePrivate _webFramePrivate;
+        private IWebFrame _webFramePrivate;
         private IWebKitBrowserHost _owner;
         private IWebKitBrowser _browser;
-        private Graphics _printGfx;
+        /*private Graphics _printGfx;
         private uint _nPages;
         private uint _page;
         private int _hDC;
+        */
         private bool _preview;
         private bool _printing = false;
 
@@ -28,7 +29,7 @@ namespace WebKit
             this._owner = Owner;
             this._browser = Browser;
             this._webFramePrivate =
-                (IWebFramePrivate)((IWebView)_browser.GetWebView()).mainFrame();
+                (IWebFrame)((IWebView)_browser.GetWebView()).mainFrame();
             this._preview = Preview;
         }
 
@@ -57,6 +58,8 @@ namespace WebKit
 
         private void _document_PrintPage(object sender, PrintPageEventArgs e)
         {
+            return; 
+            /*
             // running on a seperate thread, so we invoke _webFramePrivate
             // methods on the owners ui thread
 
@@ -90,6 +93,7 @@ namespace WebKit
                 _printGfx = null;
                 _nPages = 0;
             }
+            */
         }
 
         private delegate TResult Fn<TResult>();

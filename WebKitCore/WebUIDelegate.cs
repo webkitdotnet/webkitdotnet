@@ -171,7 +171,7 @@ namespace WebKit
         {
         }
 
-        public void printFrame(WebView WebView, webFrame frame)
+        public void printFrame(WebView WebView, IWebFrame frame)
         {
         }
 
@@ -187,12 +187,12 @@ namespace WebKit
         {
         }
 
-        public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, webFrame initiatedByFrame)
+        public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, IWebFrame initiatedByFrame)
         {
             throw new NotImplementedException();
         }
 
-        public int runDatabaseSizeLimitPrompt(WebView WebView, string displayName, webFrame initiatedByFrame)
+        public int runDatabaseSizeLimitPrompt(WebView WebView, string displayName, IWebFrame initiatedByFrame)
         {
             throw new NotImplementedException();
         }

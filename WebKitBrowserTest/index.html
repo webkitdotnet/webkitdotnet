@@ -15,7 +15,8 @@ var start = new Date().getTime();
 document.getElementById("log").innerHTML = "Calling function...";
 //var f = window.external.callback(function(x) { alert('hello ' + x); return ('' + new Date()); });
 //alert(window.external.getInner().Testing);
-alert(window.external.getArray()[1]);
+//alert(window.external.getArray()[1]);
+window.external.associativeArray({x:1, y:[2,3]});
 document.getElementById("log").innerHTML = "Done. elapsed: " + (new Date().getTime() - start);
 }, 1000);
 
