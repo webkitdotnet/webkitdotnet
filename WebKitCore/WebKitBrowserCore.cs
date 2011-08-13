@@ -816,10 +816,14 @@ namespace WebKit
                 activationContext.Activate();
 
                 WebMutableURLRequest request = new WebMutableURLRequestClass();
-                request.initWithURL(url, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
+                request.initWithURL(url, _WebURLRequestCachePolicy.WebURLRequestReloadIgnoringCacheData, 60);
                 request.setHTTPMethod("GET");
 
-                webView.mainFrame().loadRequest(request);
+                webView.mainFrame().loadRequest((WebURLRequest)request);
+
+                WebPreferences p = webView.preferences();
+                p.setMinimumFontSize(16);
+                p.setFontSmoothing(FontSmoothingType.FontSmoothingTypeWindows);
 
                 activationContext.Deactivate();
             }
