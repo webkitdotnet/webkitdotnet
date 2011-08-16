@@ -40,8 +40,9 @@ public delegate Object^ EventDelegate(array<Object^>^ args);
 ref class DelegateFunctionWrapper
 {
 public:
-	DelegateFunctionWrapper(JSObjectRef _func) : func(_func)
-    {       
+	DelegateFunctionWrapper(JSContextRef _context, JSObjectRef _func) : context(_context), func(_func)
+    {       		
+		JSGlobalContextRetain((JSGlobalContextRef)context);
         nativeCallback_ = gcnew EventDelegate(this, &DelegateFunctionWrapper::Callback);
         delegateHandle_ = GCHandle::Alloc(nativeCallback_);
     }
@@ -50,6 +51,8 @@ public:
     {
         if (delegateHandle_.IsAllocated)
 			delegateHandle_.Free();
+
+		JSGlobalContextRelease((JSGlobalContextRef)context);	
     }
 
 	EventDelegate^ CallbackFunction() {
@@ -60,12 +63,11 @@ public:
 private:
 	GCHandle delegateHandle_;
     EventDelegate^ nativeCallback_;
-	JSObjectRef func;
+	JSObjectRef func;	
+	JSContextRef context;
 	
     Object^ Callback(array<Object^>^ args)
     {							
-		JSContextRef context = JSGlobalContextCreate(NULL);
-
 		JSValueRef *arguments = new JSValueRef[args->Length];
 		for(int i = 0; i < args->Length; i++)
 		{
@@ -78,8 +80,6 @@ private:
 			Type^ t = nullptr;
 			retObj = getObjectFromJSValueRef(context, t, ret, NULL);			
 		}
-
-		JSGlobalContextRelease((JSGlobalContextRef) context);		
 
 		return retObj;
     }
@@ -134,8 +134,8 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 	else if (JSObjectIsFunction(ctx, (JSObjectRef) value))
 	{	
 		// Create a delegate wrapper around function
-		JSObjectRef functionObj = JSValueToObject(ctx, value, exception);
-		DelegateFunctionWrapper^ ni = gcnew DelegateFunctionWrapper(functionObj);				
+		JSObjectRef functionObj = JSValueToObject(ctx, value, exception);		
+		DelegateFunctionWrapper^ ni = gcnew DelegateFunctionWrapper(ctx, functionObj);
 		val = ni->CallbackFunction();
 	}
 	else if (JSValueIsArray(ctx, value)) 
@@ -158,11 +158,11 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 	} 
 	else if (JSValueIsObject(ctx, value))
 	{
-		JSObjectRef o = JSValueToObject(ctx, value, NULL);
+		JSObjectRef o = (JSObjectRef)value; //JSValueToObject(ctx, value, NULL);
 		JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
 		size_t count = JSPropertyNameArrayGetCount(properties);
 		
-		System::Collections::Generic::Dictionary<Object^, Object^>^ results = gcnew System::Collections::Generic::Dictionary<Object^, Object^>();
+		System::Collections::Generic::Dictionary<Object^, Object^>^ resultsDict = gcnew System::Collections::Generic::Dictionary<Object^, Object^>();
 
 		for (size_t i = 0; i < count; i++) {
 			JSStringRef jsNameRef = JSPropertyNameArrayGetNameAtIndex(properties, i);
@@ -171,12 +171,12 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 			JSValueRef propertyValue = JSObjectGetProperty(ctx, o, jsNameRef, NULL);
 			Object^ value = getObjectFromJSValueRef(ctx, nullptr, propertyValue, NULL);
 
-			results->Add((Object^)name, value);
+			resultsDict->Add((Object^)name, value);
 		}
 
 		JSPropertyNameArrayRelease(properties);
 
-		val = results;
+		val = resultsDict;
 	}
 	return val;
 }

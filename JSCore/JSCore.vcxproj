@@ -112,8 +112,15 @@ del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX86</TargetMachine>
-      <KeyFile>"$(SolutionDir)WebKit.NET.snk"</KeyFile>
+      <KeyFile>$(SolutionDir)WebKit.NET.snk</KeyFile>
+      <DelaySign>true</DelaySign>
     </Link>
+    <PostBuildEvent>
+      <Command> sn -R "$(TargetPath)" "$(SolutionDir)WebKit.NET.snk"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Re-sign the assembly</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -132,6 +139,7 @@ del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
       <HintPath>..\webkit\WebKit.Interop.dll</HintPath>
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
