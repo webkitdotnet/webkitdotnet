@@ -26,7 +26,7 @@ namespace JSCore.Tests
             public float floatProperty { get; set; }
             public double doubleProperty { get; set; }
             public bool boolProperty { get; set; }
-
+            public TestFunctions nestedProperty { get; set; }
         }
 
         public interface TestFunctions
@@ -44,16 +44,19 @@ namespace JSCore.Tests
 
         [TestInitialize()]
         public void Initialize() {
+            testFunctionsMock = new Mock<TestFunctions>();
+
             Context = new JSContext();
             Context.GetGlobalObject().SetProperty("simpleProperties", new SimpleProperties()
             {
                 stringProperty = "stringPropertyValue",
                 floatProperty = (float)Math.PI,
                 doubleProperty = GOLDEN_RATIO,
-                boolProperty = true
+                boolProperty = true,
+                nestedProperty = testFunctionsMock.Object
             });
 
-            testFunctionsMock = new Mock<TestFunctions>();
+            
             Context.GetGlobalObject().SetProperty("testFunctions", testFunctionsMock.Object);
         }
 
@@ -72,6 +75,15 @@ namespace JSCore.Tests
             Assert.IsTrue(o.GetProperty("boolProperty").ToBoolean());
         }
 
+        [TestMethod]
+        public void TestNestedSimpleProperties()
+        {
+            Assert.IsFalse(Context.EvaluateScript("simpleProperties.nestedProperty").IsUndefined);
+
+            testFunctionsMock.Setup(f => f.acceptsBoolean(true));
+            Context.EvaluateScript("simpleProperties.nestedProperty.acceptsBoolean(true)");
+            testFunctionsMock.VerifyAll();
+        }
 
         [TestMethod]
         public void TestFunctionSimpleInput()

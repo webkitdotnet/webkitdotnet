@@ -251,7 +251,6 @@ void wrapper_Finalize(JSObjectRef object)
 bool wrapper_HasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName)
 {
     Object ^ obj = getObjectFromJSObjectRef(object);
-
     String ^ propName = JSCoreMarshal::JSStringToString(propertyName);
     MethodInfo ^ method = obj->GetType()->GetMethod(propName);
     return obj->GetType()->GetProperty(propName) != nullptr || obj->GetType()->GetMethod(propName) != nullptr;
@@ -260,21 +259,19 @@ bool wrapper_HasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef prope
 JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception)
 {
     Object ^ obj = getObjectFromJSObjectRef(object);
-
     String ^ propName = JSCoreMarshal::JSStringToString(propertyName);
+
     PropertyInfo ^ prop = obj->GetType()->GetProperty(propName);
     if (prop != nullptr)
-    {
-        // for the moment, just return as string
+    {       
         if (prop->CanRead)
-        {
-            String ^ val = prop->GetValue(obj, nullptr)->ToString();
-            JSStringRef jsStr = JSCoreMarshal::StringToJSString(val);
-            return JSValueMakeString(ctx, jsStr);
+        {			
+			Object ^propObj = prop->GetValue(obj, nullptr);
+			return getJSValueRefFromObject(ctx, propObj, NULL);
         }
         else
         {
-            // exception?
+			return NULL;            
         }
     }
 
