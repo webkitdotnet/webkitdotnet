@@ -22,6 +22,7 @@ namespace JSCore.Tests
 
         class SimpleProperties
         {
+            public string noGetterStringProperty = "stringProp";
             public string stringProperty { get; set; }
             public float floatProperty { get; set; }
             public double doubleProperty { get; set; }
@@ -67,8 +68,9 @@ namespace JSCore.Tests
             Assert.IsNotNull(result);
             Assert.IsFalse(result.IsUndefined);
 
-            JSObject o = result.ToObject();
+            JSObject o = result.ToObject();                      
 
+            Assert.AreEqual("stringProp", o.GetProperty("noGetterStringProperty").ToString());
             Assert.AreEqual("stringPropertyValue", o.GetProperty("stringProperty").ToString());
             Assert.IsTrue(precisionEquals(Math.PI, o.GetProperty("floatProperty").ToNumber()));
             Assert.IsTrue(precisionEquals(GOLDEN_RATIO, o.GetProperty("doubleProperty").ToNumber()));
