@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
 
 namespace WebKit
 {
+    using System.Drawing;
+    using System.Drawing.Printing;
+    using System.Windows.Forms;
+
     public interface IWebKitBrowser
     {
         /// <summary>

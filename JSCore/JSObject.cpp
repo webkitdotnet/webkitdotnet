@@ -48,7 +48,10 @@ void JSObject::SetProperty(String ^ propertyName, System::Object ^ value)
     void * ptr = GCHandle::ToIntPtr(handle).ToPointer();
 
     JSObjectRef jsObj = JSObjectMake(_context->context(), wrap, ptr);
-    SetProperty(propertyName, (JSValueRef)jsObj);
+
+    JSClassRelease(wrap);
+
+	SetProperty(propertyName, (JSValueRef)jsObj);
 }
 
 void JSObject::SetProperty(String ^ propertyName, System::String ^ value)

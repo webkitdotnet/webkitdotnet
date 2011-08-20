@@ -517,7 +517,7 @@ namespace WebKit
             get { return _scriptObject; }
             set 
             { 
-                _scriptObject = value; 
+                _scriptObject = value;
                 CreateWindowScriptObject((JSContext)GetGlobalScriptContext()); 
             }
         }
@@ -684,7 +684,8 @@ namespace WebKit
                 DocumentText = initialText;
                 policyDelegate.AllowInitialNavigation = false;
             }
-
+            if (_scriptObject !=null)
+                CreateWindowScriptObject((JSContext)GetGlobalScriptContext()); 
             IsScriptingEnabled = initialJavaScriptEnabled;
         }
 
@@ -712,6 +713,10 @@ namespace WebKit
             if (frame == webView.mainFrame())
             {
                 string url = frame.provisionalDataSource().request().url();
+                if (url == "")
+                {
+                    url = "about:blank";
+                }
                 Navigating(this, new WebBrowserNavigatingEventArgs(new Uri(url), frame.name()));
             }
         }
@@ -1081,9 +1086,11 @@ namespace WebKit
             if (ObjectForScripting != null && context != null)
             {
                 JSObject global = context.GetGlobalObject();
-                JSObject window = global.GetProperty("window") as JSObject;
-                if (window != null)
-                    window.SetProperty("external", (object)ObjectForScripting);
+                JSValue window = global.GetProperty("window");
+                if (window == null || !window.IsObject) return;
+                JSObject windowObj = window.ToObject();
+                if (windowObj == null) return;
+                windowObj.SetProperty("external", (object)ObjectForScripting);
             }
         }
     }
