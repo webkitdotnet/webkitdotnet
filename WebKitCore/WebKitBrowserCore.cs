@@ -822,8 +822,8 @@ namespace WebKit
                 webView.mainFrame().loadRequest((WebURLRequest)request);
 
                 WebPreferences p = webView.preferences();
-                p.setMinimumFontSize(16);
-                p.setFontSmoothing(FontSmoothingType.FontSmoothingTypeWindows);
+                p.setMinimumFontSize(8);
+                p.setFontSmoothing(FontSmoothingType.FontSmoothingTypeWindows);               
 
                 activationContext.Deactivate();
             }
