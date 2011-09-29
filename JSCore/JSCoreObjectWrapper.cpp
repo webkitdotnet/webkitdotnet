@@ -254,6 +254,11 @@ bool wrapper_HasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef prope
     String ^ propName = JSCoreMarshal::JSStringToString(propertyName);
 	Type ^type = obj->GetType();
 
+	if (type == Dictionary<Object^,Object^>::typeid) {
+		Dictionary<Object^,Object^> ^ dict = (Dictionary<Object^,Object^> ^)obj;
+		return dict->ContainsKey(propName);
+	}
+
 	return type->GetProperty(propName) != nullptr ||
 		   type->GetField(propName) != nullptr ||
 		   type->GetMethod(propName) != nullptr;
@@ -263,8 +268,20 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
 {
     Object ^ obj = getObjectFromJSObjectRef(object);
     String ^ propName = JSCoreMarshal::JSStringToString(propertyName);
+	Type ^ objType = obj -> GetType();
 
-    PropertyInfo ^ prop = obj->GetType()->GetProperty(propName);
+	if (objType == Dictionary<Object^,Object^>::typeid) {
+		Dictionary<Object^,Object^> ^ dict = (Dictionary<Object^,Object^> ^)obj;
+		Object ^ value;
+		if (dict->TryGetValue(propName, value))
+		{
+			return getJSValueRefFromObject(ctx, value, NULL);
+		}
+
+		return nullptr;
+	}
+
+    PropertyInfo ^ prop = objType->GetProperty(propName);
     if (prop != nullptr)
     {       
         if (prop->CanRead)

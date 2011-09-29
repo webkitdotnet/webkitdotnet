@@ -27,6 +27,8 @@ namespace JSCore.Tests
             public float floatProperty { get; set; }
             public double doubleProperty { get; set; }
             public bool boolProperty { get; set; }
+            public float[] floatsProperty { get; set; }
+            public Dictionary<object, object> dictProperty { get; set; }
             public TestFunctions nestedProperty { get; set; }
         }
 
@@ -54,9 +56,13 @@ namespace JSCore.Tests
                 floatProperty = (float)Math.PI,
                 doubleProperty = GOLDEN_RATIO,
                 boolProperty = true,
+                floatsProperty = new float[] { 3.14f, 16/9 },
+                dictProperty = new Dictionary<object,object>() {
+                    {"123", 2},
+                    {"string", "hello world"}
+                },
                 nestedProperty = testFunctionsMock.Object
             });
-
             
             Context.GetGlobalObject().SetProperty("testFunctions", testFunctionsMock.Object);
         }
@@ -75,6 +81,36 @@ namespace JSCore.Tests
             Assert.IsTrue(precisionEquals(Math.PI, o.GetProperty("floatProperty").ToNumber()));
             Assert.IsTrue(precisionEquals(GOLDEN_RATIO, o.GetProperty("doubleProperty").ToNumber()));
             Assert.IsTrue(o.GetProperty("boolProperty").ToBoolean());
+        }
+
+
+        [TestMethod]
+        public void TestArraySimpleProperties()
+        {
+            JSValue result = Context.EvaluateScript("simpleProperties.floatsProperty");
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsUndefined);
+
+            JSObject o = result.ToObject();
+            Assert.AreEqual(2, o.GetProperty("length").ToNumber());
+        }
+
+        [TestMethod]
+        public void TestDictionarySimpleProperties()
+        {
+            JSValue result = Context.EvaluateScript("simpleProperties.dictProperty");
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsUndefined);
+
+            JSObject dictionary = result.ToObject();
+
+            JSValue r = Context.EvaluateScript("(function() {var x = 0; for (var p in simpleProperties.dictProperty) { x++ }; return x})()");
+
+            Assert.IsFalse(result.IsUndefined);
+            Assert.IsTrue(r.IsNumber);
+            Assert.AreEqual(2, r.ToNumber());
+            Assert.IsTrue(dictionary.HasProperty("string"));
+            Assert.IsTrue(dictionary.HasProperty("123"));
         }
 
         [TestMethod]
@@ -106,7 +142,7 @@ namespace JSCore.Tests
             testFunctionsMock.Setup(f => f.acceptsObject(It.Is<Dictionary<object, object>>(d =>
                 (double)d["x"] == 1 &&
                 ((object[])d["array"]).Length == 3 &&
-                ((Dictionary<object,object>)d["nestedObj"])["z"].Equals("nested")
+                ((Dictionary<object,object>)d["nestedObj"])["z"].Equals("nested")                
             )));
 
             Context.EvaluateScript("testFunctions.acceptsBoolean(true)");
