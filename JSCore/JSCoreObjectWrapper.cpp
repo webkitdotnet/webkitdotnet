@@ -20,11 +20,11 @@ JSClassDefinition wrapperClass =
     wrapper_GetProperty,     /* JSObjectGetPropertyCallback getProperty; */
     wrapper_SetProperty,     /* JSObjectSetPropertyCallback setProperty; */
     NULL,                    /* JSObjectDeletePropertyCallback deleteProperty; */
-    NULL,                    /* JSObjectGetPropertyNamesCallback getPropertyNames; */
-    wrapper_CallAsFunction   /* JSObjectCallAsFunctionCallback callAsFunction; */
-                             /* JSObjectCallAsConstructorCallback callAsConstructor; */
-                             /* JSObjectHasInstanceCallback hasInstance; */
-                             /* JSObjectConvertToTypeCallback convertToType; */
+    wrapper_GetPropertyNames,/* JSObjectGetPropertyNamesCallback getPropertyNames; */
+    wrapper_CallAsFunction,  /* JSObjectCallAsFunctionCallback callAsFunction; */
+    NULL,                    /* JSObjectCallAsConstructorCallback callAsConstructor; */
+    NULL,                    /* JSObjectHasInstanceCallback hasInstance; */
+    NULL//wrapper_ConvertToType    /* JSObjectConvertToTypeCallback convertToType; */
 };
 
 Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception);
@@ -183,14 +183,16 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 
 
 JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef * exception)
-{
-    Type ^ type = object->GetType();
-    JSValueRef val;
-
+{	
     if(object == nullptr)
     {
         return JSValueMakeUndefined(ctx);
     }
+
+	Type ^ type = object->GetType();
+    JSValueRef val;
+
+
 	if (type == float::typeid)
 	{
 		float floatVal = (float)object;
@@ -337,11 +339,41 @@ bool wrapper_SetProperty(JSContextRef ctx, JSObjectRef object,
     return false;
 }
 
+void wrapper_GetPropertyNames(JSContextRef ctx, JSObjectRef object, JSPropertyNameAccumulatorRef propertyNames)
+{
+	Object ^ obj = getObjectFromJSObjectRef(object);
+	Type ^ type = obj->GetType();
+	Type ^dType = System::Collections::Generic::Dictionary<Object^,Object^>::typeid;
+
+	if (type == dType) {	
+		
+		// If the object is a dictionary return the keys
+		Dictionary<Object^,Object^>::KeyCollection^ keys = ((Dictionary<Object^,Object^> ^)obj)->Keys;
+		for each( Object^ s in keys)
+        {
+			String^name = (String ^)s;
+			JSStringRef jsString = JSCoreMarshal::StringToJSString(name);
+			JSPropertyNameAccumulatorAddName(propertyNames, jsString);
+			JSStringRelease(jsString);             
+        }
+	} else {
+
+		// otherwise just list the public instance members
+		array<MemberInfo^>^ members = type->GetMembers( static_cast<BindingFlags>(BindingFlags::Public | BindingFlags::Instance | BindingFlags::DeclaredOnly) );
+		for each (MemberInfo ^member in members) {
+			JSStringRef jsString = JSCoreMarshal::StringToJSString(member->Name);
+			JSPropertyNameAccumulatorAddName(propertyNames, jsString);
+			JSStringRelease(jsString);    
+		}    
+	}
+}
+
+
 JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, 
                                    size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
 {
     Object ^ obj = getObjectFromJSObjectRef(thisObject);
-
+	
     JSStringRef nameProperty = JSCoreMarshal::StringToJSString("name");
     JSValueRef val = JSObjectGetProperty(ctx, function, nameProperty, exception);
     JSStringRelease(nameProperty);
@@ -386,3 +418,16 @@ JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObj
     JSValueRef jsVal = getJSValueRefFromObject(ctx, ret, exception);
     return jsVal;
 }
+
+
+/*JSValueRef wrapper_ConvertToType(JSContextRef ctx, JSObjectRef object, JSType type, JSValueRef* exception)
+{
+	if (type == kJSTypeObject) {
+		String ^ output = "default output";
+		
+		JSStringRef str = JSCoreMarshal::StringToJSString(output);
+		return JSValueMakeString(ctx, str);
+	}
+
+	return nullptr;
+}*/
