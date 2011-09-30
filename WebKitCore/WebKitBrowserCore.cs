@@ -626,7 +626,7 @@ namespace WebKit
         private void WebKitBrowser_Resize(object sender, EventArgs e)
         {
             // Resize the WebKit control
-            NativeMethods.MoveWindow(webViewHWND, 0, 0, this.host.Width - 1, this.host.Height - 1, true);
+            NativeMethods.MoveWindow(webViewHWND, 0, 0, this.host.Width, this.host.Height, true);
         }
 
         private void WebKitBrowser_Load(object sender, EventArgs e)
@@ -920,6 +920,16 @@ namespace WebKit
                 return new JSContext(webView.mainFrame());
             else
                 return null;
+        }
+
+        public void ShowInspector()
+        {
+            if (webView != null)
+            {
+                IWebViewPrivate v = (IWebViewPrivate)webView;
+                v.inspector().attach();                
+                v.inspector().show();
+            }
         }
 
         #endregion Public Methods

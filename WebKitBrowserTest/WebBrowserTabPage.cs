@@ -143,9 +143,10 @@ namespace WebKitBrowserTest
             browser = browserControl;
             browser.Visible = true;
             browser.Dock = DockStyle.Fill;
-            browser.Name = "browser";
-            //browser.IsWebBrowserContextMenuEnabled = false;
-            //browser.IsScriptingEnabled = false;
+            browser.Name = "browser";            
+            
+            browser.IsWebBrowserContextMenuEnabled = true;
+            
             container.ContentPanel.Controls.Add(browser);
 
             browser.ObjectForScripting = new TestClass();

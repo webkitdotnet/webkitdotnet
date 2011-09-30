@@ -54,10 +54,10 @@ namespace WebKit
             if (key == Keys.Left || key == Keys.Right || key == Keys.Up || 
                 key == Keys.Down || key == Keys.Tab)
             {
-                NativeMethods.SendMessage(core.WebViewHWND, (uint)msg.Msg, msg.WParam, msg.LParam);
+                NativeMethods.SendMessage(msg.HWnd, (uint)msg.Msg, msg.WParam, msg.LParam);
                 return true;
             }
-            
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -420,6 +420,14 @@ namespace WebKit
         public void Navigate(string url)
         {
             core.Navigate(url);
+        }
+
+        /// <summary>
+        /// Show the web inspector.
+        /// </summary>
+        public void ShowInspector()
+        {
+            core.ShowInspector();
         }
 
         /// <summary>

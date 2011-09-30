@@ -303,7 +303,7 @@ namespace WebKit
 
         public tagRECT webViewFrame(WebView sender)
         {
-            throw new NotImplementedException();
+            return ((WebViewClass)sender).visibleContentRect();
         }
 
         public float webViewHeaderHeight(WebView WebView)
