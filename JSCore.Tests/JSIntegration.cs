@@ -24,11 +24,13 @@ namespace JSCore.Tests
         {
             public string noGetterStringProperty = "stringProp";
             public string stringProperty { get; set; }
+            public int intProperty { get; set; }
             public float floatProperty { get; set; }
             public double doubleProperty { get; set; }
             public bool boolProperty { get; set; }
             public float[] floatsProperty { get; set; }
             public Dictionary<object, object> dictProperty { get; set; }
+            public Dictionary<string, object> nonGenericDictionary { get; set; }            
             public TestFunctions nestedProperty { get; set; }
         }
 
@@ -53,6 +55,7 @@ namespace JSCore.Tests
             Context.GetGlobalObject().SetProperty("simpleProperties", new SimpleProperties()
             {
                 stringProperty = "stringPropertyValue",
+                intProperty = 3,
                 floatProperty = (float)Math.PI,
                 doubleProperty = GOLDEN_RATIO,
                 boolProperty = true,
@@ -60,7 +63,8 @@ namespace JSCore.Tests
                 dictProperty = new Dictionary<object,object>() {
                     {"123", 2},
                     {"string", "hello world"}
-                },
+                },         
+                nonGenericDictionary = new Dictionary<string, object>() { { "x", 1 } },
                 nestedProperty = testFunctionsMock.Object
             });
             
@@ -78,6 +82,7 @@ namespace JSCore.Tests
 
             Assert.AreEqual("stringProp", o.GetProperty("noGetterStringProperty").ToString());
             Assert.AreEqual("stringPropertyValue", o.GetProperty("stringProperty").ToString());
+            Assert.AreEqual(3, o.GetProperty("intProperty").ToNumber());
             Assert.IsTrue(precisionEquals(Math.PI, o.GetProperty("floatProperty").ToNumber()));
             Assert.IsTrue(precisionEquals(GOLDEN_RATIO, o.GetProperty("doubleProperty").ToNumber()));
             Assert.IsTrue(o.GetProperty("boolProperty").ToBoolean());
@@ -111,6 +116,27 @@ namespace JSCore.Tests
             Assert.AreEqual(2, r.ToNumber());
             Assert.IsTrue(dictionary.HasProperty("string"));
             Assert.IsTrue(dictionary.HasProperty("123"));
+            Assert.AreEqual(2, dictionary.GetProperty("123").ToNumber());
+            Assert.AreEqual("hello world", dictionary.GetProperty("string").ToString());
+        }
+
+        [TestMethod]
+        public void TestNonGenericDictionary()
+        {
+            JSObject dict = Context.EvaluateScript("simpleProperties.nonGenericDictionary").ToObject();
+            Assert.IsTrue(dict.HasProperty("x"));
+            JSValue val = dict.GetProperty("x");
+            Assert.AreEqual(1, val.ToNumber());
+
+            Assert.AreEqual(1, Context.EvaluateScript("simpleProperties.nonGenericDictionary['x']").ToNumber());
+
+        }
+
+        [TestMethod]
+        public void TestSetDictionaryValues()
+        {
+            Context.EvaluateScript("simpleProperties.nonGenericDictionary['y'] = 2");
+            Assert.AreEqual(2, Context.EvaluateScript("simpleProperties.nonGenericDictionary['y']").ToNumber());           
         }
 
         [TestMethod]
