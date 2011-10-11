@@ -667,7 +667,10 @@ namespace WebKit
             if (frame == webView.mainFrame())
             {
                 string url = frame.provisionalDataSource().request().url();
-                Navigating(this, new WebBrowserNavigatingEventArgs(new Uri(url), frame.name()));
+                if (url != null && url != "")
+                {
+                    Navigating(this, new WebBrowserNavigatingEventArgs(new Uri(url), frame.name()));
+                }
             }
         }
 

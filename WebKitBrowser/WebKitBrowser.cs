@@ -40,7 +40,7 @@ namespace WebKit
     /// </summary>
     public partial class WebKitBrowser : UserControl, IWebKitBrowserHost, IWebKitBrowser
     {
-        private WebKitBrowserCore core = new WebKitBrowserCore();
+        private WebKitBrowserCore core;
 
         /// <summary>
         /// Processes a command key.  Overridden in WebKitBrowser to forward key events to the WebKit window.
@@ -388,11 +388,16 @@ namespace WebKit
 
         #region Constructors / initialization functions
 
+        public WebKitBrowser() : this(new WebKitBrowserCore()) 
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the WebKitBrowser control.
         /// </summary>
-        public WebKitBrowser()
+        public WebKitBrowser(WebKitBrowserCore bCore)
         {
+            core = bCore;
             NewWindowCreated += delegate { };
             NewWindowRequest += delegate { };
             DownloadBegin += delegate { };
