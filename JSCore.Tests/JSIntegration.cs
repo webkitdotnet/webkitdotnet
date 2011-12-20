@@ -49,7 +49,7 @@ namespace JSCore.Tests
             void acceptsArray(object[] a);
             void acceptsObject(Dictionary<object, object> d);
             void acceptsNonGenericDictionary(Dictionary<string, object> d);
-            void acceptsDelegate(Delegate d);
+            void acceptsDelegate(JavaScriptFunction d);
             
             void verified(bool r);
         }
@@ -209,7 +209,7 @@ namespace JSCore.Tests
         [TestMethod]
         public void TestFunctionSimpleCallbacks()
         {           
-            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<Delegate>())).Callback<Delegate>(d => Assert.IsTrue((bool)d.DynamicInvoke((object) new object[] { })));
+            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<JavaScriptFunction>())).Callback<JavaScriptFunction>(d => Assert.IsTrue((bool)d(Context)));
             testFunctionsMock.Setup(f => f.verified(true));
 
             Context.EvaluateScript("testFunctions.acceptsDelegate(function() { testFunctions.verified(true); return true; })");
@@ -227,7 +227,7 @@ namespace JSCore.Tests
         {
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
             
-            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<Delegate>())).Callback<Delegate>(d => {
+            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<JavaScriptFunction>())).Callback<JavaScriptFunction>(d => {
 
                 var worker = new System.ComponentModel.BackgroundWorker();
                 worker.DoWork += delegate
@@ -236,7 +236,7 @@ namespace JSCore.Tests
                     dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate
                     {
                         //m_trigger.Set();
-                        Assert.IsTrue((bool)d.DynamicInvoke((object)new object[] { 10 }));
+                        Assert.IsTrue((bool)d(Context, 10));
                     });    
                 };
        
@@ -257,7 +257,7 @@ namespace JSCore.Tests
         [TestMethod]       
         public void TestFunctionCallbacksWithParametersAndReturnsObject()
         {
-            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<Delegate>())).Callback<Delegate>(VerifyObjectCallbackFunction);
+            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<JavaScriptFunction>())).Callback<JavaScriptFunction>(VerifyObjectCallbackFunction);
             testFunctionsMock.Setup(f => f.verified(true));
 
             Context.EvaluateScript(@"
@@ -276,7 +276,7 @@ namespace JSCore.Tests
         [TestMethod]
         public void TestFunctionCallbacksWithParametersAndReturnsArray()
         {
-            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<Delegate>())).Callback<Delegate>(VerifyArrayCallbackFunction);
+            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<JavaScriptFunction>())).Callback<JavaScriptFunction>(VerifyArrayCallbackFunction);
             testFunctionsMock.Setup(f => f.verified(true));
 
             Context.EvaluateScript(@"
@@ -289,40 +289,15 @@ namespace JSCore.Tests
             testFunctionsMock.VerifyAll();
         }
 
-        /// <summary>
-        /// Have the C# delegate spawn a thread and call the passed in calback function asyncrounously
-        /// </summary>
-        [TestMethod]
-        public void TestFunctionsAsyncCallbacks()
-        {
-            lock (this)
-            {
-                testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<Delegate>())).Callback<Delegate>(AsyncCallbackFunction);
-                testFunctionsMock.Setup(f => f.verified(true));
-                
-                JSValue result = Context.EvaluateScript(@"                    
-                    testFunctions.acceptsDelegate(function() { 
-                        testFunctions.verified(true);
-                        return true; 
-                    })                    
-                ");
-                
-
-                if (!Monitor.Wait(this, 5000)) Assert.Fail("Callback function didn't fire");
-            }
-
-            testFunctionsMock.VerifyAll();
-        }
-
 
         /// <summary>
         /// Verify that the callback accepts parameters and returns an object
         /// </summary>
         /// <param name="d"></param>
-        private void VerifyObjectCallbackFunction(Delegate d)
+        private void VerifyObjectCallbackFunction(JavaScriptFunction d)
         {
             bool param = true;
-            Dictionary<object, object> returnVal = (Dictionary<object, object>)d.DynamicInvoke((object)new object[] { param });
+            Dictionary<object, object> returnVal = (Dictionary<object, object>)d(Context, param);
             Assert.AreEqual<string>("success", (string)returnVal.Keys.ElementAt(0));
             Assert.AreEqual<string>("hello world", (string)returnVal["success"]);
         }
@@ -331,34 +306,16 @@ namespace JSCore.Tests
         /// Verify that the callback accepts parametsr and returns an array
         /// </summary>
         /// <param name="d"></param>
-        private void VerifyArrayCallbackFunction(Delegate d)
+        private void VerifyArrayCallbackFunction(JavaScriptFunction d)
         {
             bool param = true;
-            object[] ret = (object[]) d.DynamicInvoke((object)new object[] { param });
+            object[] ret = (object[])d(Context, param);
             Assert.AreEqual(3, ret.Length);
             Assert.AreEqual("first", ret[0]);
             Assert.IsTrue(precisionEquals(2.0, (double)ret[1]));
             Assert.AreEqual(param, (bool)ret[2]);
         }
 
-        /// <summary>
-        /// Fire off a thread and invoke the delegate later
-        /// </summary>
-        /// <param name="d"></param>
-        private void AsyncCallbackFunction(Delegate d)
-        {
-            var worker = new System.ComponentModel.BackgroundWorker();            
-            worker.DoWork += delegate
-            {
-                lock (this)
-                {
-                    Thread.Sleep(400);
-                    Assert.IsTrue((bool)d.DynamicInvoke((object)new object[] { }));
-                    Monitor.Pulse(this);    
-                }                 
-            };            
-            worker.RunWorkerAsync();
-        }
 
         /// <summary>
         /// Are the double close enough?
