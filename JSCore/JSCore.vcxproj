@@ -131,6 +131,7 @@ del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -141,6 +142,7 @@ del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <Private>true</Private>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />

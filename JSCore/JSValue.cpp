@@ -59,6 +59,11 @@ bool JSValue::IsUndefined::get()
     return JSValueIsUndefined(_context->context(), _value);
 }
 
+JSValueRef JSValue::getValue()
+{
+	return _value;
+}
+
 String ^ JSValue::ToJSONString()
 {
     return "";

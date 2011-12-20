@@ -586,8 +586,8 @@ namespace WebKit
 
             tagRECT rect = new tagRECT();
             rect.top = rect.left = 0;
-            rect.bottom = this.host.Height - 1;
-            rect.right = this.host.Width - 1;
+            rect.bottom = this.host.Height;
+            rect.right = this.host.Width;
             webView.initWithFrame(rect, null, null);
 
             IWebViewPrivate webViewPrivate = (IWebViewPrivate)webView;

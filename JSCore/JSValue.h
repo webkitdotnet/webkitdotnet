@@ -34,6 +34,8 @@ public:
     property bool IsNumber { bool get(); };
     property bool IsString { bool get(); };
     property bool IsObject { bool get(); };
+	
+	JSValueRef JSValue::getValue();
 
     // conversion methods
     String ^ ToJSONString();

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebKit.JSCore;
 using Moq;
 using System.Threading;
+using System.Windows.Threading;
 
 namespace JSCore.Tests
 {
@@ -16,6 +17,8 @@ namespace JSCore.Tests
     public class JSIntegration
     {
         static double GOLDEN_RATIO = (1 + Math.Sqrt(5)) / 2;
+
+        static ManualResetEvent m_trigger = new ManualResetEvent(false);
 
         JSContext Context;
         Mock<TestFunctions> testFunctionsMock;
@@ -38,10 +41,14 @@ namespace JSCore.Tests
         {
             void acceptsBoolean(bool b);
             void acceptsDouble(double d);
+            void acceptsInt(int i);
+            void acceptsLong(long l);
+            void acceptsDateTime(DateTime dt);
             void acceptsFloat(float f);
             void acceptsString(string s);
             void acceptsArray(object[] a);
             void acceptsObject(Dictionary<object, object> d);
+            void acceptsNonGenericDictionary(Dictionary<string, object> d);
             void acceptsDelegate(Delegate d);
             
             void verified(bool r);
@@ -155,8 +162,11 @@ namespace JSCore.Tests
             testFunctionsMock.Setup(f => f.acceptsBoolean(true));
             testFunctionsMock.Setup(f => f.acceptsDouble(It.Is<double>(d => precisionEquals(d, GOLDEN_RATIO))));
             testFunctionsMock.Setup(f => f.acceptsFloat(It.Is<float>(fl => precisionEquals(fl, Math.PI))));
+            testFunctionsMock.Setup(f => f.acceptsInt(1024));            
+            testFunctionsMock.Setup(f => f.acceptsLong(It.Is<Int64>(l => l == 1318538364334)));
             testFunctionsMock.Setup(f => f.acceptsString("stringVal"));
-            
+            //testFunctionsMock.Setup(f => f.acceptsDateTime(It.Is<DateTime>(d => d != null)));
+
             testFunctionsMock.Setup(f => f.acceptsArray(It.Is<object[]>(o => 
                 o.Length == 3 && 
                 (double)o[0] == 1 && 
@@ -173,13 +183,25 @@ namespace JSCore.Tests
 
             Context.EvaluateScript("testFunctions.acceptsBoolean(true)");
             Context.EvaluateScript("testFunctions.acceptsDouble(" + GOLDEN_RATIO + ")");
+            Context.EvaluateScript("testFunctions.acceptsInt(1024)");
+            Context.EvaluateScript("testFunctions.acceptsLong(1318538364334)");
             Context.EvaluateScript("testFunctions.acceptsFloat(" + Math.PI + ")");
             Context.EvaluateScript("testFunctions.acceptsString('stringVal')");
             Context.EvaluateScript("testFunctions.acceptsArray([1, 'second', [true, 3, []]])");
             Context.EvaluateScript("testFunctions.acceptsObject({x:1, array:[1,2,3], nestedObj:{z:'nested'}})");
+            //Context.EvaluateScript("testFunctions.acceptsDateTime(new Date(1980, 1, 9))");
+
 
             testFunctionsMock.VerifyAll();
         }
+
+        /*
+        [TestMethod]
+        public void TestFunctionNonGenericDictionary()
+        {
+            testFunctionsMock.Setup(f => f.acceptsNonGenericDictionary(It.Is<Dictionary<string, object>>(d => true)));
+            Context.EvaluateScript("testFunctions.acceptsNonGenericDictionary({'x': 1})");
+        }*/
 
         /// <summary>
         /// C# methods should be able to accept a delegate function and be able to invoke it
@@ -193,6 +215,40 @@ namespace JSCore.Tests
             Context.EvaluateScript("testFunctions.acceptsDelegate(function() { testFunctions.verified(true); return true; })");
 
             testFunctionsMock.VerifyAll();
+        }
+
+        
+
+        /// <summary>
+        /// C# methods should be able to accept a delegate function and be able to invoke it with parameter
+        /// </summary>
+        [TestMethod]
+        public void TestFunctionArgumentCallbacks()
+        {
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+            
+            testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<Delegate>())).Callback<Delegate>(d => {
+
+                var worker = new System.ComponentModel.BackgroundWorker();
+                worker.DoWork += delegate
+                {
+                    m_trigger.Set();
+                    dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate
+                    {
+                        //m_trigger.Set();
+                        Assert.IsTrue((bool)d.DynamicInvoke((object)new object[] { 10 }));
+                    });    
+                };
+       
+                worker.RunWorkerAsync();
+            });
+            testFunctionsMock.Setup(f => f.verified(true));
+            
+            Context.EvaluateScript("testFunctions.acceptsDelegate(function(aFloat) { testFunctions.verified(aFloat == 10.0); return true; })");
+            
+            m_trigger.WaitOne();
+
+            //testFunctionsMock.VerifyAll();
         }
 
         /// <summary>
@@ -252,7 +308,7 @@ namespace JSCore.Tests
                 ");
                 
 
-                if (!Monitor.Wait(this, 1000)) Assert.Fail("Callback function didn't fire");
+                if (!Monitor.Wait(this, 5000)) Assert.Fail("Callback function didn't fire");
             }
 
             testFunctionsMock.VerifyAll();
@@ -296,7 +352,7 @@ namespace JSCore.Tests
             {
                 lock (this)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(400);
                     Assert.IsTrue((bool)d.DynamicInvoke((object)new object[] { }));
                     Monitor.Pulse(this);    
                 }                 

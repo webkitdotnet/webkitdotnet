@@ -34,6 +34,7 @@ using System.Threading;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Windows.Threading;
 
 namespace WebKitBrowserTest
 {
@@ -48,6 +49,8 @@ namespace WebKitBrowserTest
     public class TestClass
     {
         public JSContext ctx { get; set; }
+
+       
 
         public class InnerClass
         {
@@ -70,21 +73,24 @@ namespace WebKitBrowserTest
             MessageBox.Show("" + x["x"] + " " + a[0] + " " + a[1] + " l=" + a.GetLength(0));
         }
 
-        public void callback(Delegate callback)
+        public void callback(JavaScriptFunction func)
         {            
-            object[] x = { "first" };
-            
-            string result = (string) callback.DynamicInvoke(new object[] {x});
-            MessageBox.Show(result);
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
             var worker = new BackgroundWorker();
             worker.DoWork += delegate
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
+                func(ctx, "testing", "1234");
+                
+                dispatcher.Invoke((MethodInvoker)delegate
+                {
+                    //MessageBox.Show(result);
+                    //EventDelegate 
+                    
+                    //func.DynamicInvoke(ctx, "testing", "1234");
+                });
             };
-            worker.RunWorkerCompleted += delegate
-            {
-                callback.DynamicInvoke(new object[] {x});
-            };
+           
             worker.RunWorkerAsync();
         }
         public string x { get; set; }
@@ -149,7 +155,10 @@ namespace WebKitBrowserTest
             
             container.ContentPanel.Controls.Add(browser);
 
-            browser.ObjectForScripting = new TestClass();
+            var t = new TestClass();
+            
+            browser.ObjectForScripting = t;
+
 
             // context menu
 
@@ -160,7 +169,10 @@ namespace WebKitBrowserTest
             browser.DocumentTitleChanged += (s, e) => this.Text = browser.DocumentTitle;
             browser.Navigating += (s, e) => statusLabel.Text = "Loading...";
             browser.Navigated += (s, e) => { statusLabel.Text = "Downloading..."; };
-            browser.DocumentCompleted += (s, e) => { statusLabel.Text = "Done"; };
+            browser.DocumentCompleted += (s, e) => {
+                t.ctx = (JSContext)browser.GetGlobalScriptContext();
+                statusLabel.Text = "Done"; 
+            };
             if (goHome)
             {
                 string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);

@@ -63,7 +63,7 @@ namespace WebKit
 
         public int canRedo()
         {
-            throw new NotImplementedException();
+            return 1;
         }
 
         public int canRunModal(WebView WebView)
@@ -73,12 +73,12 @@ namespace WebKit
 
         public void canTakeFocus(WebView sender, int forward, out int result)
         {
-            throw new NotImplementedException();
+            result = 0;            
         }
 
         public int canUndo()
         {
-            throw new NotImplementedException();
+            return 1;
         }
 
         public void cleanUpCustomMenuDrawingData(WebView sender, int hMenu)
@@ -361,7 +361,7 @@ namespace WebKit
 
         public IDataObject willPerformDragSourceAction(WebView WebView, WebDragSourceAction action, ref tagPOINT point, IDataObject pasteboard)
         {
-            throw new NotImplementedException();
+            return pasteboard;
         }
 
         #endregion

@@ -4,6 +4,9 @@ using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace System::Reflection;
 using namespace System::Collections::Generic;
+using namespace System::Windows::Threading;
+using namespace System::Windows::Forms;
+using namespace System::Threading;
 
 extern JSClassDefinition wrapperClass;
 
