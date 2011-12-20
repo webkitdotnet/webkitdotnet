@@ -556,7 +556,7 @@ namespace WebKit
                 };
 
                 activationContext.Activate();
-                webView = new WebViewClass();
+                webView = new WebView();
                 activationContext.Deactivate();
             }
         }
@@ -818,7 +818,7 @@ namespace WebKit
 
                 activationContext.Activate();
 
-                WebMutableURLRequest request = new WebMutableURLRequestClass();
+                WebMutableURLRequest request = new WebMutableURLRequest();
                 request.initWithURL(url, _WebURLRequestCachePolicy.WebURLRequestReloadIgnoringCacheData, 60);
                 request.setHTTPMethod("GET");
 
@@ -983,23 +983,31 @@ namespace WebKit
         /// Displays a Print Preview dialog box.
         /// </summary>
         public void ShowPrintPreviewDialog()
-        {
-            // TODO: find out why it apparently only shows the first page on the preview...
+        {            
             PrintPreviewDialog printDlg = new PrintPreviewDialog();
             PrintDocument doc = this.GetCommonPrintDocument();
             printDlg.Document = doc;
             PrintManager pm = new PrintManager(doc, this.host, this, true);
-            pm.Print();
-            printDlg.ShowDialog();
+            pm.Print();            
+            
+            printDlg.ShowDialog();            
         }
 
         // Gets a PrintDocument with the current default settings.
         private PrintDocument GetCommonPrintDocument()
         {
+            if (!PageSettings.PrinterSettings.IsValid)
+            {                
+                PageSettings.PrinterSettings.PrinterName = "Microsoft XPS Document Writer";
+            }
             PrintDocument doc = new PrintDocument();
             doc.DocumentName = this.DocumentTitle;
             doc.DefaultPageSettings = PageSettings;
             doc.OriginAtMargins = true;
+            if (!doc.PrinterSettings.IsValid)
+            {
+                doc.PrinterSettings = PageSettings.PrinterSettings;
+            }
             return doc;
         }
 

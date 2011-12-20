@@ -37,6 +37,7 @@ using WebKit.Interop;
 namespace WebKit
 {
     internal delegate void CreateWebViewWithRequestEvent(IWebURLRequest request, out WebView webView);
+    internal delegate string FTPDirectoryTemplatePath(WebView WebView);
     internal delegate void RunJavaScriptAlertPanelWithMessageEvent(WebView sender, string message);
     internal delegate int RunJavaScriptConfirmPanelWithMessageEvent(WebView sender, string message);
     internal delegate string RunJavaScriptTextInputPanelWithPromptEvent(WebView sender, string message, string defaultText);
@@ -44,6 +45,7 @@ namespace WebKit
     internal class WebUIDelegate : IWebUIDelegate
     {
         public event CreateWebViewWithRequestEvent CreateWebViewWithRequest;
+        public event FTPDirectoryTemplatePath FTPDirectoryTemplatePath;
         public event RunJavaScriptAlertPanelWithMessageEvent RunJavaScriptAlertPanelWithMessage;
         public event RunJavaScriptConfirmPanelWithMessageEvent RunJavaScriptConfirmPanelWithMessage;
         public event RunJavaScriptTextInputPanelWithPromptEvent RunJavaScriptTextInputPanelWithPrompt;
@@ -136,8 +138,14 @@ namespace WebKit
         {
         }
 
+        // TODO: Um, what does this do? I can't figure it out from the source code and can't find it
+        // in the docs.
+        // From: https://trac.webkit.org/timeline?from=2007-07-15&daysback=4
+        // --> Set the path to the FTP listing document template
         public string ftpDirectoryTemplatePath(WebView WebView)
         {
+            //return FTPDirectoryTemplatePath(WebView);
+            // You'd think the above would work but it's returning NullReferenceException
             return "";
         }
 
@@ -171,7 +179,7 @@ namespace WebKit
         {
         }
 
-        public void printFrame(WebView WebView, IWebFrame frame)
+        public void printFrame(WebView WebView, webFrame frame)
         {
         }
 
@@ -187,12 +195,12 @@ namespace WebKit
         {
         }
 
-        public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, IWebFrame initiatedByFrame)
+        public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, webFrame initiatedByFrame)
         {
             throw new NotImplementedException();
         }
 
-        public int runDatabaseSizeLimitPrompt(WebView WebView, string displayName, IWebFrame initiatedByFrame)
+        public int runDatabaseSizeLimitPrompt(WebView WebView, string displayName, webFrame initiatedByFrame)
         {
             throw new NotImplementedException();
         }
@@ -298,22 +306,22 @@ namespace WebKit
 
         public float webViewFooterHeight(WebView WebView)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public tagRECT webViewFrame(WebView sender)
         {
-            return ((WebViewClass)sender).visibleContentRect();
+            return ((IWebViewPrivate)sender).visibleContentRect();
         }
 
         public float webViewHeaderHeight(WebView WebView)
         {
-            throw new NotImplementedException();
+            return 0;            
         }
 
         public int webViewIsResizable(WebView sender)
         {
-            throw new NotImplementedException();
+            return 1;            
         }
 
         public int webViewIsStatusBarVisible(WebView sender)
@@ -361,7 +369,7 @@ namespace WebKit
 
         public IDataObject willPerformDragSourceAction(WebView WebView, WebDragSourceAction action, ref tagPOINT point, IDataObject pasteboard)
         {
-            return pasteboard;
+            throw new NotImplementedException();
         }
 
         #endregion
