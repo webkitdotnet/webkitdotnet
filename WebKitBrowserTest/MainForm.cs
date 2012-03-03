@@ -259,7 +259,7 @@ namespace WebKitBrowserTest
 
         private void jSTestPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            currentPage.browser.DocumentText = @"<!DOCTYPE html>
+            /*currentPage.browser.DocumentText = @"<!DOCTYPE html>
 <html lang=""eng"">
 <head>
 <script>
@@ -293,10 +293,15 @@ function testtest(dog) {
   dog.test.b = true;
 }
 function testLocalStorage() {
+  //if (localStorage) {
+  //  alert('hi!');
+  //}
+alert('well');
   if (!localStorage.getItem(""test"")) {
-    document.getElementById(""status"").innerHTML = ""Setting local storage..."";
+    document.getElementById(""status"").innerText = ""Setting local storage..."";
+    localStorage.setItem(""test"", 42);
   } else {
-    document.getElementById(""status"").innerHTML = localStorage.getItem(""test"");
+    document.getElementById(""status"").innerText = localStorage.getItem(""test"");
   }
 }
 </script>
@@ -306,7 +311,8 @@ function testLocalStorage() {
 <p id=""status"">Status</p>
 </body>
 </html>
-";
+";*/
+            currentPage.browser.Navigate("file:///C:/Users/Peter/Desktop/test.html");
         }
 
         private void test3ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -332,7 +338,7 @@ function testLocalStorage() {
                 }
             }*/
 
-            ctx.EvaluateScript("testLocalStorage");
+            ctx.EvaluateScript("testLocalStorage()");
         }
 
         private class TestClass
