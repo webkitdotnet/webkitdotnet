@@ -304,23 +304,23 @@ function testtest(dog) {
         private void test3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
-            JSObject dog = ctx.EvaluateScript("someDog(12, \"Golden Retriever\");").ToObject();
+            dynamic dog = ctx.EvaluateScript("someDog(12, \"Golden Retriever\");").ToObject();
             if (dog != null)
             {
                 if (dog.HasProperty("breed"))
                 {
-                    /*MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
-                    dog.SetProperty("breed", "Border Collie");
-                    MessageBox.Show("breed = " + dog.GetProperty("breed").ToString());
-                    dog.SetProperty("name", "Holly");
-                    MessageBox.Show("name = " + dog.GetProperty("name").ToString());*/
+                    MessageBox.Show("breed = " + dog.breed);
+                    dog.breed = "Border Collie";
+                    MessageBox.Show("breed = " + dog.breed);
+                    dog.name = "Holly";
+                    MessageBox.Show("name = " + dog.name);
                     ctx.EvaluateScript("printDog(myDog)");
                     TestClass myTest = new TestClass() { x = "testing" };
-                    dog.SetProperty("test", myTest);
+                    dog.test = myTest;
                     ctx.EvaluateScript("testtest(myDog)");
                     //ctx.GarbageCollect();
 
-                    MessageBox.Show(String.Format("y = {0}, i = {1}, b = {2}", myTest.y, myTest.i, myTest.b));
+                    MessageBox.Show(String.Format("y = {0}, i = {1}, b = {2}", dog.test.y, dog.test.i, dog.test.b));
                 }
             }
         }
