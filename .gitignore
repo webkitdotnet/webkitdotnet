@@ -5,6 +5,7 @@ StyleCop.Cache
 *.suo
 *.ncb
 *.sdf
+*.opensdf
 bin/
 obj/
 JSCore/Debug
