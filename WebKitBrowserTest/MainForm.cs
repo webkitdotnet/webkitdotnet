@@ -292,10 +292,18 @@ function testtest(dog) {
   dog.test.i = 42.55;
   dog.test.b = true;
 }
+function testLocalStorage() {
+  if (!localStorage.getItem(""test"")) {
+    document.getElementById(""status"").innerHTML = ""Setting local storage..."";
+  } else {
+    document.getElementById(""status"").innerHTML = localStorage.getItem(""test"");
+  }
+}
 </script>
 </head>
 <body>
 <p id=""dog"">Hi!</p>
+<p id=""status"">Status</p>
 </body>
 </html>
 ";
@@ -304,7 +312,7 @@ function testtest(dog) {
         private void test3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
-            dynamic dog = ctx.EvaluateScript("someDog(12, \"Golden Retriever\");").ToObject();
+            /*dynamic dog = ctx.EvaluateScript("someDog(12, \"Golden Retriever\");").ToObject();
             if (dog != null)
             {
                 if (dog.HasProperty("breed"))
@@ -322,7 +330,9 @@ function testtest(dog) {
 
                     MessageBox.Show(String.Format("y = {0}, i = {1}, b = {2}", dog.test.y, dog.test.i, dog.test.b));
                 }
-            }
+            }*/
+
+            ctx.EvaluateScript("testLocalStorage");
         }
 
         private class TestClass
