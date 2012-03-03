@@ -3,6 +3,7 @@ StyleCop.Cache
 *.cache
 *.user
 *.suo
+*.ncb
 bin/
 obj/
 JSCore/Debug
