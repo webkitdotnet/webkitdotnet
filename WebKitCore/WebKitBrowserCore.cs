@@ -47,6 +47,7 @@ namespace WebKit
         private WebDownloadDelegate downloadDelegate;
         private WebPolicyDelegate policyDelegate;
         private WebUIDelegate uiDelegate;
+        private WebPreferences preferences;
 
         #region WebKitBrowser events
 
@@ -519,6 +520,18 @@ namespace WebKit
             { 
                 _scriptObject = value; 
                 CreateWindowScriptObject((JSContext)GetGlobalScriptContext()); 
+            }
+        }
+
+        public string LocalStorageDatabasePath
+        {
+            get
+            {
+                return webView.preferences().localStorageDatabasePath();
+            }
+            set
+            {
+                webView.preferences().setIconDatabaseLocation(value);
             }
         }
 

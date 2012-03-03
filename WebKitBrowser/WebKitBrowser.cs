@@ -431,6 +431,13 @@ namespace WebKit
             set { core.ObjectForScripting = value; }
         }
 
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string LocalStorageDatabasePath
+        {
+            get { return core.LocalStorageDatabasePath; }
+            set { core.LocalStorageDatabasePath = value; }
+        }
+
         #endregion
 
         #region Constructors / initialization functions

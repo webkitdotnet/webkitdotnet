@@ -312,6 +312,7 @@ alert('well');
 </body>
 </html>
 ";*/
+            currentPage.browser.LocalStorageDatabasePath = "localstorage.db";
             currentPage.browser.Navigate("file:///C:/Users/Peter/Desktop/test.html");
         }
 
