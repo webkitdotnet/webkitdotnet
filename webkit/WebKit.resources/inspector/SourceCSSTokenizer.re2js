@@ -29,78 +29,35 @@
  */
 
 // Generate js file as follows:
-//
-// re2c -isc WebCore/inspector/front-end/SourceCSSTokenizer.re2js \
-// | sed 's|^yy\([^:]*\)*\:|case \1:|' \
-// | sed 's|[*]cursor[+][+]|this._charAt(cursor++)|' \
-// | sed 's|[[*][+][+]cursor|this._charAt(++cursor)|' \
-// | sed 's|[*]cursor|this._charAt(cursor)|' \
-// | sed 's|yych = \*\([^;]*\)|yych = this._charAt\1|' \
-// | sed 's|goto case \([^;]*\)|{ gotoCase = \1; continue; }|' \
-// | sed 's|unsigned\ int|var|' \
-// | sed 's|var\ yych|case 1: var yych|'
 
+/*
+re2c -isc Source/WebCore/inspector/front-end/SourceCSSTokenizer.re2js \
+ | sed 's|^yy\([^:]*\)*\:|case \1:|' \
+ | sed 's|[*]cursor[+][+]|this._charAt(cursor++)|' \
+ | sed 's|[[*][+][+]cursor|this._charAt(++cursor)|' \
+ | sed 's|[*]cursor|this._charAt(cursor)|' \
+ | sed 's|yych = \*\([^;]*\)|yych = this._charAt\1|' \
+ | sed 's|goto case \([^;]*\)|{ gotoCase = \1; continue; }|' \
+ | sed 's|unsigned\ int|var|' \
+ | sed 's|var\ yych|case 1: var yych|' > Source/WebCore/inspector/front-end/SourceCSSTokenizer.js
+*/
+
+/**
+ * @constructor
+ * @extends {WebInspector.SourceTokenizer}
+ */
 WebInspector.SourceCSSTokenizer = function()
 {
     WebInspector.SourceTokenizer.call(this);
 
-    this._propertyKeywords = [
-        "background", "background-attachment", "background-clip", "background-color", "background-image",
-        "background-origin", "background-position", "background-position-x", "background-position-y",
-        "background-repeat", "background-repeat-x", "background-repeat-y", "background-size", "border",
-        "border-bottom", "border-bottom-color", "border-bottom-left-radius", "border-bottom-right-radius",
-        "border-bottom-style", "border-bottom-width", "border-collapse", "border-color", "border-left",
-        "border-left-color", "border-left-style", "border-left-width", "border-radius", "border-right",
-        "border-right-color", "border-right-style", "border-right-width", "border-spacing", "border-style",
-        "border-top", "border-top-color", "border-top-left-radius", "border-top-right-radius", "border-top-style",
-        "border-top-width", "border-width", "bottom", "caption-side", "clear", "clip", "color", "content",
-        "counter-increment", "counter-reset", "cursor", "direction", "display", "empty-cells", "float",
-        "font", "font-family", "font-size", "font-stretch", "font-style", "font-variant", "font-weight",
-        "height", "left", "letter-spacing", "line-height", "list-style", "list-style-image", "list-style-position",
-        "list-style-type", "margin", "margin-bottom", "margin-left", "margin-right", "margin-top", "max-height",
-        "max-width", "min-height", "min-width", "opacity", "orphans", "outline", "outline-color", "outline-offset",
-        "outline-style", "outline-width", "overflow", "overflow-x", "overflow-y", "padding", "padding-bottom",
-        "padding-left", "padding-right", "padding-top", "page", "page-break-after", "page-break-before",
-        "page-break-inside", "pointer-events", "position", "quotes", "resize", "right", "size", "src",
-        "table-layout", "text-align", "text-decoration", "text-indent", "text-line-through", "text-line-through-color",
-        "text-line-through-mode", "text-line-through-style", "text-line-through-width", "text-overflow", "text-overline",
-        "text-overline-color", "text-overline-mode", "text-overline-style", "text-overline-width", "text-rendering",
-        "text-shadow", "text-transform", "text-underline", "text-underline-color", "text-underline-mode",
-        "text-underline-style", "text-underline-width", "top", "unicode-bidi", "unicode-range", "vertical-align",
-        "visibility", "white-space", "widows", "width", "word-break", "word-spacing", "word-wrap", "z-index", "zoom",
-        "-webkit-animation", "-webkit-animation-delay", "-webkit-animation-direction", "-webkit-animation-duration",
-        "-webkit-animation-iteration-count", "-webkit-animation-name", "-webkit-animation-play-state",
-        "-webkit-animation-timing-function", "-webkit-appearance", "-webkit-backface-visibility",
-        "-webkit-background-clip", "-webkit-background-composite", "-webkit-background-origin", "-webkit-background-size",
-        "-webkit-binding", "-webkit-border-fit", "-webkit-border-horizontal-spacing", "-webkit-border-image",
-        "-webkit-border-radius", "-webkit-border-vertical-spacing", "-webkit-box-align", "-webkit-box-direction",
-        "-webkit-box-flex", "-webkit-box-flex-group", "-webkit-box-lines", "-webkit-box-ordinal-group",
-        "-webkit-box-orient", "-webkit-box-pack", "-webkit-box-reflect", "-webkit-box-shadow", "-webkit-box-sizing",
-        "-webkit-column-break-after", "-webkit-column-break-before", "-webkit-column-break-inside", "-webkit-column-count",
-        "-webkit-column-gap", "-webkit-column-rule", "-webkit-column-rule-color", "-webkit-column-rule-style",
-        "-webkit-column-rule-width", "-webkit-column-width", "-webkit-columns", "-webkit-font-size-delta",
-        "-webkit-font-smoothing", "-webkit-highlight", "-webkit-line-break", "-webkit-line-clamp",
-        "-webkit-margin-bottom-collapse", "-webkit-margin-collapse", "-webkit-margin-start", "-webkit-margin-top-collapse",
-        "-webkit-marquee", "-webkit-marquee-direction", "-webkit-marquee-increment", "-webkit-marquee-repetition",
-        "-webkit-marquee-speed", "-webkit-marquee-style", "-webkit-mask", "-webkit-mask-attachment",
-        "-webkit-mask-box-image", "-webkit-mask-clip", "-webkit-mask-composite", "-webkit-mask-image",
-        "-webkit-mask-origin", "-webkit-mask-position", "-webkit-mask-position-x", "-webkit-mask-position-y",
-        "-webkit-mask-repeat", "-webkit-mask-repeat-x", "-webkit-mask-repeat-y", "-webkit-mask-size",
-        "-webkit-match-nearest-mail-blockquote-color", "-webkit-nbsp-mode", "-webkit-padding-start",
-        "-webkit-perspective", "-webkit-perspective-origin", "-webkit-perspective-origin-x", "-webkit-perspective-origin-y",
-        "-webkit-rtl-ordering", "-webkit-text-decorations-in-effect", "-webkit-text-fill-color", "-webkit-text-security",
-        "-webkit-text-size-adjust", "-webkit-text-stroke", "-webkit-text-stroke-color", "-webkit-text-stroke-width",
-        "-webkit-transform", "-webkit-transform-origin", "-webkit-transform-origin-x", "-webkit-transform-origin-y",
-        "-webkit-transform-origin-z", "-webkit-transform-style", "-webkit-transition", "-webkit-transition-delay",
-        "-webkit-transition-duration", "-webkit-transition-property", "-webkit-transition-timing-function",
-        "-webkit-user-drag", "-webkit-user-modify", "-webkit-user-select", "-webkit-variable-declaration-block"
-    ].keySet();
-    
+    this._propertyKeywords = WebInspector.CSSCompletions.cssNameCompletions.keySet();
+    this._colorKeywords = WebInspector.CSSKeywordCompletions.colors();
+
     this._valueKeywords = [
         "above", "absolute", "activeborder", "activecaption", "afar", "after-white-space", "ahead", "alias", "all", "all-scroll",
-        "alternate", "always","amharic", "amharic-abegede", "antialiased", "appworkspace", "aqua", "arabic-indic", "armenian",
-        "auto", "avoid", "background", "backwards", "baseline", "below", "bidi-override", "binary", "bengali", "black", "blink",
-        "block", "block-axis", "blue", "bold", "bolder", "border", "border-box", "both", "bottom", "break-all", "break-word", "button",
+        "alternate", "always", "amharic", "amharic-abegede", "antialiased", "appworkspace", "arabic-indic", "armenian", "asterisks",
+        "auto", "avoid", "background", "backwards", "baseline", "below", "bidi-override", "binary", "bengali", "blink",
+        "block", "block-axis", "bold", "bolder", "border", "border-box", "both", "bottom", "break-all", "break-word", "button",
         "button-bevel", "buttonface", "buttonhighlight", "buttonshadow", "buttontext", "cambodian", "capitalize", "caps-lock-indicator",
         "caption", "captiontext", "caret", "cell", "center", "checkbox", "circle", "cjk-earthly-branch", "cjk-heavenly-stem", "cjk-ideographic",
         "clear", "clip", "close-quote", "col-resize", "collapse", "compact", "condensed", "contain", "content", "content-box", "context-menu",
@@ -111,39 +68,39 @@ WebInspector.SourceCSSTokenizer = function()
         "ethiopic-abegede-ti-er", "ethiopic-abegede-ti-et", "ethiopic-halehame-aa-er", "ethiopic-halehame-aa-et",
         "ethiopic-halehame-am-et", "ethiopic-halehame-gez", "ethiopic-halehame-om-et", "ethiopic-halehame-sid-et",
         "ethiopic-halehame-so-et", "ethiopic-halehame-ti-er", "ethiopic-halehame-ti-et", "ethiopic-halehame-tig", "ew-resize", "expanded",
-        "extra-condensed", "extra-expanded", "fantasy", "fast", "fill", "fixed", "flat", "forwards", "from", "fuchsia", "geometricPrecision",
-        "georgian", "gray", "graytext", "green", "grey", "groove", "gujarati", "gurmukhi", "hand", "hangul", "hangul-consonant", "hebrew", "help",
+        "extra-condensed", "extra-expanded", "fantasy", "fast", "fill", "fixed", "flat", "footnotes", "forwards", "from", "geometricPrecision",
+        "georgian", "graytext", "groove", "gujarati", "gurmukhi", "hand", "hangul", "hangul-consonant", "hebrew", "help",
         "hidden", "hide", "higher", "highlight", "highlighttext", "hiragana", "hiragana-iroha", "horizontal", "hsl", "hsla", "icon", "ignore",
         "inactiveborder", "inactivecaption", "inactivecaptiontext", "infinite", "infobackground", "infotext", "inherit", "initial", "inline",
         "inline-axis", "inline-block", "inline-table", "inset", "inside", "intrinsic", "invert", "italic", "justify", "kannada", "katakana",
-        "katakana-iroha", "khmer", "landscape", "lao", "large", "larger", "left", "level", "lighter", "lime", "line-through", "linear", "lines",
-        "list-button", "list-item", "listbox", "listitem", "local", "logical", "loud", "lower", "lower-alpha", "lower-greek", "lower-hexadecimal", "lower-latin",
-        "lower-norwegian", "lower-roman", "lowercase", "ltr", "malayalam", "maroon", "match", "media-controls-background", "media-current-time-display",
-        "media-fullscreen-button", "media-mute-button", "media-play-button", "media-return-to-realtime-button", "media-rewind-button",
-        "media-seek-back-button", "media-seek-forward-button", "media-slider", "media-sliderthumb", "media-time-remaining-display",
+        "katakana-iroha", "khmer", "landscape", "lao", "large", "larger", "left", "level", "lighter", "line-through", "linear", "lines",
+        "list-button", "list-item", "listbox", "listitem", "local", "logical", "loud", "lower", "lower-alpha", "lower-armenian", "lower-greek",
+        "lower-hexadecimal", "lower-latin", "lower-norwegian", "lower-roman", "lowercase", "ltr", "malayalam", "match", "media-controls-background",
+        "media-current-time-display", "media-fullscreen-button", "media-mute-button", "media-play-button", "media-return-to-realtime-button",
+        "media-rewind-button", "media-seek-back-button", "media-seek-forward-button", "media-slider", "media-sliderthumb", "media-time-remaining-display",
         "media-volume-slider", "media-volume-slider-container", "media-volume-sliderthumb", "medium", "menu", "menulist", "menulist-button",
         "menulist-text", "menulist-textfield", "menutext", "message-box", "middle", "min-intrinsic", "mix", "mongolian", "monospace", "move", "multiple",
         "myanmar", "n-resize", "narrower", "navy", "ne-resize", "nesw-resize", "no-close-quote", "no-drop", "no-open-quote", "no-repeat", "none",
-        "normal", "not-allowed", "nowrap", "ns-resize", "nw-resize", "nwse-resize", "oblique", "octal", "olive", "open-quote", "optimizeLegibility",
-        "optimizeSpeed", "orange", "oriya", "oromo", "outset", "outside", "overlay", "overline", "padding", "padding-box", "painted", "paused",
-        "persian", "plus-darker", "plus-lighter", "pointer", "portrait", "pre", "pre-line", "pre-wrap", "preserve-3d", "progress", "purple",
-        "push-button", "radio", "read-only", "read-write", "read-write-plaintext-only", "red", "relative", "repeat", "repeat-x",
+        "normal", "not-allowed", "nowrap", "ns-resize", "nw-resize", "nwse-resize", "oblique", "octal", "open-quote", "optimizeLegibility",
+        "optimizeSpeed", "oriya", "oromo", "outset", "outside", "overlay", "overline", "padding", "padding-box", "painted", "paused",
+        "persian", "plus-darker", "plus-lighter", "pointer", "portrait", "pre", "pre-line", "pre-wrap", "preserve-3d", "progress",
+        "push-button", "radio", "read-only", "read-write", "read-write-plaintext-only", "relative", "repeat", "repeat-x",
         "repeat-y", "reset", "reverse", "rgb", "rgba", "ridge", "right", "round", "row-resize", "rtl", "run-in", "running", "s-resize", "sans-serif",
         "scroll", "scrollbar", "se-resize", "searchfield", "searchfield-cancel-button", "searchfield-decoration", "searchfield-results-button",
-        "searchfield-results-decoration", "semi-condensed", "semi-expanded", "separate", "serif", "show", "sidama", "silver", "single",
+        "searchfield-results-decoration", "semi-condensed", "semi-expanded", "separate", "serif", "show", "sidama", "single",
         "skip-white-space", "slide", "slider-horizontal", "slider-vertical", "sliderthumb-horizontal", "sliderthumb-vertical", "slow",
         "small", "small-caps", "small-caption", "smaller", "solid", "somali", "source-atop", "source-in", "source-out", "source-over",
         "space", "square", "square-button", "start", "static", "status-bar", "stretch", "stroke", "sub", "subpixel-antialiased", "super",
         "sw-resize", "table", "table-caption", "table-cell", "table-column", "table-column-group", "table-footer-group", "table-header-group",
-        "table-row", "table-row-group", "teal", "telugu", "text", "text-bottom", "text-top", "textarea", "textfield", "thai", "thick", "thin",
+        "table-row", "table-row-group", "telugu", "text", "text-bottom", "text-top", "textarea", "textfield", "thai", "thick", "thin",
         "threeddarkshadow", "threedface", "threedhighlight", "threedlightshadow", "threedshadow", "tibetan", "tigre", "tigrinya-er", "tigrinya-er-abegede",
-        "tigrinya-et", "tigrinya-et-abegede", "to", "top", "transparent", "ultra-condensed", "ultra-expanded", "underline", "up", "upper-alpha", "upper-greek",
-        "upper-hexadecimal", "upper-latin", "upper-norwegian", "upper-roman", "uppercase", "urdu", "url", "vertical", "vertical-text", "visible",
+        "tigrinya-et", "tigrinya-et-abegede", "to", "top", "transparent", "ultra-condensed", "ultra-expanded", "underline", "up", "upper-alpha", "upper-armenian",
+        "upper-greek", "upper-hexadecimal", "upper-latin", "upper-norwegian", "upper-roman", "uppercase", "urdu", "url", "vertical", "vertical-text", "visible",
         "visibleFill", "visiblePainted", "visibleStroke", "visual", "w-resize", "wait", "wave", "white", "wider", "window", "windowframe", "windowtext",
         "x-large", "x-small", "xor", "xx-large", "xx-small", "yellow", "-wap-marquee", "-webkit-activelink", "-webkit-auto", "-webkit-baseline-middle",
         "-webkit-body", "-webkit-box", "-webkit-center", "-webkit-control", "-webkit-focus-ring-color", "-webkit-grab", "-webkit-grabbing",
-        "-webkit-gradient", "-webkit-inline-box", "-webkit-left", "-webkit-link", "-webkit-marquee", "-webkit-mini-control", "-webkit-nowrap", "-webkit-right",
-        "-webkit-small-control", "-webkit-text", "-webkit-xxx-large", "-webkit-zoom-in", "-webkit-zoom-out",
+        "-webkit-gradient", "-webkit-inline-box", "-webkit-left", "-webkit-link", "-webkit-marquee", "-webkit-mini-control", "-webkit-nowrap", "-webkit-pictograph",
+        "-webkit-right", "-webkit-small-control", "-webkit-text", "-webkit-xxx-large", "-webkit-zoom-in", "-webkit-zoom-out",
     ].keySet();
 
     this._mediaTypes = ["all", "aural", "braille", "embossed", "handheld", "import", "print", "projection", "screen", "tty", "tv"].keySet();
@@ -159,7 +116,8 @@ WebInspector.SourceCSSTokenizer = function()
         INITIAL: 0,
         PROPERTY: 1,
         PROPERTY_VALUE: 2,
-        AT_RULE: 3
+        AT_RULE: 3,
+        AT_MEDIA_RULE: 4
     };
 
     this.case_INITIAL = 1000;
@@ -167,10 +125,18 @@ WebInspector.SourceCSSTokenizer = function()
     this.case_DSTRING = 1003;
     this.case_SSTRING = 1004;
 
-    this.initialCondition = { lexCondition: this._lexConditions.INITIAL, parseCondition: this._parseConditions.INITIAL }
+    this.condition = this.createInitialCondition();
 }
 
 WebInspector.SourceCSSTokenizer.prototype = {
+    createInitialCondition: function()
+    {
+        return { lexCondition: this._lexConditions.INITIAL, parseCondition: this._parseConditions.INITIAL };
+    },
+
+    /**
+     * @param {boolean=} stringEnds
+     */
     _stringToken: function(cursor, stringEnds)
     {
         if (this._isPropertyValue())
@@ -189,6 +155,7 @@ WebInspector.SourceCSSTokenizer.prototype = {
     {
         var cursorOnEnter = cursor;
         var gotoCase = 1;
+        var YYMARKER;
         while (1) {
             switch (gotoCase)
             // Following comment is replaced with generated state machine.
@@ -215,9 +182,10 @@ WebInspector.SourceCSSTokenizer.prototype = {
                 Colon = ":";
                 Semicolon = ";";
 
-                NumericLiteral = "-"? ([0-9]+ | [0-9]* "." [0-9]+)  ("em" | "rem" | "__qem" | "ex" | "px" | "cm" | 
+                NumericLiteral = "-"? ([0-9]+ | [0-9]* "." [0-9]+)  ("em" | "rem" | "__qem" | "ex" | "px" | "cm" |
                     "mm" | "in" | "pt" | "pc" | "deg" | "rad" | "grad" | "turn" | "ms" | "s" | "Hz" | "kHz" | "%")?;
 
+                Color = "#" [0-9A-Fa-f]+;
                 Identifier = [@!_\-$0-9a-zA-Z\[\]='"/]+;
 
                 DoubleStringContent = ([^\r\n\"\\] | "\\" ['"\\bfnrtv])*;
@@ -244,7 +212,7 @@ WebInspector.SourceCSSTokenizer.prototype = {
                 <INITIAL> OpenCurlyBracket
                 {
                     this.tokenType = null;
-                    if (this._condition.parseCondition === this._parseConditions.AT_RULE)
+                    if (this._condition.parseCondition === this._parseConditions.AT_MEDIA_RULE)
                         this._condition.parseCondition = this._parseConditions.INITIAL;
                     else
                         this._condition.parseCondition = this._parseConditions.PROPERTY;
@@ -285,27 +253,40 @@ WebInspector.SourceCSSTokenizer.prototype = {
                     return cursor;
                 }
 
+                <INITIAL> Color
+                {
+                    if (this._isPropertyValue())
+                        this.tokenType = "css-color";
+                    else
+                        this.tokenType = null;
+                    return cursor;
+                }
+
                 <INITIAL> Identifier
                 {
                     var token = this._line.substring(cursorOnEnter, cursor);
                     if (this._condition.parseCondition === this._parseConditions.INITIAL) {
-                        if (token === "@import" || token === "@media") {
+                        if (token === "@media") {
+                            this.tokenType = "css-at-rule";
+                            this._condition.parseCondition = this._parseConditions.AT_MEDIA_RULE;
+                        } else if (token.indexOf("@") === 0) {
                             this.tokenType = "css-at-rule";
                             this._condition.parseCondition = this._parseConditions.AT_RULE;
-                        } else if (token.indexOf("@") === 0)
-                            this.tokenType = "css-at-rule";
-                        else
+                        } else
                             this.tokenType = "css-selector";
-                    }
-                    else if (this._condition.parseCondition === this._parseConditions.AT_RULE && token in this._mediaTypes)
+                    } else if ((this._condition.parseCondition === this._parseConditions.AT_MEDIA_RULE || this._condition.parseCondition === this._parseConditions.AT_RULE) && token in this._mediaTypes)
                         this.tokenType = "css-keyword";
                     else if (this._condition.parseCondition === this._parseConditions.PROPERTY && token in this._propertyKeywords)
                         this.tokenType = "css-property";
-                    else if (this._isPropertyValue() && token in this._valueKeywords)
-                        this.tokenType = "css-keyword";
-                    else if (token === "!important")
-                        this.tokenType = "css-important";
-                    else
+                    else if (this._isPropertyValue()) {
+                        if (token in this._valueKeywords)
+                            this.tokenType = "css-keyword";
+                        else if (token in this._colorKeywords) {
+                            // FIXME: this does not convert tokens toLowerCase() for the sake of speed.
+                            this.tokenType = "css-color";
+                        } else if (token === "!important")
+                            this.tokenType = "css-important";
+                    } else
                         this.tokenType = null;
                     return cursor;
                 }

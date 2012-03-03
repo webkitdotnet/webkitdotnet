@@ -28,6 +28,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @constructor
+ * @extends {WebInspector.View}
+ */
 WebInspector.AuditResultView = function(categoryResults)
 {
     WebInspector.View.call(this);
@@ -39,11 +43,25 @@ WebInspector.AuditResultView = function(categoryResults)
     categoryResults.sort(categorySorter);
     for (var i = 0; i < categoryResults.length; ++i)
         this.element.appendChild(new WebInspector.AuditCategoryResultPane(categoryResults[i]).element);
+
+    this.element.addEventListener("contextmenu", this._contextMenuEventFired.bind(this), true);
+}
+
+WebInspector.AuditResultView.prototype = {
+    _contextMenuEventFired: function(event)
+    {
+        var contextMenu = new WebInspector.ContextMenu();
+        if (WebInspector.populateHrefContextMenu(contextMenu, null, event))
+            contextMenu.show(event);
+    }
 }
 
 WebInspector.AuditResultView.prototype.__proto__ = WebInspector.View.prototype;
 
-
+/**
+ * @constructor
+ * @extends {WebInspector.SidebarPane}
+ */
 WebInspector.AuditCategoryResultPane = function(categoryResult)
 {
     WebInspector.SidebarPane.call(this, categoryResult.title);
@@ -81,15 +99,23 @@ WebInspector.AuditCategoryResultPane = function(categoryResult)
 WebInspector.AuditCategoryResultPane.prototype = {
     _appendResult: function(parentTreeElement, result)
     {
-        var title = result.value;
-        if (result.violationCount)
-            title = String.sprintf("%s (%d)", title, result.violationCount);
+        var title = "";
 
-        var treeElement = new TreeElement(title, null, !!result.children);
+        if (typeof result.value === "string") {
+            title = result.value;
+            if (result.violationCount)
+                title = String.sprintf("%s (%d)", title, result.violationCount);
+        }
+
+        var treeElement = new TreeElement(null, null, !!result.children);
+        treeElement.title = title;
         parentTreeElement.appendChild(treeElement);
 
         if (result.className)
             treeElement.listItemElement.addStyleClass(result.className);
+        if (typeof result.value !== "string")
+            treeElement.listItemElement.appendChild(WebInspector.applyFormatters(result.value));
+
         if (result.children) {
             for (var i = 0; i < result.children.length; ++i)
                 this._appendResult(treeElement, result.children[i]);

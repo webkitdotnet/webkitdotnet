@@ -26,6 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @constructor
+ */
 WebInspector.DOMStorage = function(id, domain, isLocalStorage)
 {
     this._id = id;
@@ -34,45 +37,79 @@ WebInspector.DOMStorage = function(id, domain, isLocalStorage)
 }
 
 WebInspector.DOMStorage.prototype = {
+    /** @return {string} */
     get id()
     {
         return this._id;
     },
 
-    get domStorage()
-    {
-        return this._domStorage;
-    },
-
+    /** @return {string} */
     get domain()
     {
         return this._domain;
     },
 
+    /** @return {boolean} */
     get isLocalStorage()
     {
         return this._isLocalStorage;
     },
 
+    /**
+     * @param {function(?Protocol.Error, Array.<DOMStorageAgent.Entry>):void=} callback
+     */
     getEntries: function(callback)
     {
-        var callId = WebInspector.Callback.wrap(callback);
-        InspectorBackend.getDOMStorageEntries(callId, this._id);
+        DOMStorageAgent.getDOMStorageEntries(this._id, callback);
     },
-    
+
+    /**
+     * @param {string} key
+     * @param {string} value
+     * @param {function(?Protocol.Error, boolean):void=} callback
+     */
     setItem: function(key, value, callback)
     {
-        var callId = WebInspector.Callback.wrap(callback);
-        InspectorBackend.setDOMStorageItem(callId, this._id, key, value);
+        DOMStorageAgent.setDOMStorageItem(this._id, key, value, callback);
     },
-    
+
+    /**
+     * @param {string} key
+     * @param {function(?Protocol.Error, boolean):void=} callback
+     */
     removeItem: function(key, callback)
     {
-        var callId = WebInspector.Callback.wrap(callback);
-        InspectorBackend.removeDOMStorageItem(callId, this._id, key);
+        DOMStorageAgent.removeDOMStorageItem(this._id, key, callback);
     }
 }
 
-WebInspector.didGetDOMStorageEntries = WebInspector.Callback.processCallback;
-WebInspector.didSetDOMStorageItem = WebInspector.Callback.processCallback;
-WebInspector.didRemoveDOMStorageItem = WebInspector.Callback.processCallback;
+/**
+ * @constructor
+ * @implements {DOMStorageAgent.Dispatcher}
+ */
+WebInspector.DOMStorageDispatcher = function()
+{
+}
+
+WebInspector.DOMStorageDispatcher.prototype = {
+
+    /**
+     * @param {DOMStorageAgent.Entry} payload
+     */
+    addDOMStorage: function(payload)
+    {
+        var domStorage = new WebInspector.DOMStorage(
+            payload.id,
+            payload.host,
+            payload.isLocalStorage);
+        WebInspector.panels.resources.addDOMStorage(domStorage);
+    },
+
+    /**
+     * @param {number} storageId
+     */
+    updateDOMStorage: function(storageId)
+    {
+        WebInspector.panels.resources.updateDOMStorage(storageId);
+    }
+}

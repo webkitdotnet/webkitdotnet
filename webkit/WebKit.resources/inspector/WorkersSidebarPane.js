@@ -28,10 +28,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @constructor
+ * @extends {WebInspector.SidebarPane}
+ */
 WebInspector.WorkersSidebarPane = function()
 {
     WebInspector.SidebarPane.call(this, WebInspector.UIString("Workers"));
-    
+
     this._workers = {};
 
     this._enableWorkersCheckbox = new WebInspector.Checkbox(
@@ -53,47 +57,60 @@ WebInspector.WorkersSidebarPane = function()
 WebInspector.WorkersSidebarPane.prototype = {
     addWorker: function(id, url, isShared)
     {
-        if (id in this._workers) 
+        if (id in this._workers)
             return;
         var worker = new WebInspector.Worker(id, url, isShared);
         this._workers[id] = worker;
 
-        var title = WebInspector.linkifyURL(url, WebInspector.displayNameForURL(url), "worker-item", true, url);
-        var treeElement = new TreeElement(title, worker, false);
-        this._treeOutline.appendChild(treeElement);
+        var title = WebInspector.linkifyURLAsNode(url, WebInspector.displayNameForURL(url), "worker-item", true, url);
+        this._treeOutline.appendChild(new TreeElement(title, worker, false));
     },
 
     removeWorker: function(id)
     {
         if (id in this._workers) {
-            this._treeOutline.removeChild(this._treeOutline.findTreeElement(this._workers[id]));
+            this._treeOutline.removeChild(this._treeOutline.getCachedTreeElement(this._workers[id]));
             delete this._workers[id];
         }
     },
 
-    setInstrumentation: function(enabled)
+    _setInstrumentation: function(enabled)
     {
-        InspectorBackend.removeAllScriptsToEvaluateOnLoad();
-        if (enabled)
-            InspectorBackend.addScriptToEvaluateOnLoad("(" + InjectedFakeWorker + ")");
+        if (!enabled === !this._fakeWorkersScriptIdentifier)
+            return;
+
+        if (enabled) {
+            this._enableWorkersCheckbox.disabled = true;
+            function callback(error, identifier)
+            {
+                this._fakeWorkersScriptIdentifier = identifier;
+                this._enableWorkersCheckbox.disabled = false;
+            }
+            PageAgent.addScriptToEvaluateOnLoad("(" + InjectedFakeWorker + ")", callback.bind(this));
+        } else {
+            PageAgent.removeScriptToEvaluateOnLoad(this._fakeWorkersScriptIdentifier);
+            this._fakeWorkersScriptIdentifier = null;
+        }
     },
 
     reset: function()
     {
-        InspectorBackend.removeAllScriptsToEvaluateOnLoad();
-        this.setInstrumentation(this._enableWorkersCheckbox.checked);
+        this._setInstrumentation(this._enableWorkersCheckbox.checked);
         this._treeOutline.removeChildren();
         this._workers = {};
     },
 
     _onTriggerInstrument: function(event)
     {
-        this.setInstrumentation(this._enableWorkersCheckbox.checked);
+        this._setInstrumentation(this._enableWorkersCheckbox.checked);
     }
 };
 
 WebInspector.WorkersSidebarPane.prototype.__proto__ = WebInspector.SidebarPane.prototype;
 
+/**
+ * @constructor
+ */
 WebInspector.Worker = function(id, url, shared)
 {
     this.id = id;
@@ -101,14 +118,87 @@ WebInspector.Worker = function(id, url, shared)
     this.shared = shared;
 }
 
-WebInspector.didCreateWorker = function()
+/**
+ * @constructor
+ * @extends {WebInspector.SidebarPane}
+ */
+WebInspector.WorkerListSidebarPane = function(workerManager)
 {
-    var workersPane = WebInspector.panels.scripts.sidebarPanes.workers;
-    workersPane.addWorker.apply(workersPane, arguments);
+    WebInspector.SidebarPane.call(this, WebInspector.UIString("Workers"));
+
+    this._enableWorkersCheckbox = new WebInspector.Checkbox(
+        WebInspector.UIString("Pause on start"),
+        "sidebar-label",
+        WebInspector.UIString("Automatically attach to new workers and pause them. Enabling this option will force opening inspector for all new workers."));
+    this._enableWorkersCheckbox.element.id = "pause-workers-checkbox";
+    this.bodyElement.appendChild(this._enableWorkersCheckbox.element);
+    this._enableWorkersCheckbox.addEventListener(this._autoattachToWorkersClicked.bind(this));
+    this._enableWorkersCheckbox.checked = false;
+
+    if (Preferences.sharedWorkersDebugNote) {
+        var note = this.bodyElement.createChild("div");
+        note.id = "shared-workers-list";
+        note.addStyleClass("sidebar-label")
+        note.textContent = Preferences.sharedWorkersDebugNote;
+    }
+
+    var separator = this.bodyElement.createChild("div", "sidebar-separator");
+    separator.textContent = WebInspector.UIString("Dedicated worker inspectors");
+
+    this._workerListElement = document.createElement("ol");
+    this._workerListElement.tabIndex = 0;
+    this._workerListElement.addStyleClass("properties-tree");
+    this._workerListElement.addStyleClass("sidebar-label");
+    this.bodyElement.appendChild(this._workerListElement);
+
+    this._idToWorkerItem = {};
+    this._workerManager = workerManager;
+
+    workerManager.addEventListener(WebInspector.WorkerManager.Events.WorkerAdded, this._workerAdded, this);
+    workerManager.addEventListener(WebInspector.WorkerManager.Events.WorkerRemoved, this._workerRemoved, this);
+    workerManager.addEventListener(WebInspector.WorkerManager.Events.WorkersCleared, this._workersCleared, this);
 }
 
-WebInspector.didDestroyWorker = function()
-{
-    var workersPane = WebInspector.panels.scripts.sidebarPanes.workers;
-    workersPane.removeWorker.apply(workersPane, arguments);
+WebInspector.WorkerListSidebarPane.prototype = {
+    _workerAdded: function(event)
+    {
+        this._addWorker(event.data.workerId, event.data.url, event.data.inspectorConnected);
+    },
+
+    _workerRemoved: function(event)
+    {
+        var workerItem = this._idToWorkerItem[event.data];
+        delete this._idToWorkerItem[event.data];
+        workerItem.parentElement.removeChild(workerItem);
+    },
+
+    _workersCleared: function(event)
+    {
+        this._idToWorkerItem = {};
+        this._workerListElement.removeChildren();
+    },
+
+    _addWorker: function(workerId, url, inspectorConnected)
+    {
+        var item = this._workerListElement.createChild("div", "dedicated-worker-item");
+        var link = item.createChild("a");
+        link.textContent = url;
+        link.href = "#";
+        link.target = "_blank";
+        link.addEventListener("click", this._workerItemClicked.bind(this, workerId), true);
+        this._idToWorkerItem[workerId] = item;
+    },
+
+    _workerItemClicked: function(workerId, event)
+    {
+        event.preventDefault();
+        this._workerManager.openWorkerInspector(workerId);
+    },
+
+    _autoattachToWorkersClicked: function(event)
+    {
+        WorkerAgent.setAutoconnectToWorkers(event.target.checked);
+    }
 }
+
+WebInspector.WorkerListSidebarPane.prototype.__proto__ = WebInspector.SidebarPane.prototype;

@@ -23,50 +23,118 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-WebInspector.Script = function(sourceID, sourceURL, source, startingLine, errorLine, errorMessage, worldType)
+/**
+ * @constructor
+ * @param {string} scriptId
+ * @param {string} sourceURL
+ * @param {number} startLine
+ * @param {number} startColumn
+ * @param {number} endLine
+ * @param {number} endColumn
+ * @param {boolean} isContentScript
+ * @param {string=} sourceMapURL
+ */
+WebInspector.Script = function(scriptId, sourceURL, startLine, startColumn, endLine, endColumn, isContentScript, sourceMapURL)
 {
-    this.sourceID = sourceID;
+    this.scriptId = scriptId;
     this.sourceURL = sourceURL;
-    this.source = source;
-    this.startingLine = startingLine;
-    this.errorLine = errorLine;
-    this.errorMessage = errorMessage;
-    this.worldType = worldType;
-
-    // if no URL, look for "//@ sourceURL=" decorator
-    // note that this sourceURL comment decorator is behavior that FireBug added
-    // in it's 1.1 release as noted in the release notes:
-    // http://fbug.googlecode.com/svn/branches/firebug1.1/docs/ReleaseNotes_1.1.txt
-    if (!sourceURL) {
-        // use of [ \t] rather than \s is to prevent \n from matching
-        var pattern = /^\s*\/\/[ \t]*@[ \t]*sourceURL[ \t]*=[ \t]*(\S+).*$/m;
-        var match = pattern.exec(source);
-
-        if (match)
-            this.sourceURL = match[1];
-    }
-}
-
-WebInspector.Script.WorldType = {
-    MAIN_WORLD: 0,
-    EXTENSIONS_WORLD: 1
-}
-
-WebInspector.Script.WorldType = {
-    MAIN_WORLD: 0,
-    EXTENSIONS_WORLD: 1
+    this.lineOffset = startLine;
+    this.columnOffset = startColumn;
+    this.endLine = endLine;
+    this.endColumn = endColumn;
+    this.isContentScript = isContentScript;
+    this.sourceMapURL = sourceMapURL;
 }
 
 WebInspector.Script.prototype = {
-    get linesCount()
+    /**
+     * @param {function(string)} callback
+     */
+    requestSource: function(callback)
     {
-        if (!this.source)
-            return 0;
-        this._linesCount = 0;
-        var lastIndex = this.source.indexOf("\n");
-        while (lastIndex !== -1) {
-            lastIndex = this.source.indexOf("\n", lastIndex + 1)
-            this._linesCount++;
+        if (this._source) {
+            callback(this._source);
+            return;
         }
+
+        /**
+         * @this {WebInspector.Script}
+         * @param {?Protocol.Error} error
+         * @param {string} source
+         */
+        function didGetScriptSource(error, source)
+        {
+            this._source = error ? "" : source;
+            callback(this._source);
+        }
+        if (this.scriptId) {
+            // Script failed to parse.
+            DebuggerAgent.getScriptSource(this.scriptId, didGetScriptSource.bind(this));
+        } else
+            callback("");
+    },
+
+    /**
+     * @param {string} query
+     * @param {boolean} caseSensitive
+     * @param {boolean} isRegex
+     * @param {function(Array.<PageAgent.SearchMatch>)} callback
+     */
+    searchInContent: function(query, caseSensitive, isRegex, callback)
+    {
+        /**
+         * @this {WebInspector.Script}
+         * @param {?Protocol.Error} error
+         * @param {Array.<PageAgent.SearchMatch>} searchMatches
+         */
+        function innerCallback(error, searchMatches)
+        {
+            if (error)
+                console.error(error);
+            var result = [];
+            for (var i = 0; i < searchMatches.length; ++i) {
+                var searchMatch = new WebInspector.ContentProvider.SearchMatch(searchMatches[i].lineNumber, searchMatches[i].lineContent);
+                result.push(searchMatch);
+            }
+            callback(result || []);
+        }
+
+        if (this.scriptId) {
+            // Script failed to parse.
+            DebuggerAgent.searchInContent(this.scriptId, query, caseSensitive, isRegex, innerCallback.bind(this));
+        } else
+            callback([]);
+    },
+
+    /**
+     * @param {string} newSource
+     * @param {function(?Protocol.Error, Array.<DebuggerAgent.CallFrame>=)} callback
+     */
+    editSource: function(newSource, callback)
+    {
+        /**
+         * @this {WebInspector.Script}
+         * @param {?Protocol.Error} error
+         * @param {Array.<DebuggerAgent.CallFrame>|undefined} callFrames
+         */
+        function didEditScriptSource(error, callFrames)
+        {
+            if (!error)
+                this._source = newSource;
+            callback(error, callFrames);
+        }
+        if (this.scriptId) {
+            // Script failed to parse.
+            DebuggerAgent.setScriptSource(this.scriptId, newSource, undefined, didEditScriptSource.bind(this));
+        } else
+            callback("Script failed to parse");
+    },
+
+    /**
+     * @return {boolean}
+     */
+    isInlineScript: function()
+    {
+        return !!this.sourceURL && this.lineOffset !== 0 && this.columnOffset !== 0;
     }
 }

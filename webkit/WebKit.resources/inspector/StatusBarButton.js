@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @extends {WebInspector.Object}
+ * @constructor
+ * @param {number=} states
+ */
 WebInspector.StatusBarButton = function(title, className, states)
 {
     this.element = document.createElement("button");
@@ -41,7 +46,7 @@ WebInspector.StatusBarButton = function(title, className, states)
     this.glyphShadow = document.createElement("div");
     this.glyphShadow.className = "glyph shadow";
     this.element.appendChild(this.glyphShadow);
-    
+
     this.states = states;
     if (!states)
         this.states = 2;
@@ -50,7 +55,7 @@ WebInspector.StatusBarButton = function(title, className, states)
         this._state = false;
     else
         this._state = 0;
-    
+
     this.title = title;
     this.disabled = false;
     this._visible = true;
@@ -87,17 +92,17 @@ WebInspector.StatusBarButton.prototype = {
         this._title = x;
         this.element.title = x;
     },
-    
+
     get state()
     {
         return this._state;
     },
-    
+
     set state(x)
     {
         if (this._state === x)
             return;
-        
+
         if (this.states === 2) {
             if (x)
                 this.element.addStyleClass("toggled-on");
@@ -107,7 +112,7 @@ WebInspector.StatusBarButton.prototype = {
             if (x !== 0) {
                 this.element.removeStyleClass("toggled-" + this._state);
                 this.element.addStyleClass("toggled-" + x);
-            } else 
+            } else
                 this.element.removeStyleClass("toggled-" + this._state);
         }
         this._state = x;
