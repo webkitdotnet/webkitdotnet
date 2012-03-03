@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0500 */
-/* at Fri Sep 10 13:28:35 2010
+/* at Fri Mar 02 18:58:54 2012
  */
 /* Compiler settings for ..\Interfaces\IWebDesktopNotificationsDelegate.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)

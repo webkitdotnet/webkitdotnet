@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Apple Inc.  All rights reserved.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2011 Apple Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,7 @@
 #define WebKitSansSerifFontPreferenceKey "WebKitSansSerifFont"
 #define WebKitCursiveFontPreferenceKey "WebKitCursiveFont"
 #define WebKitFantasyFontPreferenceKey "WebKitFantasyFont"
+#define WebKitPictographFontPreferenceKey "WebKitPictographFont"
 #define WebKitMinimumFontSizePreferenceKey "WebKitMinimumFontSize"
 #define WebKitMinimumLogicalFontSizePreferenceKey "WebKitMinimumLogicalFontSize"
 #define WebKitDefaultFontSizePreferenceKey "WebKitDefaultFontSize"
@@ -58,6 +59,7 @@
 #define WebKitAllowAnimatedImagesPreferenceKey "WebKitAllowAnimatedImagesPreferenceKey"
 #define WebKitAllowAnimatedImageLoopingPreferenceKey "WebKitAllowAnimatedImageLoopingPreferenceKey"
 #define WebKitDisplayImagesKey "WebKitDisplayImagesKey"
+#define WebKitLoadSiteIconsKey "WebKitLoadSiteIconsKey"
 #define WebKitBackForwardCacheExpirationIntervalKey "WebKitBackForwardCacheExpirationIntervalKey"
 #define WebKitTabToLinksPreferenceKey "WebKitTabToLinksPreferenceKey"
 #define WebKitPrivateBrowsingEnabledPreferenceKey "WebKitPrivateBrowsingEnabled"
@@ -66,15 +68,22 @@
 #define WebKitUsesPageCachePreferenceKey "WebKitUsesPageCachePreferenceKey"
 #define WebKitCacheModelPreferenceKey "WebKitCacheModelPreferenceKey"
 #define WebKitLocalStorageDatabasePathPreferenceKey "WebKitLocalStorageDatabasePath"
+#define WebKitHyperlinkAuditingEnabledPreferenceKey "WebKitHyperlinkAuditingEnabled"
+#define WebKitWebAudioEnabledPreferenceKey "WebKitWebAudioEnabled"
+#define WebKitShouldDisplaySubtitlesPreferenceKey "WebKitShouldDisplaySubtitles"
+#define WebKitShouldDisplayCaptionsPreferenceKey "WebKitShouldDisplayCaptions"
+#define WebKitShouldDisplayTextDescriptionsPreferenceKey "WebKitShouldDisplayTextDescriptions"
 
 // These are private both because callers should be using the cover methods and because the
 // cover methods themselves are private.
 #define WebKitRespectStandardStyleKeyEquivalentsPreferenceKey "WebKitRespectStandardStyleKeyEquivalents"
 #define WebKitShowsURLsInToolTipsPreferenceKey "WebKitShowsURLsInToolTips"
+#define WebKitShowsToolTipOverTruncatedTextPreferenceKey "WebKitShowsToolTipOverTruncatedText"
 #define WebKitPDFDisplayModePreferenceKey "WebKitPDFDisplayMode"
 #define WebKitPDFScaleFactorPreferenceKey "WebKitPDFScaleFactor"
 #define WebKitEditableLinkBehaviorPreferenceKey "WebKitEditableLinkBehavior"
 #define WebKitEditingBehaviorPreferenceKey "WebKitEditingBehavior"
+#define WebKitShouldInvertColorsPreferenceKey "WebKitShouldInvertColors"
 
 // Window display is throttled to 60 frames per second if WebKitThrottleWindowDisplayPreferenceKey
 // is set to YES.  The window display throttle is OFF by default for compatibility with Mac OS X
@@ -120,8 +129,6 @@
 
 #define WebKitAuthorAndUserStylesEnabledPreferenceKey "WebKitAuthorAndUserStylesEnabled"
 
-#define WebKitPaintCustomScrollbarsPreferenceKey "WebKitPaintCustomScrollbars"
-
 #define WebKitPaintNativeControlsPreferenceKey "WebKitPaintNativeControls"
 
 #define WebKitZoomsTextOnlyPreferenceKey "WebKitZoomsTextOnly"
@@ -131,8 +138,6 @@
 #define WebKitXSSAuditorEnabledPreferenceKey "WebKitXSSAuditorEnabled"
 
 #define WebKitUseHighResolutionTimersPreferenceKey "WebKitUseHighResolutionTimers"
-
-#define WebKitPluginAllowedRunTimePreferenceKey "WebKitPluginAllowedRunTime"
 
 #define WebKitFrameFlatteningEnabledPreferenceKey "WebKitFrameFlatteningEnabled"
 
@@ -147,3 +152,13 @@
 #define WebKitDNSPrefetchingEnabledPreferenceKey "WebKitDNSPrefetchingEnabled"
 
 #define WebKitMemoryInfoEnabledPreferenceKey "WebKitMemoryInfoEnabled"
+
+#define WebKitFullScreenEnabledPreferenceKey "WebKitFullScreenEnabled"
+
+#define WebKitHixie76WebSocketProtocolEnabledPreferenceKey "WebKitHixie76WebSocketProtocolEnabled"
+
+#define WebKitMediaPlaybackRequiresUserGesturePreferenceKey "WebKitMediaPlaybackRequiresUserGesture"
+
+#define WebKitMediaPlaybackAllowsInlinePreferenceKey "WebKitMediaPlaybackAllowsInline"
+
+#define WebKitAVFoundationEnabledPreferenceKey "WebKitAVFoundationEnabled"

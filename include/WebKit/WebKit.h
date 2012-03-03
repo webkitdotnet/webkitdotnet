@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0500 */
-/* at Fri Sep 10 13:28:29 2010
+/* at Fri Mar 02 18:58:52 2012
  */
 /* Compiler settings for ..\Interfaces\WebKit.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
@@ -627,18 +627,6 @@ typedef interface IWebIconDatabase IWebIconDatabase;
 #endif 	/* __IWebIconDatabase_FWD_DEFINED__ */
 
 
-#ifndef __IWebIconFetcherDelegate_FWD_DEFINED__
-#define __IWebIconFetcherDelegate_FWD_DEFINED__
-typedef interface IWebIconFetcherDelegate IWebIconFetcherDelegate;
-#endif 	/* __IWebIconFetcherDelegate_FWD_DEFINED__ */
-
-
-#ifndef __IWebIconFetcher_FWD_DEFINED__
-#define __IWebIconFetcher_FWD_DEFINED__
-typedef interface IWebIconFetcher IWebIconFetcher;
-#endif 	/* __IWebIconFetcher_FWD_DEFINED__ */
-
-
 #ifndef __IWebInspector_FWD_DEFINED__
 #define __IWebInspector_FWD_DEFINED__
 typedef interface IWebInspector IWebInspector;
@@ -693,12 +681,6 @@ typedef interface IWebNotificationObserver IWebNotificationObserver;
 #endif 	/* __IWebNotificationObserver_FWD_DEFINED__ */
 
 
-#ifndef __IWebPluginHalterDelegate_FWD_DEFINED__
-#define __IWebPluginHalterDelegate_FWD_DEFINED__
-typedef interface IWebPluginHalterDelegate IWebPluginHalterDelegate;
-#endif 	/* __IWebPluginHalterDelegate_FWD_DEFINED__ */
-
-
 #ifndef __IWebPolicyDecisionListener_FWD_DEFINED__
 #define __IWebPolicyDecisionListener_FWD_DEFINED__
 typedef interface IWebPolicyDecisionListener IWebPolicyDecisionListener;
@@ -747,6 +729,12 @@ typedef interface IWebResourceLoadDelegatePrivate IWebResourceLoadDelegatePrivat
 #endif 	/* __IWebResourceLoadDelegatePrivate_FWD_DEFINED__ */
 
 
+#ifndef __IWebResourceLoadDelegatePrivate2_FWD_DEFINED__
+#define __IWebResourceLoadDelegatePrivate2_FWD_DEFINED__
+typedef interface IWebResourceLoadDelegatePrivate2 IWebResourceLoadDelegatePrivate2;
+#endif 	/* __IWebResourceLoadDelegatePrivate2_FWD_DEFINED__ */
+
+
 #ifndef __IWebScriptWorld_FWD_DEFINED__
 #define __IWebScriptWorld_FWD_DEFINED__
 typedef interface IWebScriptWorld IWebScriptWorld;
@@ -775,6 +763,12 @@ typedef interface IWebSecurityOrigin IWebSecurityOrigin;
 #define __IWebSerializedJSValue_FWD_DEFINED__
 typedef interface IWebSerializedJSValue IWebSerializedJSValue;
 #endif 	/* __IWebSerializedJSValue_FWD_DEFINED__ */
+
+
+#ifndef __IWebSerializedJSValuePrivate_FWD_DEFINED__
+#define __IWebSerializedJSValuePrivate_FWD_DEFINED__
+typedef interface IWebSerializedJSValuePrivate IWebSerializedJSValuePrivate;
+#endif 	/* __IWebSerializedJSValuePrivate_FWD_DEFINED__ */
 
 
 #ifndef __IWebTextRenderer_FWD_DEFINED__
@@ -817,6 +811,12 @@ typedef interface IWebUIDelegatePrivate2 IWebUIDelegatePrivate2;
 #define __IWebUIDelegatePrivate3_FWD_DEFINED__
 typedef interface IWebUIDelegatePrivate3 IWebUIDelegatePrivate3;
 #endif 	/* __IWebUIDelegatePrivate3_FWD_DEFINED__ */
+
+
+#ifndef __IWebUIDelegatePrivate4_FWD_DEFINED__
+#define __IWebUIDelegatePrivate4_FWD_DEFINED__
+typedef interface IWebUIDelegatePrivate4 IWebUIDelegatePrivate4;
+#endif 	/* __IWebUIDelegatePrivate4_FWD_DEFINED__ */
 
 
 #ifndef __IWebURLAuthenticationChallenge_FWD_DEFINED__
@@ -955,18 +955,6 @@ typedef struct WebView WebView;
 #endif /* __cplusplus */
 
 #endif 	/* __WebView_FWD_DEFINED__ */
-
-
-#ifndef __WebFrame_FWD_DEFINED__
-#define __WebFrame_FWD_DEFINED__
-
-#ifdef __cplusplus
-typedef class WebFrame WebFrame;
-#else
-typedef struct WebFrame WebFrame;
-#endif /* __cplusplus */
-
-#endif 	/* __WebFrame_FWD_DEFINED__ */
 
 
 #ifndef __WebIconDatabase_FWD_DEFINED__
@@ -9707,10 +9695,10 @@ EXTERN_C const IID IID_IDOMUIEvent;
         virtual HRESULT STDMETHODCALLTYPE charCode( 
             /* [retval][out] */ long *result) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE layerX( 
+        virtual HRESULT STDMETHODCALLTYPE unused1( 
             /* [retval][out] */ long *result) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE layerY( 
+        virtual HRESULT STDMETHODCALLTYPE unused2( 
             /* [retval][out] */ long *result) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE pageX( 
@@ -9845,11 +9833,11 @@ EXTERN_C const IID IID_IDOMUIEvent;
             IDOMUIEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerX )( 
+        HRESULT ( STDMETHODCALLTYPE *unused1 )( 
             IDOMUIEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerY )( 
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
             IDOMUIEvent * This,
             /* [retval][out] */ long *result);
         
@@ -9960,11 +9948,11 @@ EXTERN_C const IID IID_IDOMUIEvent;
 #define IDOMUIEvent_charCode(This,result)	\
     ( (This)->lpVtbl -> charCode(This,result) ) 
 
-#define IDOMUIEvent_layerX(This,result)	\
-    ( (This)->lpVtbl -> layerX(This,result) ) 
+#define IDOMUIEvent_unused1(This,result)	\
+    ( (This)->lpVtbl -> unused1(This,result) ) 
 
-#define IDOMUIEvent_layerY(This,result)	\
-    ( (This)->lpVtbl -> layerY(This,result) ) 
+#define IDOMUIEvent_unused2(This,result)	\
+    ( (This)->lpVtbl -> unused2(This,result) ) 
 
 #define IDOMUIEvent_pageX(This,result)	\
     ( (This)->lpVtbl -> pageX(This,result) ) 
@@ -10170,11 +10158,11 @@ EXTERN_C const IID IID_IDOMKeyboardEvent;
             IDOMKeyboardEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerX )( 
+        HRESULT ( STDMETHODCALLTYPE *unused1 )( 
             IDOMKeyboardEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerY )( 
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
             IDOMKeyboardEvent * This,
             /* [retval][out] */ long *result);
         
@@ -10332,11 +10320,11 @@ EXTERN_C const IID IID_IDOMKeyboardEvent;
 #define IDOMKeyboardEvent_charCode(This,result)	\
     ( (This)->lpVtbl -> charCode(This,result) ) 
 
-#define IDOMKeyboardEvent_layerX(This,result)	\
-    ( (This)->lpVtbl -> layerX(This,result) ) 
+#define IDOMKeyboardEvent_unused1(This,result)	\
+    ( (This)->lpVtbl -> unused1(This,result) ) 
 
-#define IDOMKeyboardEvent_layerY(This,result)	\
-    ( (This)->lpVtbl -> layerY(This,result) ) 
+#define IDOMKeyboardEvent_unused2(This,result)	\
+    ( (This)->lpVtbl -> unused2(This,result) ) 
 
 #define IDOMKeyboardEvent_pageX(This,result)	\
     ( (This)->lpVtbl -> pageX(This,result) ) 
@@ -10589,11 +10577,11 @@ EXTERN_C const IID IID_IDOMMouseEvent;
             IDOMMouseEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerX )( 
+        HRESULT ( STDMETHODCALLTYPE *unused1 )( 
             IDOMMouseEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerY )( 
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
             IDOMMouseEvent * This,
             /* [retval][out] */ long *result);
         
@@ -10786,11 +10774,11 @@ EXTERN_C const IID IID_IDOMMouseEvent;
 #define IDOMMouseEvent_charCode(This,result)	\
     ( (This)->lpVtbl -> charCode(This,result) ) 
 
-#define IDOMMouseEvent_layerX(This,result)	\
-    ( (This)->lpVtbl -> layerX(This,result) ) 
+#define IDOMMouseEvent_unused1(This,result)	\
+    ( (This)->lpVtbl -> unused1(This,result) ) 
 
-#define IDOMMouseEvent_layerY(This,result)	\
-    ( (This)->lpVtbl -> layerY(This,result) ) 
+#define IDOMMouseEvent_unused2(This,result)	\
+    ( (This)->lpVtbl -> unused2(This,result) ) 
 
 #define IDOMMouseEvent_pageX(This,result)	\
     ( (This)->lpVtbl -> pageX(This,result) ) 
@@ -11589,11 +11577,11 @@ EXTERN_C const IID IID_IDOMWheelEvent;
             IDOMWheelEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerX )( 
+        HRESULT ( STDMETHODCALLTYPE *unused1 )( 
             IDOMWheelEvent * This,
             /* [retval][out] */ long *result);
         
-        HRESULT ( STDMETHODCALLTYPE *layerY )( 
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
             IDOMWheelEvent * This,
             /* [retval][out] */ long *result);
         
@@ -11782,11 +11770,11 @@ EXTERN_C const IID IID_IDOMWheelEvent;
 #define IDOMWheelEvent_charCode(This,result)	\
     ( (This)->lpVtbl -> charCode(This,result) ) 
 
-#define IDOMWheelEvent_layerX(This,result)	\
-    ( (This)->lpVtbl -> layerX(This,result) ) 
+#define IDOMWheelEvent_unused1(This,result)	\
+    ( (This)->lpVtbl -> unused1(This,result) ) 
 
-#define IDOMWheelEvent_layerY(This,result)	\
-    ( (This)->lpVtbl -> layerY(This,result) ) 
+#define IDOMWheelEvent_unused2(This,result)	\
+    ( (This)->lpVtbl -> unused2(This,result) ) 
 
 #define IDOMWheelEvent_pageX(This,result)	\
     ( (This)->lpVtbl -> pageX(This,result) ) 
@@ -18297,6 +18285,9 @@ EXTERN_C const IID IID_IDOMElementPrivate;
         virtual /* [local] */ HRESULT STDMETHODCALLTYPE markerTextForListItem( 
             /* [retval][out] */ BSTR *markerText) = 0;
         
+        virtual /* [local] */ HRESULT STDMETHODCALLTYPE shadowPseudoId( 
+            /* [retval][out] */ BSTR *result) = 0;
+        
     };
     
 #else 	/* C style interface */
@@ -18346,6 +18337,10 @@ EXTERN_C const IID IID_IDOMElementPrivate;
             IDOMElementPrivate * This,
             /* [retval][out] */ BSTR *markerText);
         
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *shadowPseudoId )( 
+            IDOMElementPrivate * This,
+            /* [retval][out] */ BSTR *result);
+        
         END_INTERFACE
     } IDOMElementPrivateVtbl;
 
@@ -18389,6 +18384,9 @@ EXTERN_C const IID IID_IDOMElementPrivate;
 
 #define IDOMElementPrivate_markerTextForListItem(This,markerText)	\
     ( (This)->lpVtbl -> markerTextForListItem(This,markerText) ) 
+
+#define IDOMElementPrivate_shadowPseudoId(This,result)	\
+    ( (This)->lpVtbl -> shadowPseudoId(This,result) ) 
 
 #endif /* COBJMACROS */
 
@@ -23493,6 +23491,9 @@ EXTERN_C const IID IID_IWebFrame;
         
         virtual HRESULT STDMETHODCALLTYPE reloadFromOrigin( void) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE DOMWindow( 
+            /* [retval][out] */ IDOMWindow **window) = 0;
+        
     };
     
 #else 	/* C style interface */
@@ -23612,6 +23613,10 @@ EXTERN_C const IID IID_IWebFrame;
         HRESULT ( STDMETHODCALLTYPE *reloadFromOrigin )( 
             IWebFrame * This);
         
+        HRESULT ( STDMETHODCALLTYPE *DOMWindow )( 
+            IWebFrame * This,
+            /* [retval][out] */ IDOMWindow **window);
+        
         END_INTERFACE
     } IWebFrameVtbl;
 
@@ -23706,6 +23711,9 @@ EXTERN_C const IID IID_IWebFrame;
 
 #define IWebFrame_reloadFromOrigin(This)	\
     ( (This)->lpVtbl -> reloadFromOrigin(This) ) 
+
+#define IWebFrame_DOMWindow(This,window)	\
+    ( (This)->lpVtbl -> DOMWindow(This,window) ) 
 
 #endif /* COBJMACROS */
 
@@ -24317,8 +24325,6 @@ EXTERN_C const IID IID_IWebFrameLoadDelegatePrivate2;
 
 
 
-
-
 typedef /* [public][public] */ 
 enum __MIDL___MIDL_itf_WebKit_0000_0083_0001
     {	WebFrameLoadTypeStandard	= 0,
@@ -24330,8 +24336,7 @@ enum __MIDL___MIDL_itf_WebKit_0000_0083_0001
 	WebFrameLoadTypeSame	= ( WebFrameLoadTypeReloadAllowingStaleData + 1 ) ,
 	WebFrameLoadTypeRedirectWithLockedBackForwardList	= ( WebFrameLoadTypeSame + 1 ) ,
 	WebFrameLoadTypeReplace	= ( WebFrameLoadTypeRedirectWithLockedBackForwardList + 1 ) ,
-	WebFrameLoadTypeReloadFromOrigin	= ( WebFrameLoadTypeReplace + 1 ) ,
-	WebFrameLoadTypeBackWMLDeckNotAccessible	= ( WebFrameLoadTypeReloadFromOrigin + 1 ) 
+	WebFrameLoadTypeReloadFromOrigin	= ( WebFrameLoadTypeReplace + 1 ) 
     } 	WebFrameLoadType;
 
 
@@ -24380,7 +24385,7 @@ EXTERN_C const IID IID_IWebFramePrivate;
             /* [in] */ HDC printDC,
             /* [in] */ UINT startPage,
             /* [in] */ UINT endPage,
-            /* [in] */ void *ctx) = 0;
+            /* [retval][out] */ void *ctx) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE isFrameSet( 
             /* [retval][out] */ BOOL *result) = 0;
@@ -24407,9 +24412,7 @@ EXTERN_C const IID IID_IWebFramePrivate;
         virtual HRESULT STDMETHODCALLTYPE pendingFrameUnloadEventCount( 
             /* [retval][out] */ UINT *result) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE fetchApplicationIcon( 
-            /* [in] */ IWebIconFetcherDelegate *delegate,
-            /* [retval][out] */ IWebIconFetcher **result) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused2( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE paintDocumentRectToContext( 
             /* [in] */ RECT rect,
@@ -24454,12 +24457,6 @@ EXTERN_C const IID IID_IWebFramePrivate;
             /* [in] */ BSTR id,
             /* [retval][out] */ BSTR *result) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE pauseSVGAnimation( 
-            /* [in] */ BSTR elementId,
-            /* [in] */ IDOMNode *node,
-            /* [in] */ double secondsFromNow,
-            /* [retval][out] */ BOOL *animationWasRunning) = 0;
-        
         virtual HRESULT STDMETHODCALLTYPE visibleContentRect( 
             /* [retval][out] */ RECT *__MIDL__IWebFramePrivate0003) = 0;
         
@@ -24489,6 +24486,20 @@ EXTERN_C const IID IID_IWebFramePrivate;
         virtual HRESULT STDMETHODCALLTYPE suspendAnimations( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE resumeAnimations( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE loadPlainTextString( 
+            /* [in] */ BSTR string,
+            /* [in] */ BSTR url) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE hasSpellingMarker( 
+            /* [in] */ UINT from,
+            /* [in] */ UINT length,
+            /* [retval][out] */ BOOL *result) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE clearOpener( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setTextDirection( 
+            /* [in] */ BSTR direction) = 0;
         
     };
     
@@ -24544,7 +24555,7 @@ EXTERN_C const IID IID_IWebFramePrivate;
             /* [in] */ HDC printDC,
             /* [in] */ UINT startPage,
             /* [in] */ UINT endPage,
-            /* [in] */ void *ctx);
+            /* [retval][out] */ void *ctx);
         
         HRESULT ( STDMETHODCALLTYPE *isFrameSet )( 
             IWebFramePrivate * This,
@@ -24579,10 +24590,8 @@ EXTERN_C const IID IID_IWebFramePrivate;
             IWebFramePrivate * This,
             /* [retval][out] */ UINT *result);
         
-        HRESULT ( STDMETHODCALLTYPE *fetchApplicationIcon )( 
-            IWebFramePrivate * This,
-            /* [in] */ IWebIconFetcherDelegate *delegate,
-            /* [retval][out] */ IWebIconFetcher **result);
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
+            IWebFramePrivate * This);
         
         HRESULT ( STDMETHODCALLTYPE *paintDocumentRectToContext )( 
             IWebFramePrivate * This,
@@ -24637,13 +24646,6 @@ EXTERN_C const IID IID_IWebFramePrivate;
             /* [in] */ BSTR id,
             /* [retval][out] */ BSTR *result);
         
-        HRESULT ( STDMETHODCALLTYPE *pauseSVGAnimation )( 
-            IWebFramePrivate * This,
-            /* [in] */ BSTR elementId,
-            /* [in] */ IDOMNode *node,
-            /* [in] */ double secondsFromNow,
-            /* [retval][out] */ BOOL *animationWasRunning);
-        
         HRESULT ( STDMETHODCALLTYPE *visibleContentRect )( 
             IWebFramePrivate * This,
             /* [retval][out] */ RECT *__MIDL__IWebFramePrivate0003);
@@ -24681,6 +24683,24 @@ EXTERN_C const IID IID_IWebFramePrivate;
         
         HRESULT ( STDMETHODCALLTYPE *resumeAnimations )( 
             IWebFramePrivate * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *loadPlainTextString )( 
+            IWebFramePrivate * This,
+            /* [in] */ BSTR string,
+            /* [in] */ BSTR url);
+        
+        HRESULT ( STDMETHODCALLTYPE *hasSpellingMarker )( 
+            IWebFramePrivate * This,
+            /* [in] */ UINT from,
+            /* [in] */ UINT length,
+            /* [retval][out] */ BOOL *result);
+        
+        HRESULT ( STDMETHODCALLTYPE *clearOpener )( 
+            IWebFramePrivate * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *setTextDirection )( 
+            IWebFramePrivate * This,
+            /* [in] */ BSTR direction);
         
         END_INTERFACE
     } IWebFramePrivateVtbl;
@@ -24753,8 +24773,8 @@ EXTERN_C const IID IID_IWebFramePrivate;
 #define IWebFramePrivate_pendingFrameUnloadEventCount(This,result)	\
     ( (This)->lpVtbl -> pendingFrameUnloadEventCount(This,result) ) 
 
-#define IWebFramePrivate_fetchApplicationIcon(This,delegate,result)	\
-    ( (This)->lpVtbl -> fetchApplicationIcon(This,delegate,result) ) 
+#define IWebFramePrivate_unused2(This)	\
+    ( (This)->lpVtbl -> unused2(This) ) 
 
 #define IWebFramePrivate_paintDocumentRectToContext(This,rect,deviceContext)	\
     ( (This)->lpVtbl -> paintDocumentRectToContext(This,rect,deviceContext) ) 
@@ -24786,9 +24806,6 @@ EXTERN_C const IID IID_IWebFramePrivate;
 #define IWebFramePrivate_counterValueForElementById(This,id,result)	\
     ( (This)->lpVtbl -> counterValueForElementById(This,id,result) ) 
 
-#define IWebFramePrivate_pauseSVGAnimation(This,elementId,node,secondsFromNow,animationWasRunning)	\
-    ( (This)->lpVtbl -> pauseSVGAnimation(This,elementId,node,secondsFromNow,animationWasRunning) ) 
-
 #define IWebFramePrivate_visibleContentRect(This,__MIDL__IWebFramePrivate0003)	\
     ( (This)->lpVtbl -> visibleContentRect(This,__MIDL__IWebFramePrivate0003) ) 
 
@@ -24812,6 +24829,18 @@ EXTERN_C const IID IID_IWebFramePrivate;
 
 #define IWebFramePrivate_resumeAnimations(This)	\
     ( (This)->lpVtbl -> resumeAnimations(This) ) 
+
+#define IWebFramePrivate_loadPlainTextString(This,string,url)	\
+    ( (This)->lpVtbl -> loadPlainTextString(This,string,url) ) 
+
+#define IWebFramePrivate_hasSpellingMarker(This,from,length,result)	\
+    ( (This)->lpVtbl -> hasSpellingMarker(This,from,length,result) ) 
+
+#define IWebFramePrivate_clearOpener(This)	\
+    ( (This)->lpVtbl -> clearOpener(This) ) 
+
+#define IWebFramePrivate_setTextDirection(This,direction)	\
+    ( (This)->lpVtbl -> setTextDirection(This,direction) ) 
 
 #endif /* COBJMACROS */
 
@@ -26822,6 +26851,10 @@ EXTERN_C const IID IID_IWebIconDatabase;
         virtual HRESULT STDMETHODCALLTYPE setEnabled( 
             /* [in] */ BOOL flag) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE hasIconForURL( 
+            /* [in] */ BSTR url,
+            /* [retval][out] */ BOOL *result) = 0;
+        
     };
     
 #else 	/* C style interface */
@@ -26888,6 +26921,11 @@ EXTERN_C const IID IID_IWebIconDatabase;
             IWebIconDatabase * This,
             /* [in] */ BOOL flag);
         
+        HRESULT ( STDMETHODCALLTYPE *hasIconForURL )( 
+            IWebIconDatabase * This,
+            /* [in] */ BSTR url,
+            /* [retval][out] */ BOOL *result);
+        
         END_INTERFACE
     } IWebIconDatabaseVtbl;
 
@@ -26944,6 +26982,9 @@ EXTERN_C const IID IID_IWebIconDatabase;
 #define IWebIconDatabase_setEnabled(This,flag)	\
     ( (This)->lpVtbl -> setEnabled(This,flag) ) 
 
+#define IWebIconDatabase_hasIconForURL(This,url,result)	\
+    ( (This)->lpVtbl -> hasIconForURL(This,url,result) ) 
+
 #endif /* COBJMACROS */
 
 
@@ -26953,173 +26994,6 @@ EXTERN_C const IID IID_IWebIconDatabase;
 
 
 #endif 	/* __IWebIconDatabase_INTERFACE_DEFINED__ */
-
-
-/* interface __MIDL_itf_WebKit_0000_0096 */
-/* [local] */ 
-
-
-
-
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0096_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0096_v0_0_s_ifspec;
-
-#ifndef __IWebIconFetcherDelegate_INTERFACE_DEFINED__
-#define __IWebIconFetcherDelegate_INTERFACE_DEFINED__
-
-/* interface IWebIconFetcherDelegate */
-/* [unique][uuid][oleautomation][object] */ 
-
-
-EXTERN_C const IID IID_IWebIconFetcherDelegate;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("9d27e503-1e0e-458e-bc66-ffa9fa64600e")
-    IWebIconFetcherDelegate : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE finishedLoadingIcon( 
-            /* [in] */ IWebIconFetcher *fetcher,
-            /* [in] */ IStream *data) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-
-    typedef struct IWebIconFetcherDelegateVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IWebIconFetcherDelegate * This,
-            /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IWebIconFetcherDelegate * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IWebIconFetcherDelegate * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *finishedLoadingIcon )( 
-            IWebIconFetcherDelegate * This,
-            /* [in] */ IWebIconFetcher *fetcher,
-            /* [in] */ IStream *data);
-        
-        END_INTERFACE
-    } IWebIconFetcherDelegateVtbl;
-
-    interface IWebIconFetcherDelegate
-    {
-        CONST_VTBL struct IWebIconFetcherDelegateVtbl *lpVtbl;
-    };
-
-    
-
-#ifdef COBJMACROS
-
-
-#define IWebIconFetcherDelegate_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
-
-#define IWebIconFetcherDelegate_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
-
-#define IWebIconFetcherDelegate_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
-
-
-#define IWebIconFetcherDelegate_finishedLoadingIcon(This,fetcher,data)	\
-    ( (This)->lpVtbl -> finishedLoadingIcon(This,fetcher,data) ) 
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-
-#endif 	/* __IWebIconFetcherDelegate_INTERFACE_DEFINED__ */
-
-
-#ifndef __IWebIconFetcher_INTERFACE_DEFINED__
-#define __IWebIconFetcher_INTERFACE_DEFINED__
-
-/* interface IWebIconFetcher */
-/* [unique][uuid][oleautomation][object] */ 
-
-
-EXTERN_C const IID IID_IWebIconFetcher;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("54f50460-8ffa-442c-b5Ab-5422e1fcc973")
-    IWebIconFetcher : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE cancel( void) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-
-    typedef struct IWebIconFetcherVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IWebIconFetcher * This,
-            /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IWebIconFetcher * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IWebIconFetcher * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *cancel )( 
-            IWebIconFetcher * This);
-        
-        END_INTERFACE
-    } IWebIconFetcherVtbl;
-
-    interface IWebIconFetcher
-    {
-        CONST_VTBL struct IWebIconFetcherVtbl *lpVtbl;
-    };
-
-    
-
-#ifdef COBJMACROS
-
-
-#define IWebIconFetcher_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
-
-#define IWebIconFetcher_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
-
-#define IWebIconFetcher_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
-
-
-#define IWebIconFetcher_cancel(This)	\
-    ( (This)->lpVtbl -> cancel(This) ) 
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-
-#endif 	/* __IWebIconFetcher_INTERFACE_DEFINED__ */
 
 
 #ifndef __IWebInspector_INTERFACE_DEFINED__
@@ -27632,7 +27506,7 @@ EXTERN_C const IID IID_IWebKitStatistics;
 #endif 	/* __IWebKitStatistics_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0102 */
+/* interface __MIDL_itf_WebKit_0000_0100 */
 /* [local] */ 
 
 // this is done to get midl to treat the CFURLRequestRef as pointer types
@@ -27644,8 +27518,8 @@ typedef const struct _CFURLRequest* CFURLRequestRef;
 #endif
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0102_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0102_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0100_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0100_v0_0_s_ifspec;
 
 #ifndef __IWebMutableURLRequestPrivate_INTERFACE_DEFINED__
 #define __IWebMutableURLRequestPrivate_INTERFACE_DEFINED__
@@ -27734,15 +27608,15 @@ EXTERN_C const IID IID_IWebMutableURLRequestPrivate;
 #endif 	/* __IWebMutableURLRequestPrivate_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0103 */
+/* interface __MIDL_itf_WebKit_0000_0101 */
 /* [local] */ 
 
 
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0103_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0103_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0101_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0101_v0_0_s_ifspec;
 
 #ifndef __IWebNavigationData_INTERFACE_DEFINED__
 #define __IWebNavigationData_INTERFACE_DEFINED__
@@ -27986,15 +27860,15 @@ EXTERN_C const IID IID_IWebNotification;
 #endif 	/* __IWebNotification_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0105 */
+/* interface __MIDL_itf_WebKit_0000_0103 */
 /* [local] */ 
 
 
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0105_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0105_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0103_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0103_v0_0_s_ifspec;
 
 #ifndef __IWebNotificationCenter_INTERFACE_DEFINED__
 #define __IWebNotificationCenter_INTERFACE_DEFINED__
@@ -28127,14 +28001,14 @@ EXTERN_C const IID IID_IWebNotificationCenter;
 #endif 	/* __IWebNotificationCenter_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0106 */
+/* interface __MIDL_itf_WebKit_0000_0104 */
 /* [local] */ 
 
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0106_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0106_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0104_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0104_v0_0_s_ifspec;
 
 #ifndef __IWebNotificationObserver_INTERFACE_DEFINED__
 #define __IWebNotificationObserver_INTERFACE_DEFINED__
@@ -28215,104 +28089,7 @@ EXTERN_C const IID IID_IWebNotificationObserver;
 #endif 	/* __IWebNotificationObserver_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0107 */
-/* [local] */ 
-
-
-
-
-
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0107_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0107_v0_0_s_ifspec;
-
-#ifndef __IWebPluginHalterDelegate_INTERFACE_DEFINED__
-#define __IWebPluginHalterDelegate_INTERFACE_DEFINED__
-
-/* interface IWebPluginHalterDelegate */
-/* [unique][uuid][oleautomation][object] */ 
-
-
-EXTERN_C const IID IID_IWebPluginHalterDelegate;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("2e0e5d9e-ffc9-4185-aa15-e66868d548ee")
-    IWebPluginHalterDelegate : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE shouldHaltPlugin( 
-            /* [in] */ IWebView *webView,
-            /* [in] */ IDOMNode *__MIDL__IWebPluginHalterDelegate0000,
-            /* [in] */ BOOL isWindowed,
-            /* [in] */ BSTR pluginName,
-            /* [retval][out] */ BOOL *result) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-
-    typedef struct IWebPluginHalterDelegateVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IWebPluginHalterDelegate * This,
-            /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IWebPluginHalterDelegate * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IWebPluginHalterDelegate * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *shouldHaltPlugin )( 
-            IWebPluginHalterDelegate * This,
-            /* [in] */ IWebView *webView,
-            /* [in] */ IDOMNode *__MIDL__IWebPluginHalterDelegate0000,
-            /* [in] */ BOOL isWindowed,
-            /* [in] */ BSTR pluginName,
-            /* [retval][out] */ BOOL *result);
-        
-        END_INTERFACE
-    } IWebPluginHalterDelegateVtbl;
-
-    interface IWebPluginHalterDelegate
-    {
-        CONST_VTBL struct IWebPluginHalterDelegateVtbl *lpVtbl;
-    };
-
-    
-
-#ifdef COBJMACROS
-
-
-#define IWebPluginHalterDelegate_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
-
-#define IWebPluginHalterDelegate_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
-
-#define IWebPluginHalterDelegate_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
-
-
-#define IWebPluginHalterDelegate_shouldHaltPlugin(This,webView,__MIDL__IWebPluginHalterDelegate0000,isWindowed,pluginName,result)	\
-    ( (This)->lpVtbl -> shouldHaltPlugin(This,webView,__MIDL__IWebPluginHalterDelegate0000,isWindowed,pluginName,result) ) 
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-
-#endif 	/* __IWebPluginHalterDelegate_INTERFACE_DEFINED__ */
-
-
-/* interface __MIDL_itf_WebKit_0000_0108 */
+/* interface __MIDL_itf_WebKit_0000_0105 */
 /* [local] */ 
 
 
@@ -28339,8 +28116,8 @@ enum WebNavigationType
 #define WebActionOriginalURLKey TEXT("WebActionOriginalURLKey")
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0108_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0108_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0105_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0105_v0_0_s_ifspec;
 
 #ifndef __IWebPolicyDecisionListener_INTERFACE_DEFINED__
 #define __IWebPolicyDecisionListener_INTERFACE_DEFINED__
@@ -28572,15 +28349,15 @@ EXTERN_C const IID IID_IWebPolicyDelegate;
 #endif 	/* __IWebPolicyDelegate_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0110 */
+/* interface __MIDL_itf_WebKit_0000_0107 */
 /* [local] */ 
 
 
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0110_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0110_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0107_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0107_v0_0_s_ifspec;
 
 #ifndef __IWebPolicyDelegatePrivate_INTERFACE_DEFINED__
 #define __IWebPolicyDelegatePrivate_INTERFACE_DEFINED__
@@ -28651,7 +28428,7 @@ EXTERN_C const IID IID_IWebPolicyDelegatePrivate;
 #endif 	/* __IWebPolicyDelegatePrivate_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0111 */
+/* interface __MIDL_itf_WebKit_0000_0108 */
 /* [local] */ 
 
 #define WebPreferencesChangedNotification TEXT("WebPreferencesChangedNotification")
@@ -28677,7 +28454,8 @@ enum WebKitEditableLinkBehavior
 typedef 
 enum WebKitEditingBehavior
     {	WebKitEditingMacBehavior	= 0,
-	WebKitEditingWinBehavior	= ( WebKitEditingMacBehavior + 1 ) 
+	WebKitEditingWinBehavior	= ( WebKitEditingMacBehavior + 1 ) ,
+	WebKitEditingUnixBehavior	= ( WebKitEditingWinBehavior + 1 ) 
     } 	WebKitEditingBehavior;
 
 typedef 
@@ -28696,8 +28474,8 @@ enum WebCacheModel
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0111_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0111_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0108_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0108_v0_0_s_ifspec;
 
 #ifndef __IWebPreferences_INTERFACE_DEFINED__
 #define __IWebPreferences_INTERFACE_DEFINED__
@@ -28944,11 +28722,9 @@ EXTERN_C const IID IID_IWebPreferences;
         virtual HRESULT STDMETHODCALLTYPE setCacheModel( 
             /* [in] */ WebCacheModel cacheModel) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE setShouldPaintCustomScrollbars( 
-            BOOL shouldPaint) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused3( void) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE shouldPaintCustomScrollbars( 
-            BOOL *shouldPaint) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused4( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE setZoomsTextOnly( 
             BOOL zoomsTextOnly) = 0;
@@ -28967,6 +28743,36 @@ EXTERN_C const IID IID_IWebPreferences;
         
         virtual HRESULT STDMETHODCALLTYPE setEditingBehavior( 
             /* [in] */ WebKitEditingBehavior behavior) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setAVFoundationEnabled( 
+            BOOL avFoundationEnabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE avFoundationEnabled( 
+            BOOL *avFoundationEnabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE pictographFontFamily( 
+            /* [retval][out] */ BSTR *family) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setPictographFontFamily( 
+            /* [in] */ BSTR family) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setShouldDisplaySubtitles( 
+            BOOL shouldDisplaySubtitles) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE shouldDisplaySubtitles( 
+            BOOL *shouldDisplaySubtitles) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setShouldDisplayCaptions( 
+            BOOL shouldDisplayCaptions) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE shouldDisplayCaptions( 
+            BOOL *shouldDisplayCaptions) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setShouldDisplayTextDescriptions( 
+            BOOL shouldDisplayTextDescriptions) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE shouldDisplayTextDescriptions( 
+            BOOL *shouldDisplayTextDescriptions) = 0;
         
     };
     
@@ -29295,13 +29101,11 @@ EXTERN_C const IID IID_IWebPreferences;
             IWebPreferences * This,
             /* [in] */ WebCacheModel cacheModel);
         
-        HRESULT ( STDMETHODCALLTYPE *setShouldPaintCustomScrollbars )( 
-            IWebPreferences * This,
-            BOOL shouldPaint);
+        HRESULT ( STDMETHODCALLTYPE *unused3 )( 
+            IWebPreferences * This);
         
-        HRESULT ( STDMETHODCALLTYPE *shouldPaintCustomScrollbars )( 
-            IWebPreferences * This,
-            BOOL *shouldPaint);
+        HRESULT ( STDMETHODCALLTYPE *unused4 )( 
+            IWebPreferences * This);
         
         HRESULT ( STDMETHODCALLTYPE *setZoomsTextOnly )( 
             IWebPreferences * This,
@@ -29326,6 +29130,46 @@ EXTERN_C const IID IID_IWebPreferences;
         HRESULT ( STDMETHODCALLTYPE *setEditingBehavior )( 
             IWebPreferences * This,
             /* [in] */ WebKitEditingBehavior behavior);
+        
+        HRESULT ( STDMETHODCALLTYPE *setAVFoundationEnabled )( 
+            IWebPreferences * This,
+            BOOL avFoundationEnabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *avFoundationEnabled )( 
+            IWebPreferences * This,
+            BOOL *avFoundationEnabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *pictographFontFamily )( 
+            IWebPreferences * This,
+            /* [retval][out] */ BSTR *family);
+        
+        HRESULT ( STDMETHODCALLTYPE *setPictographFontFamily )( 
+            IWebPreferences * This,
+            /* [in] */ BSTR family);
+        
+        HRESULT ( STDMETHODCALLTYPE *setShouldDisplaySubtitles )( 
+            IWebPreferences * This,
+            BOOL shouldDisplaySubtitles);
+        
+        HRESULT ( STDMETHODCALLTYPE *shouldDisplaySubtitles )( 
+            IWebPreferences * This,
+            BOOL *shouldDisplaySubtitles);
+        
+        HRESULT ( STDMETHODCALLTYPE *setShouldDisplayCaptions )( 
+            IWebPreferences * This,
+            BOOL shouldDisplayCaptions);
+        
+        HRESULT ( STDMETHODCALLTYPE *shouldDisplayCaptions )( 
+            IWebPreferences * This,
+            BOOL *shouldDisplayCaptions);
+        
+        HRESULT ( STDMETHODCALLTYPE *setShouldDisplayTextDescriptions )( 
+            IWebPreferences * This,
+            BOOL shouldDisplayTextDescriptions);
+        
+        HRESULT ( STDMETHODCALLTYPE *shouldDisplayTextDescriptions )( 
+            IWebPreferences * This,
+            BOOL *shouldDisplayTextDescriptions);
         
         END_INTERFACE
     } IWebPreferencesVtbl;
@@ -29581,11 +29425,11 @@ EXTERN_C const IID IID_IWebPreferences;
 #define IWebPreferences_setCacheModel(This,cacheModel)	\
     ( (This)->lpVtbl -> setCacheModel(This,cacheModel) ) 
 
-#define IWebPreferences_setShouldPaintCustomScrollbars(This,shouldPaint)	\
-    ( (This)->lpVtbl -> setShouldPaintCustomScrollbars(This,shouldPaint) ) 
+#define IWebPreferences_unused3(This)	\
+    ( (This)->lpVtbl -> unused3(This) ) 
 
-#define IWebPreferences_shouldPaintCustomScrollbars(This,shouldPaint)	\
-    ( (This)->lpVtbl -> shouldPaintCustomScrollbars(This,shouldPaint) ) 
+#define IWebPreferences_unused4(This)	\
+    ( (This)->lpVtbl -> unused4(This) ) 
 
 #define IWebPreferences_setZoomsTextOnly(This,zoomsTextOnly)	\
     ( (This)->lpVtbl -> setZoomsTextOnly(This,zoomsTextOnly) ) 
@@ -29604,6 +29448,36 @@ EXTERN_C const IID IID_IWebPreferences;
 
 #define IWebPreferences_setEditingBehavior(This,behavior)	\
     ( (This)->lpVtbl -> setEditingBehavior(This,behavior) ) 
+
+#define IWebPreferences_setAVFoundationEnabled(This,avFoundationEnabled)	\
+    ( (This)->lpVtbl -> setAVFoundationEnabled(This,avFoundationEnabled) ) 
+
+#define IWebPreferences_avFoundationEnabled(This,avFoundationEnabled)	\
+    ( (This)->lpVtbl -> avFoundationEnabled(This,avFoundationEnabled) ) 
+
+#define IWebPreferences_pictographFontFamily(This,family)	\
+    ( (This)->lpVtbl -> pictographFontFamily(This,family) ) 
+
+#define IWebPreferences_setPictographFontFamily(This,family)	\
+    ( (This)->lpVtbl -> setPictographFontFamily(This,family) ) 
+
+#define IWebPreferences_setShouldDisplaySubtitles(This,shouldDisplaySubtitles)	\
+    ( (This)->lpVtbl -> setShouldDisplaySubtitles(This,shouldDisplaySubtitles) ) 
+
+#define IWebPreferences_shouldDisplaySubtitles(This,shouldDisplaySubtitles)	\
+    ( (This)->lpVtbl -> shouldDisplaySubtitles(This,shouldDisplaySubtitles) ) 
+
+#define IWebPreferences_setShouldDisplayCaptions(This,shouldDisplayCaptions)	\
+    ( (This)->lpVtbl -> setShouldDisplayCaptions(This,shouldDisplayCaptions) ) 
+
+#define IWebPreferences_shouldDisplayCaptions(This,shouldDisplayCaptions)	\
+    ( (This)->lpVtbl -> shouldDisplayCaptions(This,shouldDisplayCaptions) ) 
+
+#define IWebPreferences_setShouldDisplayTextDescriptions(This,shouldDisplayTextDescriptions)	\
+    ( (This)->lpVtbl -> setShouldDisplayTextDescriptions(This,shouldDisplayTextDescriptions) ) 
+
+#define IWebPreferences_shouldDisplayTextDescriptions(This,shouldDisplayTextDescriptions)	\
+    ( (This)->lpVtbl -> shouldDisplayTextDescriptions(This,shouldDisplayTextDescriptions) ) 
 
 #endif /* COBJMACROS */
 
@@ -29731,11 +29605,9 @@ EXTERN_C const IID IID_IWebPreferencesPrivate;
             /* [in] */ BSTR key,
             /* [in] */ BSTR value) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE setPluginAllowedRunTime( 
-            /* [in] */ UINT allowedRunTime) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused1( void) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE pluginAllowedRunTime( 
-            /* [retval][out] */ UINT *allowedRunTime) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused2( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE setAcceleratedCompositingEnabled( 
             /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0000) = 0;
@@ -29784,6 +29656,54 @@ EXTERN_C const IID IID_IWebPreferencesPrivate;
         
         virtual HRESULT STDMETHODCALLTYPE setMemoryInfoEnabled( 
             /* [in] */ BOOL enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE hyperlinkAuditingEnabled( 
+            BOOL *hyperlinkAuditingEnabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setHyperlinkAuditingEnabled( 
+            BOOL hyperlinkAuditingEnabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setLoadsSiteIconsIgnoringImageLoadingPreference( 
+            /* [in] */ BOOL enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE loadsSiteIconsIgnoringImageLoadingPreference( 
+            /* [retval][out] */ BOOL *enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setFullScreenEnabled( 
+            /* [in] */ BOOL enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE isFullScreenEnabled( 
+            /* [retval][out] */ BOOL *enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setHixie76WebSocketProtocolEnabled( 
+            /* [in] */ BOOL enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE hixie76WebSocketProtocolEnabled( 
+            /* [retval][out] */ BOOL *enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setMediaPlaybackRequiresUserGesture( 
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0008) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE mediaPlaybackRequiresUserGesture( 
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0009) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setMediaPlaybackAllowsInline( 
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0010) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE mediaPlaybackAllowsInline( 
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0011) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setShowsToolTipOverTruncatedText( 
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0012) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE showsToolTipOverTruncatedText( 
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0013) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setShouldInvertColors( 
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0014) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE shouldInvertColors( 
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0015) = 0;
         
     };
     
@@ -29938,13 +29858,11 @@ EXTERN_C const IID IID_IWebPreferencesPrivate;
             /* [in] */ BSTR key,
             /* [in] */ BSTR value);
         
-        HRESULT ( STDMETHODCALLTYPE *setPluginAllowedRunTime )( 
-            IWebPreferencesPrivate * This,
-            /* [in] */ UINT allowedRunTime);
+        HRESULT ( STDMETHODCALLTYPE *unused1 )( 
+            IWebPreferencesPrivate * This);
         
-        HRESULT ( STDMETHODCALLTYPE *pluginAllowedRunTime )( 
-            IWebPreferencesPrivate * This,
-            /* [retval][out] */ UINT *allowedRunTime);
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
+            IWebPreferencesPrivate * This);
         
         HRESULT ( STDMETHODCALLTYPE *setAcceleratedCompositingEnabled )( 
             IWebPreferencesPrivate * This,
@@ -30009,6 +29927,70 @@ EXTERN_C const IID IID_IWebPreferencesPrivate;
         HRESULT ( STDMETHODCALLTYPE *setMemoryInfoEnabled )( 
             IWebPreferencesPrivate * This,
             /* [in] */ BOOL enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *hyperlinkAuditingEnabled )( 
+            IWebPreferencesPrivate * This,
+            BOOL *hyperlinkAuditingEnabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *setHyperlinkAuditingEnabled )( 
+            IWebPreferencesPrivate * This,
+            BOOL hyperlinkAuditingEnabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *setLoadsSiteIconsIgnoringImageLoadingPreference )( 
+            IWebPreferencesPrivate * This,
+            /* [in] */ BOOL enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *loadsSiteIconsIgnoringImageLoadingPreference )( 
+            IWebPreferencesPrivate * This,
+            /* [retval][out] */ BOOL *enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *setFullScreenEnabled )( 
+            IWebPreferencesPrivate * This,
+            /* [in] */ BOOL enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *isFullScreenEnabled )( 
+            IWebPreferencesPrivate * This,
+            /* [retval][out] */ BOOL *enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *setHixie76WebSocketProtocolEnabled )( 
+            IWebPreferencesPrivate * This,
+            /* [in] */ BOOL enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *hixie76WebSocketProtocolEnabled )( 
+            IWebPreferencesPrivate * This,
+            /* [retval][out] */ BOOL *enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *setMediaPlaybackRequiresUserGesture )( 
+            IWebPreferencesPrivate * This,
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0008);
+        
+        HRESULT ( STDMETHODCALLTYPE *mediaPlaybackRequiresUserGesture )( 
+            IWebPreferencesPrivate * This,
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0009);
+        
+        HRESULT ( STDMETHODCALLTYPE *setMediaPlaybackAllowsInline )( 
+            IWebPreferencesPrivate * This,
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0010);
+        
+        HRESULT ( STDMETHODCALLTYPE *mediaPlaybackAllowsInline )( 
+            IWebPreferencesPrivate * This,
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0011);
+        
+        HRESULT ( STDMETHODCALLTYPE *setShowsToolTipOverTruncatedText )( 
+            IWebPreferencesPrivate * This,
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0012);
+        
+        HRESULT ( STDMETHODCALLTYPE *showsToolTipOverTruncatedText )( 
+            IWebPreferencesPrivate * This,
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0013);
+        
+        HRESULT ( STDMETHODCALLTYPE *setShouldInvertColors )( 
+            IWebPreferencesPrivate * This,
+            /* [in] */ BOOL __MIDL__IWebPreferencesPrivate0014);
+        
+        HRESULT ( STDMETHODCALLTYPE *shouldInvertColors )( 
+            IWebPreferencesPrivate * This,
+            /* [retval][out] */ BOOL *__MIDL__IWebPreferencesPrivate0015);
         
         END_INTERFACE
     } IWebPreferencesPrivateVtbl;
@@ -30132,11 +30114,11 @@ EXTERN_C const IID IID_IWebPreferencesPrivate;
 #define IWebPreferencesPrivate_setPreferenceForTest(This,key,value)	\
     ( (This)->lpVtbl -> setPreferenceForTest(This,key,value) ) 
 
-#define IWebPreferencesPrivate_setPluginAllowedRunTime(This,allowedRunTime)	\
-    ( (This)->lpVtbl -> setPluginAllowedRunTime(This,allowedRunTime) ) 
+#define IWebPreferencesPrivate_unused1(This)	\
+    ( (This)->lpVtbl -> unused1(This) ) 
 
-#define IWebPreferencesPrivate_pluginAllowedRunTime(This,allowedRunTime)	\
-    ( (This)->lpVtbl -> pluginAllowedRunTime(This,allowedRunTime) ) 
+#define IWebPreferencesPrivate_unused2(This)	\
+    ( (This)->lpVtbl -> unused2(This) ) 
 
 #define IWebPreferencesPrivate_setAcceleratedCompositingEnabled(This,__MIDL__IWebPreferencesPrivate0000)	\
     ( (This)->lpVtbl -> setAcceleratedCompositingEnabled(This,__MIDL__IWebPreferencesPrivate0000) ) 
@@ -30185,6 +30167,54 @@ EXTERN_C const IID IID_IWebPreferencesPrivate;
 
 #define IWebPreferencesPrivate_setMemoryInfoEnabled(This,enabled)	\
     ( (This)->lpVtbl -> setMemoryInfoEnabled(This,enabled) ) 
+
+#define IWebPreferencesPrivate_hyperlinkAuditingEnabled(This,hyperlinkAuditingEnabled)	\
+    ( (This)->lpVtbl -> hyperlinkAuditingEnabled(This,hyperlinkAuditingEnabled) ) 
+
+#define IWebPreferencesPrivate_setHyperlinkAuditingEnabled(This,hyperlinkAuditingEnabled)	\
+    ( (This)->lpVtbl -> setHyperlinkAuditingEnabled(This,hyperlinkAuditingEnabled) ) 
+
+#define IWebPreferencesPrivate_setLoadsSiteIconsIgnoringImageLoadingPreference(This,enabled)	\
+    ( (This)->lpVtbl -> setLoadsSiteIconsIgnoringImageLoadingPreference(This,enabled) ) 
+
+#define IWebPreferencesPrivate_loadsSiteIconsIgnoringImageLoadingPreference(This,enabled)	\
+    ( (This)->lpVtbl -> loadsSiteIconsIgnoringImageLoadingPreference(This,enabled) ) 
+
+#define IWebPreferencesPrivate_setFullScreenEnabled(This,enabled)	\
+    ( (This)->lpVtbl -> setFullScreenEnabled(This,enabled) ) 
+
+#define IWebPreferencesPrivate_isFullScreenEnabled(This,enabled)	\
+    ( (This)->lpVtbl -> isFullScreenEnabled(This,enabled) ) 
+
+#define IWebPreferencesPrivate_setHixie76WebSocketProtocolEnabled(This,enabled)	\
+    ( (This)->lpVtbl -> setHixie76WebSocketProtocolEnabled(This,enabled) ) 
+
+#define IWebPreferencesPrivate_hixie76WebSocketProtocolEnabled(This,enabled)	\
+    ( (This)->lpVtbl -> hixie76WebSocketProtocolEnabled(This,enabled) ) 
+
+#define IWebPreferencesPrivate_setMediaPlaybackRequiresUserGesture(This,__MIDL__IWebPreferencesPrivate0008)	\
+    ( (This)->lpVtbl -> setMediaPlaybackRequiresUserGesture(This,__MIDL__IWebPreferencesPrivate0008) ) 
+
+#define IWebPreferencesPrivate_mediaPlaybackRequiresUserGesture(This,__MIDL__IWebPreferencesPrivate0009)	\
+    ( (This)->lpVtbl -> mediaPlaybackRequiresUserGesture(This,__MIDL__IWebPreferencesPrivate0009) ) 
+
+#define IWebPreferencesPrivate_setMediaPlaybackAllowsInline(This,__MIDL__IWebPreferencesPrivate0010)	\
+    ( (This)->lpVtbl -> setMediaPlaybackAllowsInline(This,__MIDL__IWebPreferencesPrivate0010) ) 
+
+#define IWebPreferencesPrivate_mediaPlaybackAllowsInline(This,__MIDL__IWebPreferencesPrivate0011)	\
+    ( (This)->lpVtbl -> mediaPlaybackAllowsInline(This,__MIDL__IWebPreferencesPrivate0011) ) 
+
+#define IWebPreferencesPrivate_setShowsToolTipOverTruncatedText(This,__MIDL__IWebPreferencesPrivate0012)	\
+    ( (This)->lpVtbl -> setShowsToolTipOverTruncatedText(This,__MIDL__IWebPreferencesPrivate0012) ) 
+
+#define IWebPreferencesPrivate_showsToolTipOverTruncatedText(This,__MIDL__IWebPreferencesPrivate0013)	\
+    ( (This)->lpVtbl -> showsToolTipOverTruncatedText(This,__MIDL__IWebPreferencesPrivate0013) ) 
+
+#define IWebPreferencesPrivate_setShouldInvertColors(This,__MIDL__IWebPreferencesPrivate0014)	\
+    ( (This)->lpVtbl -> setShouldInvertColors(This,__MIDL__IWebPreferencesPrivate0014) ) 
+
+#define IWebPreferencesPrivate_shouldInvertColors(This,__MIDL__IWebPreferencesPrivate0015)	\
+    ( (This)->lpVtbl -> shouldInvertColors(This,__MIDL__IWebPreferencesPrivate0015) ) 
 
 #endif /* COBJMACROS */
 
@@ -30334,7 +30364,7 @@ EXTERN_C const IID IID_IWebResource;
 #endif 	/* __IWebResource_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0114 */
+/* interface __MIDL_itf_WebKit_0000_0111 */
 /* [local] */ 
 
 
@@ -30345,8 +30375,8 @@ EXTERN_C const IID IID_IWebResource;
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0114_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0114_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0111_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0111_v0_0_s_ifspec;
 
 #ifndef __IWebResourceLoadDelegate_INTERFACE_DEFINED__
 #define __IWebResourceLoadDelegate_INTERFACE_DEFINED__
@@ -30561,7 +30591,7 @@ EXTERN_C const IID IID_IWebResourceLoadDelegate;
 #endif 	/* __IWebResourceLoadDelegate_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0115 */
+/* interface __MIDL_itf_WebKit_0000_0112 */
 /* [local] */ 
 
 
@@ -30570,8 +30600,8 @@ EXTERN_C const IID IID_IWebResourceLoadDelegate;
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0115_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0115_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0112_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0112_v0_0_s_ifspec;
 
 #ifndef __IWebResourceLoadDelegatePrivate_INTERFACE_DEFINED__
 #define __IWebResourceLoadDelegatePrivate_INTERFACE_DEFINED__
@@ -30698,6 +30728,96 @@ EXTERN_C const IID IID_IWebResourceLoadDelegatePrivate;
 #endif 	/* __IWebResourceLoadDelegatePrivate_INTERFACE_DEFINED__ */
 
 
+/* interface __MIDL_itf_WebKit_0000_0113 */
+/* [local] */ 
+
+
+
+
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0113_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0113_v0_0_s_ifspec;
+
+#ifndef __IWebResourceLoadDelegatePrivate2_INTERFACE_DEFINED__
+#define __IWebResourceLoadDelegatePrivate2_INTERFACE_DEFINED__
+
+/* interface IWebResourceLoadDelegatePrivate2 */
+/* [unique][uuid][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IWebResourceLoadDelegatePrivate2;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("3517ADDA-5870-4aab-9A4E-056E65989DF8")
+    IWebResourceLoadDelegatePrivate2 : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE removeIdentifierForRequest( 
+            /* [in] */ IWebView *webView,
+            /* [in] */ unsigned long identifier) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IWebResourceLoadDelegatePrivate2Vtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IWebResourceLoadDelegatePrivate2 * This,
+            /* [in] */ REFIID riid,
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IWebResourceLoadDelegatePrivate2 * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IWebResourceLoadDelegatePrivate2 * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *removeIdentifierForRequest )( 
+            IWebResourceLoadDelegatePrivate2 * This,
+            /* [in] */ IWebView *webView,
+            /* [in] */ unsigned long identifier);
+        
+        END_INTERFACE
+    } IWebResourceLoadDelegatePrivate2Vtbl;
+
+    interface IWebResourceLoadDelegatePrivate2
+    {
+        CONST_VTBL struct IWebResourceLoadDelegatePrivate2Vtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IWebResourceLoadDelegatePrivate2_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IWebResourceLoadDelegatePrivate2_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IWebResourceLoadDelegatePrivate2_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IWebResourceLoadDelegatePrivate2_removeIdentifierForRequest(This,webView,identifier)	\
+    ( (This)->lpVtbl -> removeIdentifierForRequest(This,webView,identifier) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IWebResourceLoadDelegatePrivate2_INTERFACE_DEFINED__ */
+
+
 #ifndef __IWebScriptWorld_INTERFACE_DEFINED__
 #define __IWebScriptWorld_INTERFACE_DEFINED__
 
@@ -30797,14 +30917,14 @@ EXTERN_C const IID IID_IWebScriptWorld;
 #endif 	/* __IWebScriptWorld_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0117 */
+/* interface __MIDL_itf_WebKit_0000_0115 */
 /* [local] */ 
 
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0117_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0117_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0115_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0115_v0_0_s_ifspec;
 
 #ifndef __IWebScrollBarDelegatePrivate_INTERFACE_DEFINED__
 #define __IWebScrollBarDelegatePrivate_INTERFACE_DEFINED__
@@ -30885,14 +31005,14 @@ EXTERN_C const IID IID_IWebScrollBarDelegatePrivate;
 #endif 	/* __IWebScrollBarDelegatePrivate_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0118 */
+/* interface __MIDL_itf_WebKit_0000_0116 */
 /* [local] */ 
 
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0118_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0118_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0116_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0116_v0_0_s_ifspec;
 
 #ifndef __IWebScrollBarPrivate_INTERFACE_DEFINED__
 #define __IWebScrollBarPrivate_INTERFACE_DEFINED__
@@ -31359,6 +31479,95 @@ EXTERN_C const IID IID_IWebSerializedJSValue;
 #endif 	/* __IWebSerializedJSValue_INTERFACE_DEFINED__ */
 
 
+#ifndef __IWebSerializedJSValuePrivate_INTERFACE_DEFINED__
+#define __IWebSerializedJSValuePrivate_INTERFACE_DEFINED__
+
+/* interface IWebSerializedJSValuePrivate */
+/* [unique][uuid][hidden][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IWebSerializedJSValuePrivate;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("F695AF5F-35FE-44fb-9EC6-23ABCAC8C515")
+    IWebSerializedJSValuePrivate : public IUnknown
+    {
+    public:
+        virtual /* [local] */ HRESULT STDMETHODCALLTYPE setInternalRepresentation( 
+            /* [in] */ void *internalRepresentation) = 0;
+        
+        virtual /* [local] */ HRESULT STDMETHODCALLTYPE getInternalRepresentation( 
+            /* [retval][out] */ void **internalRepresentation) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IWebSerializedJSValuePrivateVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IWebSerializedJSValuePrivate * This,
+            /* [in] */ REFIID riid,
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IWebSerializedJSValuePrivate * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IWebSerializedJSValuePrivate * This);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *setInternalRepresentation )( 
+            IWebSerializedJSValuePrivate * This,
+            /* [in] */ void *internalRepresentation);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *getInternalRepresentation )( 
+            IWebSerializedJSValuePrivate * This,
+            /* [retval][out] */ void **internalRepresentation);
+        
+        END_INTERFACE
+    } IWebSerializedJSValuePrivateVtbl;
+
+    interface IWebSerializedJSValuePrivate
+    {
+        CONST_VTBL struct IWebSerializedJSValuePrivateVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IWebSerializedJSValuePrivate_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IWebSerializedJSValuePrivate_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IWebSerializedJSValuePrivate_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IWebSerializedJSValuePrivate_setInternalRepresentation(This,internalRepresentation)	\
+    ( (This)->lpVtbl -> setInternalRepresentation(This,internalRepresentation) ) 
+
+#define IWebSerializedJSValuePrivate_getInternalRepresentation(This,internalRepresentation)	\
+    ( (This)->lpVtbl -> getInternalRepresentation(This,internalRepresentation) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IWebSerializedJSValuePrivate_INTERFACE_DEFINED__ */
+
+
 #ifndef __IWebTextRenderer_INTERFACE_DEFINED__
 #define __IWebTextRenderer_INTERFACE_DEFINED__
 
@@ -31438,7 +31647,7 @@ EXTERN_C const IID IID_IWebTextRenderer;
 #endif 	/* __IWebTextRenderer_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0122 */
+/* interface __MIDL_itf_WebKit_0000_0121 */
 /* [local] */ 
 
 
@@ -31528,8 +31737,8 @@ enum WebDragSourceAction
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0122_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0122_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0121_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0121_v0_0_s_ifspec;
 
 #ifndef __IWebOpenPanelResultListener_INTERFACE_DEFINED__
 #define __IWebOpenPanelResultListener_INTERFACE_DEFINED__
@@ -33099,7 +33308,7 @@ EXTERN_C const IID IID_IWebUIDelegate2;
 #endif 	/* __IWebUIDelegate2_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0125 */
+/* interface __MIDL_itf_WebKit_0000_0124 */
 /* [local] */ 
 
 #define WebEmbeddedViewAttributesKey TEXT("WebEmbeddedViewAttributesKey")
@@ -33113,8 +33322,8 @@ EXTERN_C const IID IID_IWebUIDelegate2;
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0125_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0125_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0124_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0124_v0_0_s_ifspec;
 
 #ifndef __IWebUIDelegatePrivate_INTERFACE_DEFINED__
 #define __IWebUIDelegatePrivate_INTERFACE_DEFINED__
@@ -33377,7 +33586,7 @@ EXTERN_C const IID IID_IWebUIDelegatePrivate;
 #endif 	/* __IWebUIDelegatePrivate_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_WebKit_0000_0126 */
+/* interface __MIDL_itf_WebKit_0000_0125 */
 /* [local] */ 
 
 #define WebWindowFeaturesXKey L"x"
@@ -33393,8 +33602,8 @@ EXTERN_C const IID IID_IWebUIDelegatePrivate;
 #define WebWindowFeaturesDialogKey L"dialog"
 
 
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0126_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0126_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0125_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_WebKit_0000_0125_v0_0_s_ifspec;
 
 #ifndef __IWebUIDelegatePrivate2_INTERFACE_DEFINED__
 #define __IWebUIDelegatePrivate2_INTERFACE_DEFINED__
@@ -33876,6 +34085,276 @@ EXTERN_C const IID IID_IWebUIDelegatePrivate3;
 
 
 #endif 	/* __IWebUIDelegatePrivate3_INTERFACE_DEFINED__ */
+
+
+#ifndef __IWebUIDelegatePrivate4_INTERFACE_DEFINED__
+#define __IWebUIDelegatePrivate4_INTERFACE_DEFINED__
+
+/* interface IWebUIDelegatePrivate4 */
+/* [unique][uuid][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IWebUIDelegatePrivate4;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("944e8e46-6d63-450f-b381-c5d68b80b727")
+    IWebUIDelegatePrivate4 : public IWebUIDelegatePrivate3
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE supportsFullScreenForElement( 
+            /* [in] */ IDOMElement *__MIDL__IWebUIDelegatePrivate40000,
+            /* [in] */ BOOL withKeyboard,
+            /* [retval][out] */ BOOL *supports) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE enterFullScreenForElement( 
+            /* [in] */ IDOMElement *__MIDL__IWebUIDelegatePrivate40001) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE exitFullScreenForElement( 
+            /* [in] */ IDOMElement *__MIDL__IWebUIDelegatePrivate40002) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IWebUIDelegatePrivate4Vtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ REFIID riid,
+            /* [iid_is][out] */ 
+            __RPC__deref_out  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IWebUIDelegatePrivate4 * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IWebUIDelegatePrivate4 * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *unused1 )( 
+            IWebUIDelegatePrivate4 * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
+            IWebUIDelegatePrivate4 * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewScrolled )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewAddMessageToConsole )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ BSTR message,
+            /* [in] */ int lineNumber,
+            /* [in] */ BSTR url,
+            /* [in] */ BOOL isError);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewShouldInterruptJavaScript )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [retval][out] */ BOOL *result);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewReceivedFocus )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewLostFocus )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ OLE_HANDLE loseFocusToHWnd);
+        
+        HRESULT ( STDMETHODCALLTYPE *doDragDrop )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ IDataObject *dataObject,
+            /* [in] */ IDropSource *dropSource,
+            /* [in] */ DWORD okEffect,
+            /* [retval][out] */ DWORD *performedEffect);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewGetDlgCode )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ UINT keyCode,
+            /* [retval][out] */ LONG_PTR *code);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewPainted )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender);
+        
+        HRESULT ( STDMETHODCALLTYPE *exceededDatabaseQuota )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ IWebFrame *frame,
+            /* [in] */ IWebSecurityOrigin *origin,
+            /* [in] */ BSTR databaseIdentifier);
+        
+        HRESULT ( STDMETHODCALLTYPE *embeddedViewWithArguments )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ IWebFrame *frame,
+            /* [in] */ IPropertyBag *arguments,
+            /* [retval][out] */ IWebEmbeddedView **view);
+        
+        HRESULT ( STDMETHODCALLTYPE *unused3 )( 
+            IWebUIDelegatePrivate4 * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewClosing )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewSetCursor )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ OLE_HANDLE cursor);
+        
+        HRESULT ( STDMETHODCALLTYPE *webViewDidInvalidate )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender);
+        
+        HRESULT ( STDMETHODCALLTYPE *createWebViewWithRequest )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ IWebURLRequest *request,
+            /* [in] */ IPropertyBag *windowFeatures,
+            /* [retval][out] */ IWebView **newWebView);
+        
+        HRESULT ( STDMETHODCALLTYPE *drawBackground )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ OLE_HANDLE hdc,
+            /* [in] */ const RECT *dirtyRect);
+        
+        HRESULT ( STDMETHODCALLTYPE *decidePolicyForGeolocationRequest )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IWebView *sender,
+            /* [in] */ IWebFrame *frame,
+            /* [in] */ IWebSecurityOrigin *origin,
+            /* [in] */ IWebGeolocationPolicyListener *listener);
+        
+        HRESULT ( STDMETHODCALLTYPE *didPressMissingPluginButton )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IDOMElement *__MIDL__IWebUIDelegatePrivate30000);
+        
+        HRESULT ( STDMETHODCALLTYPE *supportsFullScreenForElement )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IDOMElement *__MIDL__IWebUIDelegatePrivate40000,
+            /* [in] */ BOOL withKeyboard,
+            /* [retval][out] */ BOOL *supports);
+        
+        HRESULT ( STDMETHODCALLTYPE *enterFullScreenForElement )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IDOMElement *__MIDL__IWebUIDelegatePrivate40001);
+        
+        HRESULT ( STDMETHODCALLTYPE *exitFullScreenForElement )( 
+            IWebUIDelegatePrivate4 * This,
+            /* [in] */ IDOMElement *__MIDL__IWebUIDelegatePrivate40002);
+        
+        END_INTERFACE
+    } IWebUIDelegatePrivate4Vtbl;
+
+    interface IWebUIDelegatePrivate4
+    {
+        CONST_VTBL struct IWebUIDelegatePrivate4Vtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IWebUIDelegatePrivate4_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IWebUIDelegatePrivate4_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IWebUIDelegatePrivate4_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IWebUIDelegatePrivate4_unused1(This)	\
+    ( (This)->lpVtbl -> unused1(This) ) 
+
+#define IWebUIDelegatePrivate4_unused2(This)	\
+    ( (This)->lpVtbl -> unused2(This) ) 
+
+#define IWebUIDelegatePrivate4_webViewScrolled(This,sender)	\
+    ( (This)->lpVtbl -> webViewScrolled(This,sender) ) 
+
+#define IWebUIDelegatePrivate4_webViewAddMessageToConsole(This,sender,message,lineNumber,url,isError)	\
+    ( (This)->lpVtbl -> webViewAddMessageToConsole(This,sender,message,lineNumber,url,isError) ) 
+
+#define IWebUIDelegatePrivate4_webViewShouldInterruptJavaScript(This,sender,result)	\
+    ( (This)->lpVtbl -> webViewShouldInterruptJavaScript(This,sender,result) ) 
+
+#define IWebUIDelegatePrivate4_webViewReceivedFocus(This,sender)	\
+    ( (This)->lpVtbl -> webViewReceivedFocus(This,sender) ) 
+
+#define IWebUIDelegatePrivate4_webViewLostFocus(This,sender,loseFocusToHWnd)	\
+    ( (This)->lpVtbl -> webViewLostFocus(This,sender,loseFocusToHWnd) ) 
+
+#define IWebUIDelegatePrivate4_doDragDrop(This,sender,dataObject,dropSource,okEffect,performedEffect)	\
+    ( (This)->lpVtbl -> doDragDrop(This,sender,dataObject,dropSource,okEffect,performedEffect) ) 
+
+#define IWebUIDelegatePrivate4_webViewGetDlgCode(This,sender,keyCode,code)	\
+    ( (This)->lpVtbl -> webViewGetDlgCode(This,sender,keyCode,code) ) 
+
+#define IWebUIDelegatePrivate4_webViewPainted(This,sender)	\
+    ( (This)->lpVtbl -> webViewPainted(This,sender) ) 
+
+#define IWebUIDelegatePrivate4_exceededDatabaseQuota(This,sender,frame,origin,databaseIdentifier)	\
+    ( (This)->lpVtbl -> exceededDatabaseQuota(This,sender,frame,origin,databaseIdentifier) ) 
+
+#define IWebUIDelegatePrivate4_embeddedViewWithArguments(This,sender,frame,arguments,view)	\
+    ( (This)->lpVtbl -> embeddedViewWithArguments(This,sender,frame,arguments,view) ) 
+
+#define IWebUIDelegatePrivate4_unused3(This)	\
+    ( (This)->lpVtbl -> unused3(This) ) 
+
+#define IWebUIDelegatePrivate4_webViewClosing(This,sender)	\
+    ( (This)->lpVtbl -> webViewClosing(This,sender) ) 
+
+#define IWebUIDelegatePrivate4_webViewSetCursor(This,sender,cursor)	\
+    ( (This)->lpVtbl -> webViewSetCursor(This,sender,cursor) ) 
+
+#define IWebUIDelegatePrivate4_webViewDidInvalidate(This,sender)	\
+    ( (This)->lpVtbl -> webViewDidInvalidate(This,sender) ) 
+
+
+#define IWebUIDelegatePrivate4_createWebViewWithRequest(This,sender,request,windowFeatures,newWebView)	\
+    ( (This)->lpVtbl -> createWebViewWithRequest(This,sender,request,windowFeatures,newWebView) ) 
+
+#define IWebUIDelegatePrivate4_drawBackground(This,sender,hdc,dirtyRect)	\
+    ( (This)->lpVtbl -> drawBackground(This,sender,hdc,dirtyRect) ) 
+
+#define IWebUIDelegatePrivate4_decidePolicyForGeolocationRequest(This,sender,frame,origin,listener)	\
+    ( (This)->lpVtbl -> decidePolicyForGeolocationRequest(This,sender,frame,origin,listener) ) 
+
+
+#define IWebUIDelegatePrivate4_didPressMissingPluginButton(This,__MIDL__IWebUIDelegatePrivate30000)	\
+    ( (This)->lpVtbl -> didPressMissingPluginButton(This,__MIDL__IWebUIDelegatePrivate30000) ) 
+
+
+#define IWebUIDelegatePrivate4_supportsFullScreenForElement(This,__MIDL__IWebUIDelegatePrivate40000,withKeyboard,supports)	\
+    ( (This)->lpVtbl -> supportsFullScreenForElement(This,__MIDL__IWebUIDelegatePrivate40000,withKeyboard,supports) ) 
+
+#define IWebUIDelegatePrivate4_enterFullScreenForElement(This,__MIDL__IWebUIDelegatePrivate40001)	\
+    ( (This)->lpVtbl -> enterFullScreenForElement(This,__MIDL__IWebUIDelegatePrivate40001) ) 
+
+#define IWebUIDelegatePrivate4_exitFullScreenForElement(This,__MIDL__IWebUIDelegatePrivate40002)	\
+    ( (This)->lpVtbl -> exitFullScreenForElement(This,__MIDL__IWebUIDelegatePrivate40002) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IWebUIDelegatePrivate4_INTERFACE_DEFINED__ */
 
 
 /* interface __MIDL_itf_WebKit_0000_0128 */
@@ -36117,6 +36596,8 @@ enum WebViewCmd { Cut = 100, Copy, Paste, ForwardDelete, SelectAll, Undo, Redo }
 
 #define	WebElementIsSelectedKey	( L"WebElementIsSelectedKey" )
 
+#define	WebElementMediaURLKey	( L"WebElementMediaURLKey" )
+
 #define	WebElementSpellingToolTipKey	( L"WebElementSpellingToolTipKey" )
 
 #define	WebElementTitleKey	( L"WebElementTitleKey" )
@@ -38237,7 +38718,6 @@ EXTERN_C const IID IID_IWebViewEditingActions;
 
 
 
-
 typedef /* [public][public] */ 
 enum __MIDL___MIDL_itf_WebKit_0000_0148_0001
     {	WebInjectAtDocumentStart	= 0,
@@ -38474,11 +38954,9 @@ EXTERN_C const IID IID_IWebViewPrivate;
         virtual HRESULT STDMETHODCALLTYPE removeAllUserContentFromGroup( 
             /* [in] */ BSTR groupName) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE setPluginHalterDelegate( 
-            /* [in] */ IWebPluginHalterDelegate *d) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused1( void) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE pluginHalterDelegate( 
-            /* [out][retval] */ IWebPluginHalterDelegate **d) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused2( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE invalidateBackingStore( 
             /* [in] */ const RECT *rect) = 0;
@@ -38507,16 +38985,11 @@ EXTERN_C const IID IID_IWebViewPrivate;
             /* [in] */ BSTR *visitedURLs,
             /* [in] */ unsigned int visitedURLCount) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE isNodeHaltedPlugin( 
-            /* [in] */ IDOMNode *__MIDL__IWebViewPrivate0008,
-            /* [out][retval] */ BOOL *__MIDL__IWebViewPrivate0009) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused3( void) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE restartHaltedPluginForNode( 
-            /* [in] */ IDOMNode *__MIDL__IWebViewPrivate0010) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused4( void) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE hasPluginForNodeBeenHalted( 
-            /* [in] */ IDOMNode *__MIDL__IWebViewPrivate0011,
-            /* [out][retval] */ BOOL *__MIDL__IWebViewPrivate0012) = 0;
+        virtual HRESULT STDMETHODCALLTYPE unused5( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE setGeolocationProvider( 
             /* [in] */ IWebGeolocationProvider *locationProvider) = 0;
@@ -38552,6 +39025,30 @@ EXTERN_C const IID IID_IWebViewPrivate;
             /* [in] */ JSContextRef context,
             /* [in] */ JSValueRef nodeObject,
             /* [retval][out] */ IDOMElement **element) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE defaultMinimumTimerInterval( 
+            /* [retval][out] */ double *interval) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setMinimumTimerInterval( 
+            /* [in] */ double interval) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE httpPipeliningEnabled( 
+            /* [retval][out] */ BOOL *enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setHTTPPipeliningEnabled( 
+            /* [in] */ BOOL enabled) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setUsesLayeredWindow( 
+            /* [in] */ BOOL usesLayeredWindow) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE usesLayeredWindow( 
+            /* [retval][out] */ BOOL *usesLayeredWindow) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE registerURLSchemeAsAllowingLocalStorageAccessInPrivateBrowsing( 
+            /* [in] */ BSTR scheme) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE registerURLSchemeAsAllowingDatabaseAccessInPrivateBrowsing( 
+            /* [in] */ BSTR scheme) = 0;
         
     };
     
@@ -38845,13 +39342,11 @@ EXTERN_C const IID IID_IWebViewPrivate;
             IWebViewPrivate * This,
             /* [in] */ BSTR groupName);
         
-        HRESULT ( STDMETHODCALLTYPE *setPluginHalterDelegate )( 
-            IWebViewPrivate * This,
-            /* [in] */ IWebPluginHalterDelegate *d);
+        HRESULT ( STDMETHODCALLTYPE *unused1 )( 
+            IWebViewPrivate * This);
         
-        HRESULT ( STDMETHODCALLTYPE *pluginHalterDelegate )( 
-            IWebViewPrivate * This,
-            /* [out][retval] */ IWebPluginHalterDelegate **d);
+        HRESULT ( STDMETHODCALLTYPE *unused2 )( 
+            IWebViewPrivate * This);
         
         HRESULT ( STDMETHODCALLTYPE *invalidateBackingStore )( 
             IWebViewPrivate * This,
@@ -38887,19 +39382,14 @@ EXTERN_C const IID IID_IWebViewPrivate;
             /* [in] */ BSTR *visitedURLs,
             /* [in] */ unsigned int visitedURLCount);
         
-        HRESULT ( STDMETHODCALLTYPE *isNodeHaltedPlugin )( 
-            IWebViewPrivate * This,
-            /* [in] */ IDOMNode *__MIDL__IWebViewPrivate0008,
-            /* [out][retval] */ BOOL *__MIDL__IWebViewPrivate0009);
+        HRESULT ( STDMETHODCALLTYPE *unused3 )( 
+            IWebViewPrivate * This);
         
-        HRESULT ( STDMETHODCALLTYPE *restartHaltedPluginForNode )( 
-            IWebViewPrivate * This,
-            /* [in] */ IDOMNode *__MIDL__IWebViewPrivate0010);
+        HRESULT ( STDMETHODCALLTYPE *unused4 )( 
+            IWebViewPrivate * This);
         
-        HRESULT ( STDMETHODCALLTYPE *hasPluginForNodeBeenHalted )( 
-            IWebViewPrivate * This,
-            /* [in] */ IDOMNode *__MIDL__IWebViewPrivate0011,
-            /* [out][retval] */ BOOL *__MIDL__IWebViewPrivate0012);
+        HRESULT ( STDMETHODCALLTYPE *unused5 )( 
+            IWebViewPrivate * This);
         
         HRESULT ( STDMETHODCALLTYPE *setGeolocationProvider )( 
             IWebViewPrivate * This,
@@ -38945,6 +39435,38 @@ EXTERN_C const IID IID_IWebViewPrivate;
             /* [in] */ JSContextRef context,
             /* [in] */ JSValueRef nodeObject,
             /* [retval][out] */ IDOMElement **element);
+        
+        HRESULT ( STDMETHODCALLTYPE *defaultMinimumTimerInterval )( 
+            IWebViewPrivate * This,
+            /* [retval][out] */ double *interval);
+        
+        HRESULT ( STDMETHODCALLTYPE *setMinimumTimerInterval )( 
+            IWebViewPrivate * This,
+            /* [in] */ double interval);
+        
+        HRESULT ( STDMETHODCALLTYPE *httpPipeliningEnabled )( 
+            IWebViewPrivate * This,
+            /* [retval][out] */ BOOL *enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *setHTTPPipeliningEnabled )( 
+            IWebViewPrivate * This,
+            /* [in] */ BOOL enabled);
+        
+        HRESULT ( STDMETHODCALLTYPE *setUsesLayeredWindow )( 
+            IWebViewPrivate * This,
+            /* [in] */ BOOL usesLayeredWindow);
+        
+        HRESULT ( STDMETHODCALLTYPE *usesLayeredWindow )( 
+            IWebViewPrivate * This,
+            /* [retval][out] */ BOOL *usesLayeredWindow);
+        
+        HRESULT ( STDMETHODCALLTYPE *registerURLSchemeAsAllowingLocalStorageAccessInPrivateBrowsing )( 
+            IWebViewPrivate * This,
+            /* [in] */ BSTR scheme);
+        
+        HRESULT ( STDMETHODCALLTYPE *registerURLSchemeAsAllowingDatabaseAccessInPrivateBrowsing )( 
+            IWebViewPrivate * This,
+            /* [in] */ BSTR scheme);
         
         END_INTERFACE
     } IWebViewPrivateVtbl;
@@ -39155,11 +39677,11 @@ EXTERN_C const IID IID_IWebViewPrivate;
 #define IWebViewPrivate_removeAllUserContentFromGroup(This,groupName)	\
     ( (This)->lpVtbl -> removeAllUserContentFromGroup(This,groupName) ) 
 
-#define IWebViewPrivate_setPluginHalterDelegate(This,d)	\
-    ( (This)->lpVtbl -> setPluginHalterDelegate(This,d) ) 
+#define IWebViewPrivate_unused1(This)	\
+    ( (This)->lpVtbl -> unused1(This) ) 
 
-#define IWebViewPrivate_pluginHalterDelegate(This,d)	\
-    ( (This)->lpVtbl -> pluginHalterDelegate(This,d) ) 
+#define IWebViewPrivate_unused2(This)	\
+    ( (This)->lpVtbl -> unused2(This) ) 
 
 #define IWebViewPrivate_invalidateBackingStore(This,rect)	\
     ( (This)->lpVtbl -> invalidateBackingStore(This,rect) ) 
@@ -39182,14 +39704,14 @@ EXTERN_C const IID IID_IWebViewPrivate;
 #define IWebViewPrivate_addVisitedLinks(This,visitedURLs,visitedURLCount)	\
     ( (This)->lpVtbl -> addVisitedLinks(This,visitedURLs,visitedURLCount) ) 
 
-#define IWebViewPrivate_isNodeHaltedPlugin(This,__MIDL__IWebViewPrivate0008,__MIDL__IWebViewPrivate0009)	\
-    ( (This)->lpVtbl -> isNodeHaltedPlugin(This,__MIDL__IWebViewPrivate0008,__MIDL__IWebViewPrivate0009) ) 
+#define IWebViewPrivate_unused3(This)	\
+    ( (This)->lpVtbl -> unused3(This) ) 
 
-#define IWebViewPrivate_restartHaltedPluginForNode(This,__MIDL__IWebViewPrivate0010)	\
-    ( (This)->lpVtbl -> restartHaltedPluginForNode(This,__MIDL__IWebViewPrivate0010) ) 
+#define IWebViewPrivate_unused4(This)	\
+    ( (This)->lpVtbl -> unused4(This) ) 
 
-#define IWebViewPrivate_hasPluginForNodeBeenHalted(This,__MIDL__IWebViewPrivate0011,__MIDL__IWebViewPrivate0012)	\
-    ( (This)->lpVtbl -> hasPluginForNodeBeenHalted(This,__MIDL__IWebViewPrivate0011,__MIDL__IWebViewPrivate0012) ) 
+#define IWebViewPrivate_unused5(This)	\
+    ( (This)->lpVtbl -> unused5(This) ) 
 
 #define IWebViewPrivate_setGeolocationProvider(This,locationProvider)	\
     ( (This)->lpVtbl -> setGeolocationProvider(This,locationProvider) ) 
@@ -39220,6 +39742,30 @@ EXTERN_C const IID IID_IWebViewPrivate;
 
 #define IWebViewPrivate_elementFromJS(This,context,nodeObject,element)	\
     ( (This)->lpVtbl -> elementFromJS(This,context,nodeObject,element) ) 
+
+#define IWebViewPrivate_defaultMinimumTimerInterval(This,interval)	\
+    ( (This)->lpVtbl -> defaultMinimumTimerInterval(This,interval) ) 
+
+#define IWebViewPrivate_setMinimumTimerInterval(This,interval)	\
+    ( (This)->lpVtbl -> setMinimumTimerInterval(This,interval) ) 
+
+#define IWebViewPrivate_httpPipeliningEnabled(This,enabled)	\
+    ( (This)->lpVtbl -> httpPipeliningEnabled(This,enabled) ) 
+
+#define IWebViewPrivate_setHTTPPipeliningEnabled(This,enabled)	\
+    ( (This)->lpVtbl -> setHTTPPipeliningEnabled(This,enabled) ) 
+
+#define IWebViewPrivate_setUsesLayeredWindow(This,usesLayeredWindow)	\
+    ( (This)->lpVtbl -> setUsesLayeredWindow(This,usesLayeredWindow) ) 
+
+#define IWebViewPrivate_usesLayeredWindow(This,usesLayeredWindow)	\
+    ( (This)->lpVtbl -> usesLayeredWindow(This,usesLayeredWindow) ) 
+
+#define IWebViewPrivate_registerURLSchemeAsAllowingLocalStorageAccessInPrivateBrowsing(This,scheme)	\
+    ( (This)->lpVtbl -> registerURLSchemeAsAllowingLocalStorageAccessInPrivateBrowsing(This,scheme) ) 
+
+#define IWebViewPrivate_registerURLSchemeAsAllowingDatabaseAccessInPrivateBrowsing(This,scheme)	\
+    ( (This)->lpVtbl -> registerURLSchemeAsAllowingDatabaseAccessInPrivateBrowsing(This,scheme) ) 
 
 #endif /* COBJMACROS */
 
@@ -39336,14 +39882,6 @@ EXTERN_C const CLSID CLSID_WebView;
 
 class DECLSPEC_UUID("d6bca079-f61c-4e1e-b453-32a0477d02e3")
 WebView;
-#endif
-
-EXTERN_C const CLSID CLSID_WebFrame;
-
-#ifdef __cplusplus
-
-class DECLSPEC_UUID("a3676398-4485-4a9d-87dc-cb5a40e6351d")
-WebFrame;
 #endif
 
 EXTERN_C const CLSID CLSID_WebIconDatabase;

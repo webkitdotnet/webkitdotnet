@@ -48,4 +48,8 @@
     #undef FontChange
     #undef GrayScale
     #undef NormalState
+    #undef True
+    #undef False
+    #undef Success
+    #undef Expose
 #endif

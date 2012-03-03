@@ -52,8 +52,7 @@ typedef void (*JSWeakMapDestroyedCallback)(JSWeakObjectMapRef map, void* data);
  @param destructor A function to call when the weak map is destroyed.
  @result A JSWeakObjectMapRef bound to the given context, data and destructor.
  @discussion The JSWeakObjectMapRef can be used as a storage mechanism to hold custom JS objects without forcing those objects to
- remain live as JSValueProtect would.  Any objects that are intended to be stored in a weak map must be user defined objects that
- remove themselves from the map in their finalizer.
+ remain live as JSValueProtect would.
  */
 JS_EXPORT JSWeakObjectMapRef JSWeakObjectMapCreate(JSContextRef ctx, void* data, JSWeakMapDestroyedCallback destructor);
 
@@ -79,14 +78,12 @@ JS_EXPORT JSObjectRef JSWeakObjectMapGet(JSContextRef ctx, JSWeakObjectMapRef ma
 
 /*!
  @function
- @abstract Clears the association between a key and an object in a JSWeakObjectMapRef
+ @abstract Removes the entry for the given key if the key is present, otherwise it has no effect.
  @param ctx The execution context to use.
- @param map The map to clear the key association from.
- @param key The key to use.
- @param object The old object value.
- @result Returns true if the key/object association was present in map, and has been removed.
+ @param map The map to use.
+ @param key The key to remove.
  */
-JS_EXPORT bool JSWeakObjectMapClear(JSContextRef ctx, JSWeakObjectMapRef map, void* key, JSObjectRef object);
+JS_EXPORT void JSWeakObjectMapRemove(JSContextRef ctx, JSWeakObjectMapRef map, void* key);
 
 #ifdef __cplusplus
 }
