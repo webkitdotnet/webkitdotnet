@@ -4,8 +4,12 @@ StyleCop.Cache
 *.user
 *.suo
 *.ncb
+*.sdf
 bin/
 obj/
 JSCore/Debug
+JSCore/Release
 TypeNormalizer.exe
 WebKit.Interop.dll
+UpgradeLog.XML
+_UpgradeReport_Files
