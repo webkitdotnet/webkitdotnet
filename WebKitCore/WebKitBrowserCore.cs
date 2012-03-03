@@ -527,11 +527,11 @@ namespace WebKit
         {
             get
             {
-                return webView.preferences().localStorageDatabasePath();
+                return ((IWebPreferencesPrivate) webView.preferences()).localStorageDatabasePath();
             }
             set
             {
-                webView.preferences().setIconDatabaseLocation(value);
+                ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageDatabasePath(value);
             }
         }
 
