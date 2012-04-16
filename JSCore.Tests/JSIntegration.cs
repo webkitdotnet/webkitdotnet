@@ -52,6 +52,8 @@ namespace JSCore.Tests
             void acceptsDelegate(JavaScriptFunction d);
             
             void verified(bool r);
+
+            object returnsNull();
         }
 
         [TestInitialize()]
@@ -165,6 +167,7 @@ namespace JSCore.Tests
             testFunctionsMock.Setup(f => f.acceptsInt(1024));            
             testFunctionsMock.Setup(f => f.acceptsLong(It.Is<Int64>(l => l == 1318538364334)));
             testFunctionsMock.Setup(f => f.acceptsString("stringVal"));
+            testFunctionsMock.Setup(f => f.returnsNull()).Returns(null);
             //testFunctionsMock.Setup(f => f.acceptsDateTime(It.Is<DateTime>(d => d != null)));
 
             testFunctionsMock.Setup(f => f.acceptsArray(It.Is<object[]>(o => 
@@ -189,6 +192,9 @@ namespace JSCore.Tests
             Context.EvaluateScript("testFunctions.acceptsString('stringVal')");
             Context.EvaluateScript("testFunctions.acceptsArray([1, 'second', [true, 3, []]])");
             Context.EvaluateScript("testFunctions.acceptsObject({x:1, array:[1,2,3], nestedObj:{z:'nested'}})");
+            JSValue v = Context.EvaluateScript("testFunctions.returnsNull()");
+            Assert.IsTrue(v.IsUndefined);
+
             //Context.EvaluateScript("testFunctions.acceptsDateTime(new Date(1980, 1, 9))");
 
 

@@ -313,7 +313,7 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
 			return getJSValueRefFromObject(ctx, value, NULL);
 		}
 
-		return nullptr;
+		return JSValueMakeUndefined(ctx);
 	}
 
     PropertyInfo ^ prop = objType->GetProperty(propName);
@@ -326,7 +326,7 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
         }
         else
         {
-			return NULL;            
+			return JSValueMakeUndefined(ctx);
         }
     }
 
@@ -341,7 +341,7 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
 	{
 		return JSObjectMakeFunctionWithCallback(ctx, propertyName, wrapper_CallAsFunction);
 	}
-    return NULL;
+    return JSValueMakeUndefined(ctx);
 }
 
 bool wrapper_SetProperty(JSContextRef ctx, JSObjectRef object, 
@@ -425,13 +425,13 @@ JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObj
 
     if(*exception)
     {
-        return NULL;
+        return JSValueMakeUndefined(ctx);
     }
 
     JSStringRef functionName = JSValueToStringCopy(ctx, val, exception);
     if(*exception)
     {
-        return NULL;
+        return JSValueMakeUndefined(ctx);
     }
 
     String ^ methName = JSCoreMarshal::JSStringToString(functionName);
@@ -457,7 +457,7 @@ JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObj
     Object ^ ret = method->Invoke(obj, args);
 	if (!ret)
 	{
-		return NULL;
+		return JSValueMakeUndefined(ctx);
 	}
 
     JSValueRef jsVal = getJSValueRefFromObject(ctx, ret, exception);
