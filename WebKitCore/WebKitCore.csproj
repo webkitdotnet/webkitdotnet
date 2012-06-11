@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="WebKit.Interop, Version=533.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\Debug\WebKit.Interop.dll</HintPath>
+      <HintPath>..\webkit\WebKit.Interop.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
