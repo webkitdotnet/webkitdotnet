@@ -2,6 +2,8 @@
 
 #include "JSCoreObjectWrapper.h"
 #include "JSCoreMarshal.h"
+#include "JSValue.h"
+#include "JSObject.h"
 
 JSClassDefinition wrapperClass = 
 {
@@ -209,7 +211,8 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
         long l = (long) object;
         return JSValueMakeNumber(ctx, (double)l);
     }
-    if (type == float::typeid) {
+    if (type == float::typeid) 
+    {
         float f = (float) object;
         return JSValueMakeNumber(ctx, (double)f);
     }
@@ -224,7 +227,8 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
         JSStringRelease(temp);
         return val;
     }
-    if (type->IsArray) {
+    if (type->IsArray) 
+    {
         Array ^arr = (Array^)object;
         JSValueRef *arguments = new JSValueRef[arr->Length];
         for(int i = 0; i < arr->Length; i++)
@@ -233,6 +237,11 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
         }
         val = JSObjectMakeArray(ctx, arr->Length, arguments, NULL);
         return val;
+    }
+    if (type == JSObject::typeid)
+    {
+        JSObject ^obj = (JSObject^)object;
+        return obj->getValue();
     }
     else
     {

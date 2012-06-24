@@ -305,6 +305,20 @@ window.onload = function() {
             currentPage.browser.ShowInspector();
         }
 
-       
+        private void testTextAreaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            JSContext ctx = (JSContext) currentPage.browser.GetGlobalScriptContext();
+            JSObject doc = ctx.GetGlobalObject().GetProperty("document").ToObject();
+            JSObject txt = ctx.EvaluateScript("getNewTextArea()").ToObject();//ctx.GetGlobalObject().CallFunction("getNewTextArea").ToObject();//doc.CallFunction("createElement", "textarea").ToObject();
+            txt.SetProperty("id", "textAreaId");
+            txt.SetProperty("rows", "5");
+            txt.SetProperty("onclick", "if(this.value=='Enter your comments here...')this.value=''");
+            txt.SetProperty("onblur", "if(this.value=='')this.value='Enter your comments here...'");
+            txt.SetProperty("textContent", "Hello, World!");
+
+            JSObject body = doc.CallFunction("getElementById", "container").ToObject();
+
+            body.CallFunction("appendChild", txt);
+        }
     }
 }

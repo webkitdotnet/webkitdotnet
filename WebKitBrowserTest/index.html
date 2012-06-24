@@ -14,7 +14,21 @@ Test JS Function callback
 document.getElementById("btn").addEventListener('click', function() {    
     function t() {};
     window.external.callback(function(a, b) { alert(a + ', hi ' + b); return new t();});
-}, false);
+  }, false);
+
+function doStuff(x) {
+  alert(x);
+}
+
+function getNewTextArea() {
+  return document.createElement("textarea");
+}
+
 </script>
+
+<div id="container">
+    
+</div>
+
 </body>
 </html>
