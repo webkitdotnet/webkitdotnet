@@ -65,7 +65,7 @@ namespace WebKit
 
         public int canRedo()
         {
-            throw new NotImplementedException();
+            return 1;
         }
 
         public int canRunModal(WebView WebView)
@@ -75,12 +75,12 @@ namespace WebKit
 
         public void canTakeFocus(WebView sender, int forward, out int result)
         {
-            throw new NotImplementedException();
+            result = 0;            
         }
 
         public int canUndo()
         {
-            throw new NotImplementedException();
+            return 1;
         }
 
         public void cleanUpCustomMenuDrawingData(WebView sender, int hMenu)
@@ -118,12 +118,12 @@ namespace WebKit
 
         public WebDragDestinationAction dragDestinationActionMaskForDraggingInfo(WebView WebView, IDataObject draggingInfo)
         {
-            throw new NotImplementedException();
+            return WebDragDestinationAction.WebDragDestinationActionNone;            
         }
 
         public WebDragSourceAction dragSourceActionMaskForPoint(WebView WebView, ref tagPOINT point)
         {
-            throw new NotImplementedException();
+            return WebDragSourceAction.WebDragSourceActionNone;
         }
 
         public void drawCustomMenuItem(WebView sender, IntPtr drawItem)
@@ -151,7 +151,7 @@ namespace WebKit
 
         public int hasCustomMenuImplementation()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public int isMenuBarVisible(WebView WebView)
@@ -306,22 +306,22 @@ namespace WebKit
 
         public float webViewFooterHeight(WebView WebView)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public tagRECT webViewFrame(WebView sender)
         {
-            throw new NotImplementedException();
+            return ((IWebViewPrivate)sender).visibleContentRect();
         }
 
         public float webViewHeaderHeight(WebView WebView)
         {
-            throw new NotImplementedException();
+            return 0;            
         }
 
         public int webViewIsResizable(WebView sender)
         {
-            throw new NotImplementedException();
+            return 1;            
         }
 
         public int webViewIsStatusBarVisible(WebView sender)

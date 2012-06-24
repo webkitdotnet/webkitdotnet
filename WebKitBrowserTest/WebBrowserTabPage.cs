@@ -26,6 +26,15 @@
 
 using System.Windows.Forms;
 using WebKit;
+using WebKit.JSCore;
+using WebKit.Interop;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using System.IO;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Windows.Threading;
 
 namespace WebKitBrowserTest
 {
@@ -34,8 +43,62 @@ namespace WebKitBrowserTest
         public void f()
         {
             MessageBox.Show("Hey!");
-        }
+        }    
     }
+
+    public class TestClass
+    {
+        public JSContext ctx { get; set; }
+
+       
+
+        public class InnerClass
+        {
+            public string Testing { get; set; }
+        }
+
+        public InnerClass getInner()
+        {
+            return new InnerClass() { Testing = "testing" };              
+        }
+
+        public float[] getArray()
+        {
+            return new float[] { 1, 2, 5 };
+        }
+
+        public void associativeArray(Dictionary<object, object> x)
+        {
+            object[] a = (object[]) x["y"];
+            MessageBox.Show("" + x["x"] + " " + a[0] + " " + a[1] + " l=" + a.GetLength(0));
+        }
+
+        public void callback(JavaScriptFunction func)
+        {            
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+            var worker = new BackgroundWorker();
+            worker.DoWork += delegate
+            {
+                Thread.Sleep(2000);
+                func(ctx, "testing", "1234");
+                
+                dispatcher.Invoke((MethodInvoker)delegate
+                {
+                    //MessageBox.Show(result);
+                    //EventDelegate 
+                    
+                    //func.DynamicInvoke(ctx, "testing", "1234");
+                });
+            };
+           
+            worker.RunWorkerAsync();
+        }
+        public string x { get; set; }
+        public string y { get; set; }
+        public double i { get; set; }
+        public bool b { get; set; }
+    }
+
 
     public partial class WebBrowserTabPage : TabPage
     {
@@ -44,7 +107,6 @@ namespace WebKitBrowserTest
         private StatusStrip statusStrip;
         private ToolStripLabel statusLabel;
         private ToolStripLabel iconLabel;
-        private ToolStripProgressBar progressBar;
         private ToolStripContainer container;
         
         public WebBrowserTabPage() : this(new WebKitBrowser(), true)
@@ -75,26 +137,28 @@ namespace WebKitBrowserTest
             iconLabel.Text = "No Icon";
             iconLabel.Visible = true;
 
-            progressBar = new ToolStripProgressBar();
-            progressBar.Name = "progressBar";
-            progressBar.Visible = true;
-
             statusStrip.Items.Add(statusLabel);
             statusStrip.Items.Add(iconLabel);
-            statusStrip.Items.Add(progressBar);
 
             container.BottomToolStripPanel.Controls.Add(statusStrip);
 
             // create webbrowser control
+
+            //IWebView wv = (IWebView)browserControl.GetWebView();
+            
             browser = browserControl;
             browser.Visible = true;
             browser.Dock = DockStyle.Fill;
-            browser.Name = "browser";
-            //browser.IsWebBrowserContextMenuEnabled = false;
-            //browser.IsScriptingEnabled = false;
+            browser.Name = "browser";            
+            
+            browser.IsWebBrowserContextMenuEnabled = true;
+            
             container.ContentPanel.Controls.Add(browser);
 
-            browser.ObjectForScripting = new TestScriptObject();
+            var t = new TestClass();
+            
+            browser.ObjectForScripting = t;
+
 
             // context menu
 
@@ -105,13 +169,16 @@ namespace WebKitBrowserTest
             browser.DocumentTitleChanged += (s, e) => this.Text = browser.DocumentTitle;
             browser.Navigating += (s, e) => statusLabel.Text = "Loading...";
             browser.Navigated += (s, e) => { statusLabel.Text = "Downloading..."; };
-            browser.DocumentCompleted += (s, e) => { statusLabel.Text = "Done"; };
-            browser.ProgressStarted += (s, e) => { progressBar.Visible = true; };
-            browser.ProgressChanged += (s, e) => { progressBar.Value = e.ProgressPercentage; };
-            browser.ProgressFinished += (s, e) => { progressBar.Visible = false; };
+            browser.DocumentCompleted += (s, e) => {
+                t.ctx = (JSContext)browser.GetGlobalScriptContext();
+                statusLabel.Text = "Done"; 
+            };
             if (goHome)
-                browser.Navigate("http://www.google.com");
-
+            {
+                string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+                string htmlPath = Path.Combine(appPath, "index.html");
+                browser.Navigate(Uri.EscapeUriString(new Uri(htmlPath).ToString()));
+            }
             browser.ShowJavaScriptAlertPanel += (s, e) => MessageBox.Show(e.Message, "[JavaScript Alert]");
             browser.ShowJavaScriptConfirmPanel += (s, e) =>
             {

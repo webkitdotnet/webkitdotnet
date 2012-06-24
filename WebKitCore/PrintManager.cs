@@ -18,7 +18,7 @@ namespace WebKit
         private Graphics _printGfx;
         private uint _nPages;
         private uint _page;
-        private int _hDC;
+        private int _hDC;        
         private bool _preview;
         private bool _printing = false;
 
@@ -74,6 +74,9 @@ namespace WebKit
                 });
 
                 _page = 1;
+            } else {
+                _printGfx = e.Graphics;
+                _hDC = _printGfx.GetHdc().ToInt32();
             }
 
             _ownerInvoke(() => _webFramePrivate.spoolPages(_hDC, _page, _page, IntPtr.Zero));
@@ -89,7 +92,7 @@ namespace WebKit
                 e.HasMorePages = false;
                 _printGfx = null;
                 _nPages = 0;
-            }
+            }         
         }
 
         private delegate TResult Fn<TResult>();

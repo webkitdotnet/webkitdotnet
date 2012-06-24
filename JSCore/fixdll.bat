@@ -1,0 +1,1 @@
+sn -R ..\bin\Debug\JSCore.dll "..\WebKit.Net.snk"

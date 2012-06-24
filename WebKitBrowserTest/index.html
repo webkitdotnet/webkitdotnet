@@ -1,0 +1,20 @@
+﻿<html>
+<head>
+</head>
+<body>
+Test JS Function callback
+<div id="time"></div>
+<div id="log"></div>
+
+
+<button id="btn">do it timeout</button>
+
+
+<script>
+document.getElementById("btn").addEventListener('click', function() {    
+    function t() {};
+    window.external.callback(function(a, b) { alert(a + ', hi ' + b); return new t();});
+}, false);
+</script>
+</body>
+</html>

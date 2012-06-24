@@ -95,8 +95,8 @@ namespace WebKitBrowserTest
         }
 
         void browser_NewWindowCreated(object sender, NewWindowCreatedEventArgs args)
-        {
-            tabControl.TabPages.Add(new WebBrowserTabPage((WebKitBrowser)args.WebKitBrowser, false));
+        {            
+            tabControl.TabPages.Add(new WebBrowserTabPage(new WebKitBrowser((WebKitBrowserCore)args.WebKitBrowser), false));
         }
 
         void browser_NewWindowRequest(object sender, NewWindowRequestEventArgs args)
@@ -259,105 +259,47 @@ namespace WebKitBrowserTest
 
         private void jSTestPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*currentPage.browser.DocumentText = @"<!DOCTYPE html>
+            currentPage.browser.DocumentText = @"<!DOCTYPE html>
 <html lang=""eng"">
 <head>
 <script>
 var myDog;
 
 window.onload = function() {
-  
-}
-function dog(age, breed) {
-  this.age = age;
-  this.breed = breed;
-}
-dog.prototype.woof = function(wat) {
-  document.getElementById(""dog"").innerHTML = ""woof! "" + wat;
-}
-function someDog(age, breed) {
-  myDog = new dog(age, breed);
-  return myDog;
-}
-function printDog(dog) {
-  var txt = """";
-  for (var p in dog)
-    txt += p + "": "" + dog[p] + ""<br />"";
-  alert(txt);
-  document.getElementById(""dog"").innerHTML = txt;
-}
-function testtest(dog) {
-  alert(dog.test.x);
-  dog.test.y = ""TESTSTRING"";
-  dog.test.i = 42.55;
-  dog.test.b = true;
-}
-function testLocalStorage() {
-  //if (localStorage) {
-  //  alert('hi!');
-  //}
-alert('well');
-  if (!localStorage.getItem(""test"")) {
-    document.getElementById(""status"").innerText = ""Setting local storage..."";
-    localStorage.setItem(""test"", 42);
-  } else {
-    document.getElementById(""status"").innerText = localStorage.getItem(""test"");
-  }
+  setTimeout(function() {
+    window.external.callback(function(x) { 
+        alert('hello ' + x); 
+    });  
+  }, 100);
 }
 </script>
 </head>
 <body>
-<p id=""dog"">Hi!</p>
-<p id=""status"">Status</p>
+<p id=""dog"">Testing callbacks...</p>
 </body>
 </html>
-";*/
-            currentPage.browser.LocalStorageDatabasePath = "localstorage.db";
-            currentPage.browser.Navigate("file:///C:/Users/Peter/Desktop/test.html");
+";
+            JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
+
+            TestClass myTest = new TestClass();
+            currentPage.browser.ObjectForScripting = myTest;
         }
 
         private void test3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
-            /*dynamic dog = ctx.EvaluateScript("someDog(12, \"Golden Retriever\");").ToObject();
-            if (dog != null)
+
+            TestClass myTest = new TestClass()
             {
-                if (dog.HasProperty("breed"))
-                {
-                    MessageBox.Show("breed = " + dog.breed);
-                    dog.breed = "Border Collie";
-                    MessageBox.Show("breed = " + dog.breed);
-                    dog.name = "Holly";
-                    MessageBox.Show("name = " + dog.name);
-                    ctx.EvaluateScript("printDog(myDog)");
-                    TestClass myTest = new TestClass() { x = "testing" };
-                    dog.test = myTest;
-                    ctx.EvaluateScript("testtest(myDog)");
-                    //ctx.GarbageCollect();
-
-                    MessageBox.Show(String.Format("y = {0}, i = {1}, b = {2}", dog.test.y, dog.test.i, dog.test.b));
-                }
-            }*/
-
-            ctx.EvaluateScript("testLocalStorage()");
+                ctx = ctx
+            };
+            currentPage.browser.ObjectForScripting = myTest;
+            
+            //ctx.EvaluateScript("test()");
+   
+            //ctx.GarbageCollect();
         }
 
-        private class TestClass
-        {
-            public string x { get; set; }
-            public string y { get; set; }
-            public double i { get; set; }
-            public bool b { get; set; }
-        }
-
-        private void setPasswordToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PasswordDialog passDG = new PasswordDialog();
-            if (passDG.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                currentPage.browser.Password = passDG.Password;
-                currentPage.browser.UserName = passDG.Username;
-            }
-        }
+       
     }
 }

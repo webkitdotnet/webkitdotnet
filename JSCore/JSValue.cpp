@@ -59,6 +59,11 @@ bool JSValue::IsUndefined::get()
     return JSValueIsUndefined(_context->context(), _value);
 }
 
+JSValueRef JSValue::getValue()
+{
+	return _value;
+}
+
 String ^ JSValue::ToJSONString()
 {
     return "";
@@ -87,6 +92,7 @@ void JSValue::Unprotect()
 {
 }
 
+#ifdef DOTNET4
 bool JSValue::TryConvert(System::Dynamic::ConvertBinder^ binder, [OutAttribute] Object ^% result)
 {
     if(binder->Type == double::typeid)
@@ -120,7 +126,7 @@ bool JSValue::TryConvert(System::Dynamic::ConvertBinder^ binder, [OutAttribute] 
 }
 
 bool JSValue::TryGetMember(System::Dynamic::GetMemberBinder ^ binder, Object ^% result)
-{   
+{
     if(!IsObject) return false;
     JSObject ^ obj = ToObject();
     if(!obj->HasProperty(binder->Name)) return false;
@@ -182,5 +188,5 @@ bool JSValue::TryInvokeMember(System::Dynamic::InvokeMemberBinder ^ binder, arra
     result = obj->CallFunction(binder->Name, args);
     return true;
 }
-
+#endif
 

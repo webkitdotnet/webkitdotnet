@@ -1,29 +1,27 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowser", "WebKitBrowser\WebKitBrowser.csproj", "{44AFE214-12C7-4280-898D-A7C4AABF1533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowserTest", "WebKitBrowserTest\WebKitBrowserTest.csproj", "{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A0D75E0-65F8-4777-B5A0-B84937944551}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		README.txt = README.txt
+		WebKit.NET.vsmdi = WebKit.NET.vsmdi
 		WebKitBrowserDoc.shfbproj = WebKitBrowserDoc.shfbproj
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowser", "WebKitBrowser\WebKitBrowser.csproj", "{44AFE214-12C7-4280-898D-A7C4AABF1533}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D1C8CE15-4279-45DA-989A-54561E0FD842} = {D1C8CE15-4279-45DA-989A-54561E0FD842}
-		{287EEE45-1390-44D5-982F-0B96D4A077DA} = {287EEE45-1390-44D5-982F-0B96D4A077DA}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowserTest", "WebKitBrowserTest\WebKitBrowserTest.csproj", "{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}"
-	ProjectSection(ProjectDependencies) = postProject
-		{44AFE214-12C7-4280-898D-A7C4AABF1533} = {44AFE214-12C7-4280-898D-A7C4AABF1533}
-		{D1C8CE15-4279-45DA-989A-54561E0FD842} = {D1C8CE15-4279-45DA-989A-54561E0FD842}
-		{287EEE45-1390-44D5-982F-0B96D4A077DA} = {287EEE45-1390-44D5-982F-0B96D4A077DA}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitCore", "WebKitCore\WebKitCore.csproj", "{D1C8CE15-4279-45DA-989A-54561E0FD842}"
+	ProjectSection(ProjectDependencies) = postProject
+		{287EEE45-1390-44D5-982F-0B96D4A077DA} = {287EEE45-1390-44D5-982F-0B96D4A077DA}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSCore", "JSCore\JSCore.vcxproj", "{287EEE45-1390-44D5-982F-0B96D4A077DA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSCore", "JSCore\JSCore.vcproj", "{287EEE45-1390-44D5-982F-0B96D4A077DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSCore.Tests", "JSCore.Tests\JSCore.Tests.csproj", "{D47E2ADF-5A91-4140-B4D9-77E053A04226}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +73,16 @@ Global
 		{287EEE45-1390-44D5-982F-0B96D4A077DA}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{287EEE45-1390-44D5-982F-0B96D4A077DA}.Release|Win32.ActiveCfg = Release|Win32
 		{287EEE45-1390-44D5-982F-0B96D4A077DA}.Release|Win32.Build.0 = Release|Win32
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D47E2ADF-5A91-4140-B4D9-77E053A04226}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

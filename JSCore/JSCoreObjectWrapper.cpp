@@ -113,6 +113,10 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
     {
         val = (int)JSValueToNumber(ctx, value, exception);
     }
+	else if (type == Int64::typeid)
+	{
+		val = (Int64)JSValueToNumber(ctx, value, exception);
+	}
     else if (type == float::typeid)
     {
         val = (float)JSValueToNumber(ctx, value, exception);
@@ -200,6 +204,11 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
         int i = (int) object;
         return JSValueMakeNumber(ctx, (double)i);
     }
+	if (type == long::typeid) 
+	{
+		long l = (long) object;
+		return JSValueMakeNumber(ctx, (double)l);
+	}
     if (type == float::typeid) {
         float f = (float) object;
         return JSValueMakeNumber(ctx, (double)f);
@@ -301,7 +310,7 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
             return getJSValueRefFromObject(ctx, value, NULL);
         }
 
-        return nullptr;
+		return JSValueMakeUndefined(ctx);
     }
 
     PropertyInfo ^ prop = objType->GetProperty(propName);
@@ -314,7 +323,7 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
         }
         else
         {
-            return NULL;            
+			return JSValueMakeUndefined(ctx);
         }
     }
 
@@ -329,7 +338,7 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
     {
         return JSObjectMakeFunctionWithCallback(ctx, propertyName, wrapper_CallAsFunction);
     }
-    return NULL;
+    return JSValueMakeUndefined(ctx);
 }
 
 bool wrapper_SetProperty(JSContextRef ctx, JSObjectRef object, 
@@ -413,13 +422,13 @@ JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObj
 
     if(*exception)
     {
-        return NULL;
+        return JSValueMakeUndefined(ctx);
     }
 
     JSStringRef functionName = JSValueToStringCopy(ctx, val, exception);
     if(*exception)
     {
-        return NULL;
+        return JSValueMakeUndefined(ctx);
     }
 
     String ^ methName = JSCoreMarshal::JSStringToString(functionName);
@@ -445,7 +454,7 @@ JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObj
     Object ^ ret = method->Invoke(obj, args);
     if (!ret)
     {
-        return NULL;
+		return JSValueMakeUndefined(ctx);
     }
 
     JSValueRef jsVal = getJSValueRefFromObject(ctx, ret, exception);
