@@ -1081,6 +1081,7 @@ namespace WebKit
             doc.DocumentName = this.DocumentTitle;
             doc.DefaultPageSettings = PageSettings;
             doc.OriginAtMargins = true;
+            doc.PrinterSettings = PageSettings.PrinterSettings;
             return doc;
         }
 
