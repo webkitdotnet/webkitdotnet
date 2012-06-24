@@ -82,6 +82,7 @@ namespace WebKitBrowserTest
             this.test3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.navigationBar = new WebKitBrowserTest.NavigationBar();
+            this.inspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -187,20 +188,21 @@ namespace WebKitBrowserTest
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.copyToolStripMenuItem.Text = "&Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // setPasswordToolStripMenuItem
             // 
             this.setPasswordToolStripMenuItem.Name = "setPasswordToolStripMenuItem";
-            this.setPasswordToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setPasswordToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.setPasswordToolStripMenuItem.Text = "&Set Password";
             // 
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pageSourceToolStripMenuItem});
+            this.pageSourceToolStripMenuItem,
+            this.inspectorToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
@@ -208,7 +210,7 @@ namespace WebKitBrowserTest
             // pageSourceToolStripMenuItem
             // 
             this.pageSourceToolStripMenuItem.Name = "pageSourceToolStripMenuItem";
-            this.pageSourceToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.pageSourceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pageSourceToolStripMenuItem.Text = "&Page Source";
             this.pageSourceToolStripMenuItem.Click += new System.EventHandler(this.pageSourceToolStripMenuItem_Click);
             // 
@@ -308,6 +310,13 @@ namespace WebKitBrowserTest
             this.navigationBar.TabIndex = 1;
             this.navigationBar.UrlText = "";
             // 
+            // inspectorToolStripMenuItem
+            // 
+            this.inspectorToolStripMenuItem.Name = "inspectorToolStripMenuItem";
+            this.inspectorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.inspectorToolStripMenuItem.Text = "&Inspector";
+            this.inspectorToolStripMenuItem.Click += new System.EventHandler(this.inspectorToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -357,6 +366,7 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem jSTestPageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem test3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setPasswordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inspectorToolStripMenuItem;
 
     }
 }

@@ -300,6 +300,11 @@ window.onload = function() {
             //ctx.GarbageCollect();
         }
 
+        private void inspectorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.ShowInspector();
+        }
+
        
     }
 }
