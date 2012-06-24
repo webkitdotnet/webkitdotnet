@@ -1006,6 +1006,16 @@ namespace WebKit
                 return null;
         }
 
+        public void ShowInspector()
+        {
+            if (webView != null)
+            {
+                IWebViewPrivate v = (IWebViewPrivate) webView;
+                v.inspector().attach();
+                v.inspector().show();
+            }
+        }
+
         #endregion Public Methods
 
         #region Printing Methods

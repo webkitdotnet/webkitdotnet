@@ -27,7 +27,6 @@
 using System.Windows.Forms;
 using WebKit;
 using WebKit.JSCore;
-using WebKit.Interop;
 using System;
 using System.ComponentModel;
 using System.Threading;
@@ -73,7 +72,7 @@ namespace WebKitBrowserTest
             MessageBox.Show("" + x["x"] + " " + a[0] + " " + a[1] + " l=" + a.GetLength(0));
         }
 
-        public void callback(JavaScriptFunction func)
+        /*public void callback(JavaScriptFunction func)
         {            
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
             var worker = new BackgroundWorker();
@@ -92,7 +91,7 @@ namespace WebKitBrowserTest
             };
            
             worker.RunWorkerAsync();
-        }
+        }*/
         public string x { get; set; }
         public string y { get; set; }
         public double i { get; set; }

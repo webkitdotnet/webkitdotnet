@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+ï»¿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -86,7 +86,7 @@ del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
       <KeyFile>$(SolutionDir)WebKit.NET.snk</KeyFile>
     </Link>
     <PostBuildEvent>
-      <Command>sn.exe –R "$(TargetPath)" "$(SolutionDir)WebKit.NET.snk"</Command>
+      <Command>sn.exe -R "$(TargetPath)" "$(SolutionDir)WebKit.NET.snk"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,8 +139,11 @@ del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
-    <Reference Include="WebKit.Interop, Version=533.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be">
+    <Reference Include="WebKit.Interop, Version=534.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be">
       <HintPath>..\webkit\WebKit.Interop.dll</HintPath>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>

@@ -12,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowser", "WebKitBrowser\WebKitBrowser.csproj", "{44AFE214-12C7-4280-898D-A7C4AABF1533}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D1C8CE15-4279-45DA-989A-54561E0FD842} = {D1C8CE15-4279-45DA-989A-54561E0FD842}
+		{287EEE45-1390-44D5-982F-0B96D4A077DA} = {287EEE45-1390-44D5-982F-0B96D4A077DA}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowserTest", "WebKitBrowserTest\WebKitBrowserTest.csproj", "{0F92D5BB-D2FC-42D5-8938-7A9D26BF3315}"
 EndProject
