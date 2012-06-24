@@ -61,7 +61,7 @@ bool JSValue::IsUndefined::get()
 
 JSValueRef JSValue::getValue()
 {
-	return _value;
+    return _value;
 }
 
 String ^ JSValue::ToJSONString()
