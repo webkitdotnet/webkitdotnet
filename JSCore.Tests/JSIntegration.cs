@@ -49,7 +49,7 @@ namespace JSCore.Tests
             void acceptsArray(object[] a);
             void acceptsObject(Dictionary<object, object> d);
             void acceptsNonGenericDictionary(Dictionary<string, object> d);
-            //void acceptsDelegate(JavaScriptFunction d);
+            void acceptsDelegate(JavaScriptFunction d);
             
             void verified(bool r);
 
@@ -212,7 +212,7 @@ namespace JSCore.Tests
         /// <summary>
         /// C# methods should be able to accept a delegate function and be able to invoke it
         /// </summary>
-        /*[TestMethod]
+        [TestMethod]
         public void TestFunctionSimpleCallbacks()
         {           
             testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<JavaScriptFunction>())).Callback<JavaScriptFunction>(d => Assert.IsTrue((bool)d(Context)));
@@ -221,14 +221,14 @@ namespace JSCore.Tests
             Context.EvaluateScript("testFunctions.acceptsDelegate(function() { testFunctions.verified(true); return true; })");
 
             testFunctionsMock.VerifyAll();
-        }*/
+        }
 
         
 
         /// <summary>
         /// C# methods should be able to accept a delegate function and be able to invoke it with parameter
         /// </summary>
-        /*[TestMethod]
+        [TestMethod]
         public void TestFunctionArgumentCallbacks()
         {
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
@@ -255,12 +255,12 @@ namespace JSCore.Tests
             m_trigger.WaitOne();
 
             //testFunctionsMock.VerifyAll();
-        }*/
+        }
 
         /// <summary>
         /// C# methods should be able to accept a delegate function with parameters and object return values
         /// </summary>
-        /*[TestMethod]       
+        [TestMethod]       
         public void TestFunctionCallbacksWithParametersAndReturnsObject()
         {
             testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<JavaScriptFunction>())).Callback<JavaScriptFunction>(VerifyObjectCallbackFunction);
@@ -274,12 +274,12 @@ namespace JSCore.Tests
             ");
 
             testFunctionsMock.VerifyAll();
-        }*/
+        }
 
         /// <summary>
         /// C# methods should be able to accept a delegate function with parameters and array return values
         /// </summary>
-        /*[TestMethod]
+        [TestMethod]
         public void TestFunctionCallbacksWithParametersAndReturnsArray()
         {
             testFunctionsMock.Setup(f => f.acceptsDelegate(It.IsAny<JavaScriptFunction>())).Callback<JavaScriptFunction>(VerifyArrayCallbackFunction);
@@ -293,26 +293,26 @@ namespace JSCore.Tests
             ");
 
             testFunctionsMock.VerifyAll();
-        }*/
+        }
 
 
         /// <summary>
         /// Verify that the callback accepts parameters and returns an object
         /// </summary>
         /// <param name="d"></param>
-        /*private void VerifyObjectCallbackFunction(JavaScriptFunction d)
+        private void VerifyObjectCallbackFunction(JavaScriptFunction d)
         {
             bool param = true;
             Dictionary<object, object> returnVal = (Dictionary<object, object>)d(Context, param);
             Assert.AreEqual<string>("success", (string)returnVal.Keys.ElementAt(0));
             Assert.AreEqual<string>("hello world", (string)returnVal["success"]);
-        }*/
+        }
 
         /// <summary>
         /// Verify that the callback accepts parametsr and returns an array
         /// </summary>
         /// <param name="d"></param>
-        /*private void VerifyArrayCallbackFunction(JavaScriptFunction d)
+        private void VerifyArrayCallbackFunction(JavaScriptFunction d)
         {
             bool param = true;
             object[] ret = (object[])d(Context, param);
@@ -320,7 +320,7 @@ namespace JSCore.Tests
             Assert.AreEqual("first", ret[0]);
             Assert.IsTrue(precisionEquals(2.0, (double)ret[1]));
             Assert.AreEqual(param, (bool)ret[2]);
-        }*/
+        }
 
 
         /// <summary>
