@@ -42,16 +42,8 @@ void JSObject::SetProperty(String ^ propertyName, double value)
 
 void JSObject::SetProperty(String ^ propertyName, System::Object ^ value)
 {
-    JSClassRef wrap = JSClassCreate(&wrapperClass);
-    
-    GCHandle handle = GCHandle::Alloc(value, GCHandleType::Normal);
-    void * ptr = GCHandle::ToIntPtr(handle).ToPointer();
-
-    JSObjectRef jsObj = JSObjectMake(_context->context(), wrap, ptr);
-
-    JSClassRelease(wrap);
-
-    SetProperty(propertyName, (JSValueRef)jsObj);
+    JSValueRef jsVal = getJSValueRefFromObject(_context->context(), value, NULL);
+    SetProperty(propertyName, jsVal);
 }
 
 void JSObject::SetProperty(String ^ propertyName, System::String ^ value)
