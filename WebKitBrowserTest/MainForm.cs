@@ -323,6 +323,11 @@ window.onload = function() {
             txt.onclick = new ActionDelegate((args) => { if (txt.textContent == "Enter your comments here...") txt.textContent = ""; });
             txt.onblur = new ActionDelegate((args) => { if (txt.textContent == "") txt.textContent = "Enter your comments here..."; });
             document.getElementById("container").appendChild(txt);
+
+            dynamic btn = document.createElement("button");
+            btn.textContent = "What's in my textarea?";
+            btn.onclick = new ActionDelegate((args) => { MessageBox.Show("Your textarea says \n\n'" + txt.textContent + "'"); });
+            document.getElementById("container").appendChild(btn);
         }
     }
 }
