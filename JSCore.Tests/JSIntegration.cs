@@ -47,7 +47,7 @@ namespace JSCore.Tests
             void acceptsFloat(float f);
             void acceptsString(string s);
             void acceptsArray(object[] a);
-            void acceptsObject(Dictionary<object, object> d);
+            void acceptsObject(JSObject d);
             void acceptsNonGenericDictionary(Dictionary<string, object> d);
             void acceptsDelegate(JavaScriptFunction d);
             
@@ -178,10 +178,10 @@ namespace JSCore.Tests
                 (double)((object[])o[2])[1] == 3
             )));
 
-            testFunctionsMock.Setup(f => f.acceptsObject(It.Is<Dictionary<object, object>>(d =>
-                (double)d["x"] == 1 &&
-                ((object[])d["array"]).Length == 3 &&
-                ((Dictionary<object,object>)d["nestedObj"])["z"].Equals("nested")                
+            testFunctionsMock.Setup(f => f.acceptsObject(It.Is<JSObject>(d =>
+                (double)(d.ToDictionary(true))["x"] == 1 &&
+                ((object[])(d.ToDictionary(true))["array"]).Length == 3 &&
+                ((JSObject)(d.ToDictionary(true)["nestedObj"])).ToDictionary(true)["z"].Equals("nested")                
             )));
 
             Context.EvaluateScript("testFunctions.acceptsBoolean(true)");
@@ -303,7 +303,7 @@ namespace JSCore.Tests
         private void VerifyObjectCallbackFunction(JavaScriptFunction d)
         {
             bool param = true;
-            Dictionary<object, object> returnVal = (Dictionary<object, object>)d(Context, param);
+            Dictionary<object, object> returnVal = ((JSObject)d(Context, param)).ToDictionary();
             Assert.AreEqual<string>("success", (string)returnVal.Keys.ElementAt(0));
             Assert.AreEqual<string>("hello world", (string)returnVal["success"]);
         }

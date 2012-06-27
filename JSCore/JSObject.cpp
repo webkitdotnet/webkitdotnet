@@ -121,3 +121,40 @@ JSValue ^ JSObject::CallFunction(String ^ methodName, ... array<Object ^> ^ vari
     delete[] args;
     return gcnew JSValue(_context, ret);
 }
+
+Dictionary<Object^, Object^>^ JSObject::ToDictionary()
+{
+    return ToDictionary(false);
+}
+
+Dictionary<Object^, Object^>^ JSObject::ToDictionary(bool recursive)
+{
+    JSObjectRef o = (JSObjectRef)_value;
+    JSContextRef ctx = _context->context();
+
+    JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
+    size_t count = JSPropertyNameArrayGetCount(properties);
+        
+    Dictionary<Object^, Object^>^ resultsDict = gcnew Dictionary<Object^, Object^>();
+
+    for (size_t i = 0; i < count; i++) {
+        JSStringRef jsNameRef = JSPropertyNameArrayGetNameAtIndex(properties, i);
+            
+        String^ name = JSCoreMarshal::JSStringToString(jsNameRef);
+        JSValueRef propertyValue = JSObjectGetProperty(ctx, o, jsNameRef, NULL);
+        
+        Object^ value = nullptr;
+        
+        value = getObjectFromJSValueRef(ctx, nullptr, propertyValue, NULL);
+        if (value->GetType() == JSObject::typeid && recursive)
+        {
+            value = ((JSObject^)value)->ToDictionary(recursive);
+        }
+
+        resultsDict->Add((Object^)name, value);
+    }
+
+    JSPropertyNameArrayRelease(properties);
+
+    return resultsDict;
+}

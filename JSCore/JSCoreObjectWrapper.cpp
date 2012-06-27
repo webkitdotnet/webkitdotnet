@@ -27,7 +27,7 @@ JSClassDefinition wrapperClass =
     wrapper_CallAsFunction,  /* JSObjectCallAsFunctionCallback callAsFunction; */
     NULL,                    /* JSObjectCallAsConstructorCallback callAsConstructor; */
     NULL,                    /* JSObjectHasInstanceCallback hasInstance; */
-    NULL//wrapper_ConvertToType    /* JSObjectConvertToTypeCallback convertToType; */
+    NULL                     /* JSObjectConvertToTypeCallback convertToType; */
 };
 
 JSClassDefinition anonymousWrapperClass = 
@@ -51,10 +51,8 @@ JSClassDefinition anonymousWrapperClass =
     wrapper_CallAsAnonymousFunction,  /* JSObjectCallAsFunctionCallback callAsFunction; */
     NULL,                    /* JSObjectCallAsConstructorCallback callAsConstructor; */
     NULL,                    /* JSObjectHasInstanceCallback hasInstance; */
-    NULL//wrapper_ConvertToType    /* JSObjectConvertToTypeCallback convertToType; */
+    NULL                     /* JSObjectConvertToTypeCallback convertToType; */
 };
-
-Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception);
 
 GCHandle getHandleFromJSObjectRef(JSObjectRef object)
 {
@@ -185,32 +183,7 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
     } 
     else if (JSValueIsObject(ctx, value))
     {
-        // TODO: requires looking at
-        // Self-referenceing objects cause stack overflow when converting to dictionary
-        // Do we really need to convert to dictionary? What advantages/disadvantages?
-        
-        JSObjectRef o = (JSObjectRef)value; //JSValueToObject(ctx, value, NULL);
-        
-        /*JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
-        size_t count = JSPropertyNameArrayGetCount(properties);
-        
-        Dictionary<Object^, Object^>^ resultsDict = gcnew Dictionary<Object^, Object^>();
-
-        for (size_t i = 0; i < count; i++) {
-            JSStringRef jsNameRef = JSPropertyNameArrayGetNameAtIndex(properties, i);
-            
-            String^ name = JSCoreMarshal::JSStringToString(jsNameRef);
-            JSValueRef propertyValue = JSObjectGetProperty(ctx, o, jsNameRef, NULL);
-            
-            Object^ value = getObjectFromJSValueRef(ctx, nullptr, propertyValue, NULL);
-
-            resultsDict->Add((Object^)name, value);
-        }
-
-        JSPropertyNameArrayRelease(properties);
-
-        val = resultsDict;*/
-        
+        JSObjectRef o = (JSObjectRef)value;
         val = gcnew JSObject(gcnew JSContext(ctx), o);
     }
     return val;

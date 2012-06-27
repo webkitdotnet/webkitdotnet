@@ -12,6 +12,8 @@ extern JSClassDefinition wrapperClass;
 
 JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef * exception);
 
+Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception);
+
 void wrapper_Finalize(JSObjectRef object);
 bool wrapper_HasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
 JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef* exception);

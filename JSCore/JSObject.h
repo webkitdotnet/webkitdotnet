@@ -1,6 +1,7 @@
 #pragma once
 
 using namespace System;
+using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 using namespace WebKit::Interop;
 using namespace WebKit::JSCore;
@@ -32,6 +33,10 @@ public:
     void SetProperty(String ^ propertyName, ActionDelegate ^ func);
     JSValue ^ JSObject::CallAsFunction(JSContext ^ context, array<Object ^> ^ variableArgs);
     JSValue ^ CallFunction(String ^ methodName, ... array<Object ^> ^ variableArgs);
+
+    Dictionary<Object^, Object^>^ ToDictionary();
+    Dictionary<Object^, Object^>^ ToDictionary(bool recursive);
+
 internal:
     JSObject(JSContext ^ context, JSObjectRef object);
 
