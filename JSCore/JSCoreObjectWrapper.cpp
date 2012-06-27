@@ -30,6 +30,30 @@ JSClassDefinition wrapperClass =
     NULL//wrapper_ConvertToType    /* JSObjectConvertToTypeCallback convertToType; */
 };
 
+JSClassDefinition anonymousWrapperClass = 
+{
+    0,                       /* int version; */
+    kJSClassAttributeNone,   /* JSClassAttributes attributes; */
+
+    "anonymous",               /* const char* className; */
+    NULL,                    /* JSClassRef parentClass; */
+        
+    NULL,                    /* const JSStaticValue* staticValues; */
+    NULL,                    /* const JSStaticFunction* staticFunctions; */
+    
+    NULL,                    /* JSObjectInitializeCallback initialize; */
+    wrapper_Finalize,        /* JSObjectFinalizeCallback finalize; */
+    wrapper_HasProperty,     /* JSObjectHasPropertyCallback hasProperty; */
+    wrapper_GetProperty,     /* JSObjectGetPropertyCallback getProperty; */
+    wrapper_SetProperty,     /* JSObjectSetPropertyCallback setProperty; */
+    NULL,                    /* JSObjectDeletePropertyCallback deleteProperty; */
+    wrapper_GetPropertyNames,/* JSObjectGetPropertyNamesCallback getPropertyNames; */
+    wrapper_CallAsAnonymousFunction,  /* JSObjectCallAsFunctionCallback callAsFunction; */
+    NULL,                    /* JSObjectCallAsConstructorCallback callAsConstructor; */
+    NULL,                    /* JSObjectHasInstanceCallback hasInstance; */
+    NULL//wrapper_ConvertToType    /* JSObjectConvertToTypeCallback convertToType; */
+};
+
 Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value, JSValueRef * exception);
 
 GCHandle getHandleFromJSObjectRef(JSObjectRef object)
@@ -37,10 +61,6 @@ GCHandle getHandleFromJSObjectRef(JSObjectRef object)
     void * ptr = JSObjectGetPrivate(object);
     return GCHandle::FromIntPtr(IntPtr(ptr));
 }
-
-public delegate Object^ EventDelegate(array<Object^>^ args);
-
-public delegate Object^ JavaScriptFunction(JSContext ^context, ... array<Object ^> ^ variableArgs);
 
 ref class DelegateFunctionWrapper
 {
@@ -165,8 +185,13 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
     } 
     else if (JSValueIsObject(ctx, value))
     {
+        // TODO: requires looking at
+        // Self-referenceing objects cause stack overflow when converting to dictionary
+        // Do we really need to convert to dictionary? What advantages/disadvantages?
+        
         JSObjectRef o = (JSObjectRef)value; //JSValueToObject(ctx, value, NULL);
-        JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
+        
+        /*JSPropertyNameArrayRef properties = JSObjectCopyPropertyNames(ctx, o);
         size_t count = JSPropertyNameArrayGetCount(properties);
         
         Dictionary<Object^, Object^>^ resultsDict = gcnew Dictionary<Object^, Object^>();
@@ -176,6 +201,7 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
             
             String^ name = JSCoreMarshal::JSStringToString(jsNameRef);
             JSValueRef propertyValue = JSObjectGetProperty(ctx, o, jsNameRef, NULL);
+            
             Object^ value = getObjectFromJSValueRef(ctx, nullptr, propertyValue, NULL);
 
             resultsDict->Add((Object^)name, value);
@@ -183,7 +209,9 @@ Object ^ getObjectFromJSValueRef(JSContextRef ctx, Type ^ type, JSValueRef value
 
         JSPropertyNameArrayRelease(properties);
 
-        val = resultsDict;
+        val = resultsDict;*/
+        
+        val = gcnew JSObject(gcnew JSContext(ctx), o);
     }
     return val;
 }
@@ -243,6 +271,18 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
     {
         JSObject ^obj = (JSObject^)object;
         return obj->getValue();
+    }
+    if (type == EventDelegate::typeid || type == ActionDelegate::typeid)
+    {
+        JSClassRef wrap = JSClassCreate(&anonymousWrapperClass);
+
+        GCHandle handle = GCHandle::Alloc(object, GCHandleType::Normal);
+        void * ptr = GCHandle::ToIntPtr(handle).ToPointer();
+
+        val = JSObjectMake(ctx, wrap, ptr);
+
+        JSClassRelease(wrap);
+        return val;
     }
     else
     {
@@ -420,11 +460,47 @@ void wrapper_GetPropertyNames(JSContextRef ctx, JSObjectRef object, JSPropertyNa
     }
 }
 
+JSValueRef wrapper_CallAsAnonymousFunction (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, 
+                                   size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+{
+    Object ^ obj = (ActionDelegate ^) getObjectFromJSObjectRef(function);
+
+    cli::array<Object ^, 1> ^ args = gcnew cli::array<Object ^, 1>(argumentCount);
+    for(size_t i = 0; i < argumentCount; i++)
+    {
+        Object ^ val = getObjectFromJSValueRef(ctx, nullptr, arguments[i], exception);
+        args->SetValue(val, (int)i);
+    }
+
+    Type ^ type = obj->GetType();
+
+    if (type == EventDelegate::typeid) 
+    {
+        EventDelegate ^ func = (EventDelegate^)obj;
+        
+        Object ^ ret = func->Invoke(args);
+        if (!ret)
+        {
+            return JSValueMakeUndefined(ctx);
+        }
+    
+        JSValueRef jsRet = getJSValueRefFromObject(ctx, ret, exception);
+        return jsRet;
+    }
+    else if (type == ActionDelegate::typeid)
+    {
+        ActionDelegate ^ func = (ActionDelegate^)obj;
+        func->Invoke(args);
+        return JSValueMakeUndefined(ctx);
+    }
+    
+    return JSValueMakeUndefined(ctx);
+}
 
 JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, 
                                    size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
 {
-    Object ^ obj = getObjectFromJSObjectRef(thisObject);
+    Object ^ obj = thisObject != NULL ? getObjectFromJSObjectRef(thisObject) : nullptr;
     
     JSStringRef nameProperty = JSCoreMarshal::StringToJSString("name");
     JSValueRef val = JSObjectGetProperty(ctx, function, nameProperty, exception);

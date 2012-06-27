@@ -60,6 +60,18 @@ void JSObject::SetProperty(String ^ propertyName, JSValueRef value)
     JSStringRelease(jsStr);
 }
 
+void JSObject::SetProperty(String ^ propertyName, EventDelegate ^ func)
+{
+    JSValueRef jsVal = getJSValueRefFromObject(_context->context(), func, NULL);
+    SetProperty(propertyName, jsVal);
+}
+
+void JSObject::SetProperty(String ^ propertyName, ActionDelegate ^ func)
+{
+    JSValueRef jsVal = getJSValueRefFromObject(_context->context(), func, NULL);
+    SetProperty(propertyName, jsVal);
+}
+
 JSValue ^ JSObject::CallAsFunction(JSContext ^ context, array<Object ^> ^ variableArgs)
 {
     JSContextRef ctx = _context->context();

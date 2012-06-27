@@ -8,6 +8,14 @@ using namespace WebKit::JSCore;
 namespace WebKit {
 namespace JSCore {
 
+
+public delegate void ActionDelegate(array<Object^>^ args);
+
+public delegate Object^ EventDelegate(array<Object^>^ args);
+
+public delegate Object^ JavaScriptFunction(JSContext ^context, ... array<Object ^> ^ variableArgs);
+
+
 ref class JSValue;
 ref class JSContext;
 
@@ -20,8 +28,9 @@ public:
     void SetProperty(String ^ propertyName, double value);
     void SetProperty(String ^ propertyName, System::Object ^ value);
     void SetProperty(String ^ propertyName, System::String ^ value);
+    void SetProperty(String ^ propertyName, EventDelegate ^ func);
+    void SetProperty(String ^ propertyName, ActionDelegate ^ func);
     JSValue ^ JSObject::CallAsFunction(JSContext ^ context, array<Object ^> ^ variableArgs);
-    //JSValue ^ JSObject::CallAsFunction(JSContext ^ context, ... array<Object ^> ^ variableArgs);
     JSValue ^ CallFunction(String ^ methodName, ... array<Object ^> ^ variableArgs);
 internal:
     JSObject(JSContext ^ context, JSObjectRef object);

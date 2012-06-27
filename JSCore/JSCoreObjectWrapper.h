@@ -18,6 +18,8 @@ JSValueRef wrapper_GetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef
 bool wrapper_SetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName, JSValueRef value, 
     JSValueRef* exception);
 void wrapper_GetPropertyNames(JSContextRef ctx, JSObjectRef object, JSPropertyNameAccumulatorRef propertyNames);
+JSValueRef wrapper_CallAsAnonymousFunction (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, 
+    size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception);
 JSValueRef wrapper_CallAsFunction (JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, 
     size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception);
 JSValueRef wrapper_ConvertToType(JSContextRef ctx, JSObjectRef object, JSType type, JSValueRef* exception);

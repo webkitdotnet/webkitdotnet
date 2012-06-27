@@ -312,9 +312,9 @@ window.onload = function() {
             JSObject txt = ctx.EvaluateScript("getNewTextArea()").ToObject();//ctx.GetGlobalObject().CallFunction("getNewTextArea").ToObject();//doc.CallFunction("createElement", "textarea").ToObject();
             txt.SetProperty("id", "textAreaId");
             txt.SetProperty("rows", "5");
-            txt.SetProperty("onclick", "if(this.value=='Enter your comments here...')this.value=''");
-            txt.SetProperty("onblur", "if(this.value=='')this.value='Enter your comments here...'");
-            txt.SetProperty("textContent", "Hello, World!");
+            txt.SetProperty("onclick", (args) => { if (txt.GetProperty("textContent").ToString() == "Enter your comments here...") txt.SetProperty("textContent", ""); });
+            txt.SetProperty("onblur", (args) => { if (txt.GetProperty("textContent").ToString() == "") txt.SetProperty("textContent", "Enter your comments here..."); });
+            txt.SetProperty("textContent", "Enter your comments here...");
 
             JSObject body = doc.CallFunction("getElementById", "container").ToObject();
 
