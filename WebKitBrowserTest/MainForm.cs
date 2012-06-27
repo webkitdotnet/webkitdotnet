@@ -25,17 +25,10 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.Collections;
 using System.Threading;
 
 using WebKit;
-using WebKit.DOM;
 using WebKit.JSCore;
 
 namespace WebKitBrowserTest
@@ -307,7 +300,7 @@ window.onload = function() {
 
         private void testTextAreaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            JSContext ctx = (JSContext) currentPage.browser.GetGlobalScriptContext();
+            /*JSContext ctx = (JSContext) currentPage.browser.GetGlobalScriptContext();
             JSObject doc = ctx.GetGlobalObject().GetProperty("document").ToObject();
             JSObject txt = ctx.EvaluateScript("getNewTextArea()").ToObject();//ctx.GetGlobalObject().CallFunction("getNewTextArea").ToObject();//doc.CallFunction("createElement", "textarea").ToObject();
             txt.SetProperty("id", "textAreaId");
@@ -318,7 +311,18 @@ window.onload = function() {
 
             JSObject body = doc.CallFunction("getElementById", "container").ToObject();
 
-            body.CallFunction("appendChild", txt);
+            body.CallFunction("appendChild", txt);*/
+
+            // Above, but using DLR
+            dynamic ctx = currentPage.browser.GetGlobalScriptContext();
+            dynamic document = ctx.GetGlobalObject().document;
+            dynamic txt = document.createElement("textarea");
+            txt.id = "textAreaId";
+            txt.rows = 5;
+            txt.textContent = "Enter your comments here...";
+            txt.onclick = new ActionDelegate((args) => { if (txt.textContent == "Enter your comments here...") txt.textContent = ""; });
+            txt.onblur = new ActionDelegate((args) => { if (txt.textContent == "") txt.textContent = "Enter your comments here..."; });
+            document.getElementById("container").appendChild(txt);
         }
     }
 }

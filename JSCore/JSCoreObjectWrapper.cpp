@@ -240,9 +240,9 @@ JSValueRef getJSValueRefFromObject(JSContextRef ctx, Object ^ object, JSValueRef
         val = JSObjectMakeArray(ctx, arr->Length, arguments, NULL);
         return val;
     }
-    if (type == JSObject::typeid)
+    if (type == JSObject::typeid || type == JSValue::typeid)
     {
-        JSObject ^obj = (JSObject^)object;
+        JSValue ^obj = (JSValue^)object;
         return obj->getValue();
     }
     if (type == EventDelegate::typeid || type == ActionDelegate::typeid)
