@@ -6,7 +6,7 @@ WebKit.NET is a control library wrapper for WebKit written in C#.
 Currently the source code is licensed under a BSD open source license, see
 LICENSE.txt for details.
 
-This package currently contains two Visual C# 2008 projects and a build of the
+This package currently contains two Visual C# 2010 projects and a build of the
 WebKit library (including dependencies) in the following folders:
 
     WebKitBrowser - WebKit.NET control library.
