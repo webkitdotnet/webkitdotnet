@@ -15,41 +15,40 @@ namespace WebKit
     public class WebKitBrowserCore : IWebKitBrowser
     {
         // static variables
-        private static ActivationContext activationContext;
-        private static int actCtxRefCount;
+        private static ActivationContext _activationContext;
+        private static int _actCtxRefCount;
 
         // private member variables...
-        private IWebView webView;
-        private IntPtr webViewHWND;
-        private IWebKitBrowserHost host;
-        private WebNotificationObserver webNotificationObserver;
-        private WebNotificationCenter webNotificationCenter;
+        private IWebView _webView;
+        private IntPtr _webViewHwnd;
+        private IWebKitBrowserHost _webKitBrowserHost;
+        private WebNotificationObserver _webNotificationObserver;
+        private WebNotificationCenter _webNotificationCenter;
 
         // Note: we do not provide overridden Equals or GetHashCode methods for the
         // WebDownload interface used as a key here - the default implementations should suffice
-        private Dictionary<WebDownload, WebKitDownload> downloads = new Dictionary<WebDownload, WebKitDownload>();
-        private bool disposed = false;
+        private readonly Dictionary<WebDownload, WebKitDownload> _downloads = new Dictionary<WebDownload, WebKitDownload>();
+        private bool _disposed;
 
         // initialisation and property stuff
-        private string initialText = "";
-        private Uri initialUrl = null;
-        private bool loaded = false;    // loaded == true -> webView != null
-        private bool initialAllowNavigation = true;
-        private bool initialAllowDownloads = true;
-        private bool initialAllowNewWindows = true;
-        private bool initialJavaScriptEnabled = true;
-        private bool initialLocalStorageEnabled = true;
-        private string initialLocalStorageDatabaseDirectory = "";
+        private bool _loaded;    // loaded == true -> webView != null
+        private string _initialText = "";
+        private Uri _initialUrl;
+        private bool _initialAllowNavigation = true;
+        private bool _initialAllowDownloads = true;
+        private bool _initialAllowNewWindows = true;
+        private bool _initialJavaScriptEnabled = true;
+        private bool _initialLocalStorageEnabled = true;
+        private string _initialLocalStorageDatabaseDirectory = "";
         private bool _contextMenuEnabled = true;
-        private readonly Version version = Assembly.GetExecutingAssembly().GetName().Version;
-        private object _scriptObject = null;
+        private readonly Version _version = Assembly.GetExecutingAssembly().GetName().Version;
+        private object _scriptObject;
 
         // delegates for WebKit events
-        private WebFrameLoadDelegate frameLoadDelegate;
-        private WebDownloadDelegate downloadDelegate;
-        private WebPolicyDelegate policyDelegate;
-        private WebUIDelegate uiDelegate;
-        private WebPreferences preferences;
+        private WebFrameLoadDelegate _frameLoadDelegate;
+        private WebDownloadDelegate _downloadDelegate;
+        private WebPolicyDelegate _policyDelegate;
+        private WebUIDelegate _uiDelegate;
 
         #region WebKitBrowser events
 
@@ -128,20 +127,19 @@ namespace WebKit
         
         #endregion
 
-        private void SetIfLoaded<T>(T value, ref T initialValue, Action<T> setter)
+        private void SetIfLoaded<T>(T Value, ref T InitialValue, Action<T> Setter)
         {
-            if (loaded)
-                setter(value);
+            if (_loaded)
+                Setter(Value);
             else
-                initialValue = value;
+                InitialValue = Value;
         }
 
-        private T GetIfLoaded<T>(T initialValue, Func<T> getter)
+        private T GetIfLoaded<T>(T InitialValue, Func<T> Getter)
         {
-            if (loaded)
-                return getter();
-            else
-                return initialValue;
+            if (_loaded)
+                return Getter();
+            return InitialValue;
         }
 
         #region Public properties
@@ -173,15 +171,15 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(initialUrl, () => {
+                return GetIfLoaded(_initialUrl, () => {
                     Uri result;
-                    return Uri.TryCreate(webView.mainFrame().dataSource().request().url(),
+                    return Uri.TryCreate(_webView.mainFrame().dataSource().request().url(),
                                          UriKind.Absolute, out result) ? result : null;
                 });
             }
             set
             {
-                SetIfLoaded(value, ref initialUrl, Uri => {
+                SetIfLoaded(value, ref _initialUrl, Uri => {
                     if (Uri != null)
                         Navigate(Uri.AbsoluteUri);
                 });
@@ -195,7 +193,7 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(false, () => webView.isLoading() > 0);
+                return GetIfLoaded(false, () => _webView.isLoading() > 0);
             }
         }
 
@@ -206,10 +204,10 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(initialText, () => {
+                return GetIfLoaded(_initialText, () => {
                     try
                     {
-                        return webView.mainFrame().dataSource().representation().documentSource();
+                        return _webView.mainFrame().dataSource().representation().documentSource();
                     }
                     catch (COMException)
                     {
@@ -219,8 +217,8 @@ namespace WebKit
             }
             set
             {
-                SetIfLoaded(value, ref initialText,
-                                Text => webView.mainFrame().loadHTMLString(Text, null));
+                SetIfLoaded(value, ref _initialText,
+                                Text => _webView.mainFrame().loadHTMLString(Text, null));
             }
         }
 
@@ -231,7 +229,7 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded("", () => webView.selectedText());
+                return GetIfLoaded("", () => _webView.selectedText());
             }
         }
 
@@ -242,12 +240,12 @@ namespace WebKit
         {
             get
             {
-                return webView != null ? webView.applicationNameForUserAgent() : "";
+                return _webView != null ? _webView.applicationNameForUserAgent() : "";
             }
             set
             {
-                if (webView != null)
-                    webView.setApplicationNameForUserAgent(value);
+                if (_webView != null)
+                    _webView.setApplicationNameForUserAgent(value);
             }
         }
 
@@ -258,12 +256,12 @@ namespace WebKit
         {
             get
             {
-                return webView != null ? webView.userAgentForURL("") : "";
+                return _webView != null ? _webView.userAgentForURL("") : "";
             }
             set
             {
-                if (webView != null)
-                    webView.setCustomUserAgent(value);
+                if (_webView != null)
+                    _webView.setCustomUserAgent(value);
             }
         }
 
@@ -274,12 +272,12 @@ namespace WebKit
         {
             get
             {
-                return webView != null ? webView.textSizeMultiplier() : 1.0f;
+                return _webView != null ? _webView.textSizeMultiplier() : 1.0f;
             }
             set
             {
-                if (webView != null)
-                    webView.setTextSizeMultiplier(value);
+                if (_webView != null)
+                    _webView.setTextSizeMultiplier(value);
             }
         }
 
@@ -291,12 +289,12 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(initialAllowNavigation, () => policyDelegate.AllowNavigation);
+                return GetIfLoaded(_initialAllowNavigation, () => _policyDelegate.AllowNavigation);
             }
             set
             {
-                SetIfLoaded(value, ref initialAllowNavigation,
-                                B => policyDelegate.AllowInitialNavigation = policyDelegate.AllowNavigation = B);
+                SetIfLoaded(value, ref _initialAllowNavigation,
+                                B => _policyDelegate.AllowInitialNavigation = _policyDelegate.AllowNavigation = B);
             }
         }
 
@@ -307,12 +305,12 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(initialAllowDownloads, () => policyDelegate.AllowDownloads);
+                return GetIfLoaded(_initialAllowDownloads, () => _policyDelegate.AllowDownloads);
             }
             set
             {
-                SetIfLoaded(value, ref initialAllowDownloads,
-                                B => policyDelegate.AllowDownloads = policyDelegate.AllowDownloads = B);
+                SetIfLoaded(value, ref _initialAllowDownloads,
+                                B => _policyDelegate.AllowDownloads = _policyDelegate.AllowDownloads = B);
             }
         }
 
@@ -323,12 +321,12 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(initialAllowNewWindows, () => policyDelegate.AllowNewWindows);
+                return GetIfLoaded(_initialAllowNewWindows, () => _policyDelegate.AllowNewWindows);
             }
             set
             {
-                SetIfLoaded(value, ref initialAllowNewWindows,
-                                B => policyDelegate.AllowNewWindows = policyDelegate.AllowNewWindows = B);
+                SetIfLoaded(value, ref _initialAllowNewWindows,
+                                B => _policyDelegate.AllowNewWindows = _policyDelegate.AllowNewWindows = B);
             }
         }
 
@@ -339,7 +337,7 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(false, () => webView.backForwardList().backListCount() > 0);
+                return GetIfLoaded(false, () => _webView.backForwardList().backListCount() > 0);
             }
         }
 
@@ -350,7 +348,7 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(false, () => webView.backForwardList().forwardListCount() > 0);
+                return GetIfLoaded(false, () => _webView.backForwardList().forwardListCount() > 0);
             }
         }
 
@@ -361,7 +359,7 @@ namespace WebKit
         {
             get
             {
-                return DOM.Document.Create(webView.mainFrameDocument());
+                return DOM.Document.Create(_webView.mainFrameDocument());
             }
         }
 
@@ -372,7 +370,7 @@ namespace WebKit
         {
             get
             {
-                return version;
+                return _version;
             }
         }
 
@@ -383,26 +381,20 @@ namespace WebKit
         {
             get
             {
-                if (webView != null)
-                {
-                    IWebViewPrivate v = (IWebViewPrivate)webView;
-                    return new Point(v.scrollOffset().x, v.scrollOffset().y);
-                }
-                else
-                {
+                if (_webView == null)
                     return Point.Empty;
-                }
+                var v = (IWebViewPrivate) _webView;
+                return new Point(v.scrollOffset().x, v.scrollOffset().y);
             }
             set
             {
-                if (webView != null)
-                {
-                    IWebViewPrivate v = (IWebViewPrivate) webView;
-                    tagPOINT p = new tagPOINT();
-                    p.x = value.X - ScrollOffset.X;
-                    p.y = value.Y - ScrollOffset.Y;
-                    v.scrollBy(ref p);
-                }
+                if (_webView == null)
+                    return;
+                var v = (IWebViewPrivate) _webView;
+                var p = new tagPOINT();
+                p.x = value.X - ScrollOffset.X;
+                p.y = value.Y - ScrollOffset.Y;
+                v.scrollBy(ref p);
             }
         }
 
@@ -413,16 +405,11 @@ namespace WebKit
         {
             get
             {
-                if (webView != null)
-                {
-                    IWebViewPrivate v = (IWebViewPrivate)webView;
-                    tagRECT r = v.visibleContentRect();
-                    return new Rectangle(r.left, r.top, (r.right - r.left), (r.bottom - r.top));
-                }
-                else
-                {
+                if (_webView == null)
                     return Rectangle.Empty;
-                }
+                var v = (IWebViewPrivate)_webView;
+                var r = v.visibleContentRect();
+                return new Rectangle(r.left, r.top, (r.right - r.left), (r.bottom - r.top));
             }
         }
 
@@ -441,14 +428,14 @@ namespace WebKit
         public bool IsScriptingEnabled {
           get
           {
-              return GetIfLoaded(initialJavaScriptEnabled, () => webView.preferences().isJavaScriptEnabled() != 0);
+              return GetIfLoaded(_initialJavaScriptEnabled, () => _webView.preferences().isJavaScriptEnabled() != 0);
           }
           set 
           {
-              SetIfLoaded(value, ref initialJavaScriptEnabled, B => {
-                  var prefs = webView.preferences();
+              SetIfLoaded(value, ref _initialJavaScriptEnabled, B => {
+                  var prefs = _webView.preferences();
                   prefs.setJavaScriptEnabled(B ? 1 : 0);
-                  webView.setPreferences(prefs);
+                  _webView.setPreferences(prefs);
               });
           }
         }
@@ -460,13 +447,13 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(initialLocalStorageEnabled,
-                                       () => ((IWebPreferencesPrivate) webView.preferences()).localStorageEnabled() != 0);
+                return GetIfLoaded(_initialLocalStorageEnabled,
+                                       () => ((IWebPreferencesPrivate) _webView.preferences()).localStorageEnabled() != 0);
             }
             set
             {
-                SetIfLoaded(value, ref initialLocalStorageEnabled,
-                                B => ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageEnabled(B ? 1 : 0));
+                SetIfLoaded(value, ref _initialLocalStorageEnabled,
+                                B => ((IWebPreferencesPrivate) _webView.preferences()).setLocalStorageEnabled(B ? 1 : 0));
             }
         }
 
@@ -479,15 +466,15 @@ namespace WebKit
         {
             get
             {
-                return GetIfLoaded(initialLocalStorageDatabaseDirectory,
-                                () => ((IWebPreferencesPrivate) webView.preferences()).localStorageDatabasePath());
+                return GetIfLoaded(_initialLocalStorageDatabaseDirectory,
+                                () => ((IWebPreferencesPrivate) _webView.preferences()).localStorageDatabasePath());
             }
             set
             {
-                SetIfLoaded(value, ref initialLocalStorageDatabaseDirectory,
+                SetIfLoaded(value, ref _initialLocalStorageDatabaseDirectory,
                                 B => {
                                     if (!string.IsNullOrEmpty(B))
-                                        ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageDatabasePath(B);
+                                        ((IWebPreferencesPrivate) _webView.preferences()).setLocalStorageDatabasePath(B);
                                 });
             }
         }
@@ -498,7 +485,7 @@ namespace WebKit
         /// <value>The host.</value>
         public IWebKitBrowserHost Host
         {
-            get { return host; }
+            get { return _webKitBrowserHost; }
         }
 
         /// <summary>
@@ -507,7 +494,7 @@ namespace WebKit
         /// <value>The web view HWND.</value>
         public IntPtr WebViewHWND
         {
-            get { return webViewHWND; }
+            get { return _webViewHwnd; }
         }
 
         /// <summary>
@@ -539,38 +526,38 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the <see cref="WebKitBrowserCore"/> class.
         /// </summary>
-        /// <param name="webKitBrowserHost">The web kit browser host.</param>
-        private WebKitBrowserCore(IWebKitBrowserHost webKitBrowserHost)
+        /// <param name="WebKitBrowserHost">The web kit browser host.</param>
+        private WebKitBrowserCore(IWebKitBrowserHost WebKitBrowserHost)
         {
             PageSettings = new PageSettings();
-            Initialize(webKitBrowserHost);
+            Initialize(WebKitBrowserHost);
         }
 
         /// <summary>
         /// Initializes the specified host.
         /// </summary>
-        /// <param name="host">The host.</param>
-        public void Initialize(IWebKitBrowserHost host)
+        /// <param name="WebKitBrowserHost">The host.</param>
+        public void Initialize(IWebKitBrowserHost WebKitBrowserHost)
         {
-            if(host == null)
-                throw new ArgumentNullException("host");
+            if (WebKitBrowserHost == null)
+                throw new ArgumentNullException("WebKitBrowserHost");
 
-            this.host = host;
+            this._webKitBrowserHost = WebKitBrowserHost;
 
-            if(!host.InDesignMode)
+            if(!WebKitBrowserHost.InDesignMode)
             {
                 // Control Events            
-                this.host.Load += new EventHandler(WebKitBrowser_Load);
-                this.host.Resize += new EventHandler(WebKitBrowser_Resize);
+                this._webKitBrowserHost.Load += WebKitBrowser_Load;
+                this._webKitBrowserHost.Resize += WebKitBrowser_Resize;
 
                 // If this is the first time the library has been loaded,
                 // initialize the activation context required to load the
                 // WebKit COM component registration free
-                if((actCtxRefCount++) == 0)
+                if((_actCtxRefCount++) == 0)
                 {
-                    FileInfo fi = new FileInfo(Assembly.GetExecutingAssembly().Location);
-                    activationContext = new ActivationContext(Path.Combine(fi.DirectoryName, "WebKitBrowser.dll.manifest"));
-                    activationContext.Initialize();
+                    var fi = new FileInfo(Assembly.GetExecutingAssembly().Location);
+                    _activationContext = new ActivationContext(Path.Combine(fi.DirectoryName, "WebKitBrowser.dll.manifest"));
+                    _activationContext.Initialize();
 
                     // TODO: more error handling here
 
@@ -580,268 +567,265 @@ namespace WebKit
                 }
 
                 // If this control is brought to focus, focus our webkit child window
-                this.host.GotFocus += (s, e) =>
-                {
-                    NativeMethods.SetFocus(webViewHWND);
-                };
+                this._webKitBrowserHost.GotFocus += (_, __) => NativeMethods.SetFocus(_webViewHwnd);
 
-                activationContext.Activate();
-                webView = new WebViewClass();
-                activationContext.Deactivate();
+                _activationContext.Activate();
+                _webView = new WebViewClass();
+                _activationContext.Deactivate();
             }
         }
 
         private void InitializeWebKit()
         {
-            activationContext.Activate();
+            _activationContext.Activate();
 
-            frameLoadDelegate = new WebFrameLoadDelegate();
-            Marshal.AddRef(Marshal.GetIUnknownForObject(frameLoadDelegate));
+            _frameLoadDelegate = new WebFrameLoadDelegate();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(_frameLoadDelegate));
 
-            downloadDelegate = new WebDownloadDelegate();
-            Marshal.AddRef(Marshal.GetIUnknownForObject(downloadDelegate));
+            _downloadDelegate = new WebDownloadDelegate();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(_downloadDelegate));
 
-            policyDelegate = new WebPolicyDelegate(AllowNavigation, AllowDownloads, AllowNewWindows);
-            Marshal.AddRef(Marshal.GetIUnknownForObject(policyDelegate));
+            _policyDelegate = new WebPolicyDelegate(AllowNavigation, AllowDownloads, AllowNewWindows);
+            Marshal.AddRef(Marshal.GetIUnknownForObject(_policyDelegate));
 
-            uiDelegate = new WebUIDelegate(this);
-            Marshal.AddRef(Marshal.GetIUnknownForObject(uiDelegate));
+            _uiDelegate = new WebUIDelegate(this);
+            Marshal.AddRef(Marshal.GetIUnknownForObject(_uiDelegate));
 
-            webNotificationCenter = new WebNotificationCenter();
-            Marshal.AddRef(Marshal.GetIUnknownForObject(webNotificationCenter)); // TODO: find out if this is really needed
-            webNotificationObserver = new WebNotificationObserver();
-            webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressEstimateChangedNotification", webView);
-            webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressStartedNotification", webView);
-            webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressFinishedNotification", webView);
+            _webNotificationCenter = new WebNotificationCenter();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(_webNotificationCenter)); // TODO: find out if this is really needed
+            _webNotificationObserver = new WebNotificationObserver();
+            _webNotificationCenter.defaultCenter().addObserver(_webNotificationObserver, "WebProgressEstimateChangedNotification", _webView);
+            _webNotificationCenter.defaultCenter().addObserver(_webNotificationObserver, "WebProgressStartedNotification", _webView);
+            _webNotificationCenter.defaultCenter().addObserver(_webNotificationObserver, "WebProgressFinishedNotification", _webView);
 
-            webView.setPolicyDelegate(policyDelegate);
-            webView.setFrameLoadDelegate(frameLoadDelegate);
-            webView.setDownloadDelegate(downloadDelegate);
-            webView.setUIDelegate(uiDelegate);
+            _webView.setPolicyDelegate(_policyDelegate);
+            _webView.setFrameLoadDelegate(_frameLoadDelegate);
+            _webView.setDownloadDelegate(_downloadDelegate);
+            _webView.setUIDelegate(_uiDelegate);
 
-            webView.setHostWindow(this.host.Handle.ToInt32());
+            _webView.setHostWindow(this._webKitBrowserHost.Handle.ToInt32());
 
-            tagRECT rect = new tagRECT();
+            var rect = new tagRECT();
             rect.top = rect.left = 0;
-            rect.bottom = this.host.Height - 1;
-            rect.right = this.host.Width - 1;
-            webView.initWithFrame(rect, null, null);
+            rect.bottom = this._webKitBrowserHost.Height - 1;
+            rect.right = this._webKitBrowserHost.Width - 1;
+            _webView.initWithFrame(rect, null, null);
 
-            IWebViewPrivate webViewPrivate = (IWebViewPrivate)webView;
-            webViewHWND = (IntPtr)webViewPrivate.viewWindow();
+            var webViewPrivate = (IWebViewPrivate)_webView;
+            _webViewHwnd = (IntPtr)webViewPrivate.viewWindow();
 
             // Subscribe to FrameLoadDelegate events
-            frameLoadDelegate.DidRecieveTitle += new DidRecieveTitleEvent(frameLoadDelegate_DidRecieveTitle);
-            frameLoadDelegate.DidFinishLoadForFrame += new DidFinishLoadForFrameEvent(frameLoadDelegate_DidFinishLoadForFrame);
-            frameLoadDelegate.DidStartProvisionalLoadForFrame += new DidStartProvisionalLoadForFrameEvent(frameLoadDelegate_DidStartProvisionalLoadForFrame);
-            frameLoadDelegate.DidCommitLoadForFrame += new DidCommitLoadForFrameEvent(frameLoadDelegate_DidCommitLoadForFrame);
-            frameLoadDelegate.DidFailLoadWithError += new DidFailLoadWithErrorEvent(frameLoadDelegate_DidFailLoadWithError);
-            frameLoadDelegate.DidFailProvisionalLoadWithError += new DidFailProvisionalLoadWithErrorEvent(frameLoadDelegate_DidFailProvisionalLoadWithError);
-            frameLoadDelegate.DidClearWindowObject += new DidClearWindowObjectEvent(frameLoadDelegate_DidClearWindowObject);
+            _frameLoadDelegate.DidRecieveTitle += FrameLoadDelegate_DidRecieveTitle;
+            _frameLoadDelegate.DidFinishLoadForFrame += FrameLoadDelegate_DidFinishLoadForFrame;
+            _frameLoadDelegate.DidStartProvisionalLoadForFrame += FrameLoadDelegate_DidStartProvisionalLoadForFrame;
+            _frameLoadDelegate.DidCommitLoadForFrame += FrameLoadDelegate_DidCommitLoadForFrame;
+            _frameLoadDelegate.DidFailLoadWithError += FrameLoadDelegate_DidFailLoadWithError;
+            _frameLoadDelegate.DidFailProvisionalLoadWithError += FrameLoadDelegate_DidFailProvisionalLoadWithError;
+            _frameLoadDelegate.DidClearWindowObject += FrameLoadDelegate_DidClearWindowObject;
 
             // DownloadDelegate events
-            downloadDelegate.DidReceiveResponse += new DidReceiveResponseEvent(downloadDelegate_DidReceiveResponse);
-            downloadDelegate.DidReceiveDataOfLength += new DidReceiveDataOfLengthEvent(downloadDelegate_DidReceiveDataOfLength);
-            downloadDelegate.DecideDestinationWithSuggestedFilename += new DecideDestinationWithSuggestedFilenameEvent(downloadDelegate_DecideDestinationWithSuggestedFilename);
-            downloadDelegate.DidBegin += new DidBeginEvent(downloadDelegate_DidBegin);
-            downloadDelegate.DidFinish += new DidFinishEvent(downloadDelegate_DidFinish);
-            downloadDelegate.DidFailWithError += new DidFailWithErrorEvent(downloadDelegate_DidFailWithError);
+            _downloadDelegate.DidReceiveResponse += DownloadDelegate_DidReceiveResponse;
+            _downloadDelegate.DidReceiveDataOfLength += DownloadDelegate_DidReceiveDataOfLength;
+            _downloadDelegate.DecideDestinationWithSuggestedFilename += DownloadDelegate_DecideDestinationWithSuggestedFilename;
+            _downloadDelegate.DidBegin += DownloadDelegate_DidBegin;
+            _downloadDelegate.DidFinish += DownloadDelegate_DidFinish;
+            _downloadDelegate.DidFailWithError += DownloadDelegate_DidFailWithError;
 
             // UIDelegate events
-            uiDelegate.CreateWebViewWithRequest += new CreateWebViewWithRequestEvent(uiDelegate_CreateWebViewWithRequest);
-            uiDelegate.RunJavaScriptAlertPanelWithMessage += new RunJavaScriptAlertPanelWithMessageEvent(uiDelegate_RunJavaScriptAlertPanelWithMessage);
-            uiDelegate.RunJavaScriptConfirmPanelWithMessage += new RunJavaScriptConfirmPanelWithMessageEvent(uiDelegate_RunJavaScriptConfirmPanelWithMessage);
-            uiDelegate.RunJavaScriptTextInputPanelWithPrompt += new RunJavaScriptTextInputPanelWithPromptEvent(uiDelegate_RunJavaScriptTextInputPanelWithPrompt);
+            _uiDelegate.CreateWebViewWithRequest += UIDelegate_CreateWebViewWithRequest;
+            _uiDelegate.RunJavaScriptAlertPanelWithMessage += UIDelegate_RunJavaScriptAlertPanelWithMessage;
+            _uiDelegate.RunJavaScriptConfirmPanelWithMessage += UIDelegate_RunJavaScriptConfirmPanelWithMessage;
+            _uiDelegate.RunJavaScriptTextInputPanelWithPrompt += UIDelegate_RunJavaScriptTextInputPanelWithPrompt;
 
             // Notification events
-            webNotificationObserver.OnNotify += new OnNotifyEvent(webNotificationObserver_OnNotify);
+            _webNotificationObserver.OnNotify += webNotificationObserver_OnNotify;
 
-            activationContext.Deactivate();
+            _activationContext.Deactivate();
         }
 
         #endregion
 
         #region Control event handers
 
-        private void WebKitBrowser_Resize(object sender, EventArgs e)
+        private void WebKitBrowser_Resize(object Sender, EventArgs Args)
         {
             // Resize the WebKit control
-            NativeMethods.MoveWindow(webViewHWND, 0, 0, this.host.Width - 1, this.host.Height - 1, true);
+            NativeMethods.MoveWindow(_webViewHwnd, 0, 0, this._webKitBrowserHost.Width - 1, this._webKitBrowserHost.Height - 1, true);
         }
 
-        private void WebKitBrowser_Load(object sender, EventArgs e)
+        private void WebKitBrowser_Load(object Sender, EventArgs Args)
         {
             // Create the WebKit browser component
             InitializeWebKit();
 
-            loaded = webView != null;
+            _loaded = _webView != null;
 
             // intialize properties that depend on load
-            if (initialUrl != null)
+            if (_initialUrl != null)
             {
-                Navigate(initialUrl.AbsoluteUri);
+                Navigate(_initialUrl.AbsoluteUri);
             }
             else
             {
-                DocumentText = initialText;
-                policyDelegate.AllowInitialNavigation = false;
+                DocumentText = _initialText;
+                _policyDelegate.AllowInitialNavigation = false;
             }
 
-            IsScriptingEnabled = initialJavaScriptEnabled;
-            IsLocalStorageEnabled = initialLocalStorageEnabled;
-            LocalStorageDatabaseDirectory = initialLocalStorageDatabaseDirectory;
+            IsScriptingEnabled = _initialJavaScriptEnabled;
+            IsLocalStorageEnabled = _initialLocalStorageEnabled;
+            LocalStorageDatabaseDirectory = _initialLocalStorageDatabaseDirectory;
         }
 
-        private void WebKitBrowser_HandleDestroyed(object sender, EventArgs e)
+        // TODO: unused?
+        /*private void WebKitBrowser_HandleDestroyed(object sender, EventArgs e)
         {
-            webNotificationCenter.defaultCenter().removeObserver(webNotificationObserver, "WebProgressEstimateChangedNotification", webView);
-            webNotificationCenter.defaultCenter().removeObserver(webNotificationObserver, "WebProgressStartedNotification", webView);
-            webNotificationCenter.defaultCenter().removeObserver(webNotificationObserver, "WebProgressFinishedNotification", webView);
-        }
+            _webNotificationCenter.defaultCenter().removeObserver(_webNotificationObserver, "WebProgressEstimateChangedNotification", _webView);
+            _webNotificationCenter.defaultCenter().removeObserver(_webNotificationObserver, "WebProgressStartedNotification", _webView);
+            _webNotificationCenter.defaultCenter().removeObserver(_webNotificationObserver, "WebProgressFinishedNotification", _webView);
+        }*/
 
         #endregion
 
         #region WebFrameLoadDelegate event handlers 
 
-        private void frameLoadDelegate_DidCommitLoadForFrame(WebView WebView, IWebFrame frame)
+        private void FrameLoadDelegate_DidCommitLoadForFrame(WebView WebView, IWebFrame Frame)
         {
-            if (frame == webView.mainFrame())
+            if (Frame == _webView.mainFrame())
             {
                 Navigated(this, new WebBrowserNavigatedEventArgs(this.Url));
             }
         }
 
-        private void frameLoadDelegate_DidStartProvisionalLoadForFrame(WebView WebView, IWebFrame frame)
+        private void FrameLoadDelegate_DidStartProvisionalLoadForFrame(WebView WebView, IWebFrame Frame)
         {
-            if (frame == webView.mainFrame())
+            if (Frame == _webView.mainFrame())
             {
-                string url = frame.provisionalDataSource().request().url();
-                Navigating(this, new WebBrowserNavigatingEventArgs(new Uri(url), frame.name()));
+                var url = Frame.provisionalDataSource().request().url();
+                Navigating(this, new WebBrowserNavigatingEventArgs(new Uri(url), Frame.name()));
             }
         }
 
-        private void frameLoadDelegate_DidFinishLoadForFrame(WebView WebView, IWebFrame frame)
+        private void FrameLoadDelegate_DidFinishLoadForFrame(WebView WebView, IWebFrame Frame)
         {
-            if (frame == webView.mainFrame())
+            if (Frame == _webView.mainFrame())
             {
-                policyDelegate.AllowInitialNavigation = policyDelegate.AllowNavigation;
+                _policyDelegate.AllowInitialNavigation = _policyDelegate.AllowNavigation;
                 DocumentCompleted(this, new WebBrowserDocumentCompletedEventArgs(this.Url));
             }
         }
 
-        private void frameLoadDelegate_DidRecieveTitle(WebView WebView, string title, IWebFrame frame)
+        private void FrameLoadDelegate_DidRecieveTitle(WebView WebView, string Title, IWebFrame Frame)
         {
-            if (frame == webView.mainFrame())
+            if (Frame == _webView.mainFrame())
             {
-                DocumentTitle = title;
+                DocumentTitle = Title;
                 DocumentTitleChanged(this, new EventArgs());
             }
         }
 
-        private void frameLoadDelegate_DidFailProvisionalLoadWithError(WebView WebView, IWebError error, IWebFrame frame)
+        private void FrameLoadDelegate_DidFailProvisionalLoadWithError(WebView WebView, IWebError WebError, IWebFrame Frame)
         {
             // ignore an "error" where the page loading is interrupted by a policy change when dowloading a file
-            if (!(frame == WebView.mainFrame() && error.Domain() == "WebKitErrorDomain" && error.code() == 102))
+            if (!(Frame == WebView.mainFrame() && WebError.Domain() == "WebKitErrorDomain" && WebError.code() == 102))
             {
-                Error(this, new WebKitBrowserErrorEventArgs(error.localizedDescription()));
+                Error(this, new WebKitBrowserErrorEventArgs(WebError.localizedDescription()));
             }
         }
 
-        private void frameLoadDelegate_DidFailLoadWithError(WebView WebView, IWebError error, IWebFrame frame)
+        private void FrameLoadDelegate_DidFailLoadWithError(WebView WebView, IWebError WebError, IWebFrame Frame)
         {
-            Error(this, new WebKitBrowserErrorEventArgs(error.localizedDescription())); 
+            Error(this, new WebKitBrowserErrorEventArgs(WebError.localizedDescription())); 
         }
 
-        private void frameLoadDelegate_DidClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, IWebFrame frame)
+        private void FrameLoadDelegate_DidClearWindowObject(WebView WebView, IntPtr Context, IntPtr WindowScriptObject, IWebFrame Frame)
         {
-            CreateWindowScriptObject(new JSContext(context));
+            CreateWindowScriptObject(new JSContext(Context));
         }
 
         #endregion
 
         #region WebDownloadDelegate event handlers
 
-        private void downloadDelegate_DidFailWithError(WebDownload download, WebError error)
+        private void DownloadDelegate_DidFailWithError(WebDownload Download, WebError WebError)
         {
-            downloads[download].NotifyDidFailWithError(download, error);
+            _downloads[Download].NotifyDidFailWithError(Download, WebError);
         }
 
-        private void downloadDelegate_DidFinish(WebDownload download)
+        private void DownloadDelegate_DidFinish(WebDownload Download)
         {
-            downloads[download].NotifyDidFinish(download);
-            // remove from list
-            downloads.Remove(download);
+            _downloads[Download].NotifyDidFinish(Download);
+            _downloads.Remove(Download);
         }
 
-        private void downloadDelegate_DidBegin(WebDownload download)
+        private void DownloadDelegate_DidBegin(WebDownload Download)
         {
             // create WebKitDownload object to handle this download and notify listeners
-            WebKitDownload d = new WebKitDownload();
-            downloads.Add(download, d);
+            var d = new WebKitDownload();
+            _downloads.Add(Download, d);
 
-            FileDownloadBeginEventArgs args = new FileDownloadBeginEventArgs(d);
+            var args = new FileDownloadBeginEventArgs(d);
             DownloadBegin(this, args);
 
             if (args.Cancel)
                 d.Cancel();
         }
 
-        private void downloadDelegate_DecideDestinationWithSuggestedFilename(WebDownload download, string fileName)
+        private void DownloadDelegate_DecideDestinationWithSuggestedFilename(WebDownload Download, string FileName)
         {
-            downloads[download].NotifyDecideDestinationWithSuggestedFilename(download, fileName);
+            _downloads[Download].NotifyDecideDestinationWithSuggestedFilename(Download, FileName);
         }
 
-        private void downloadDelegate_DidReceiveDataOfLength(WebDownload download, uint length)
+        private void DownloadDelegate_DidReceiveDataOfLength(WebDownload Download, uint Length)
         {
             // returns false if we cancelled the download at this point
-            if (!downloads[download].NotifyDidReceiveDataOfLength(download, length))
-                downloads.Remove(download);
+            if (!_downloads[Download].NotifyDidReceiveDataOfLength(Download, Length))
+                _downloads.Remove(Download);
         }
 
-        private void downloadDelegate_DidReceiveResponse(WebDownload download, WebURLResponse response)
+        private void DownloadDelegate_DidReceiveResponse(WebDownload Download, WebURLResponse Response)
         {
-            downloads[download].NotifyDidReceiveResponse(download, response);
+            _downloads[Download].NotifyDidReceiveResponse(Download, Response);
         }
 
         #endregion
 
         #region WebUIDelegate event handlers
 
-        private void uiDelegate_CreateWebViewWithRequest(IWebURLRequest request, out WebView webView)
+        private void UIDelegate_CreateWebViewWithRequest(IWebURLRequest Request, out WebView WebView)
         {
             // TODO: find out why url seems to always be empty:
             // https://bugs.webkit.org/show_bug.cgi?id=41441 explains all
-            string url = (request == null) ? "" : request.url();
-            NewWindowRequestEventArgs args = new NewWindowRequestEventArgs(url);
+            string url = (Request == null) ? "" : Request.url();
+            var args = new NewWindowRequestEventArgs(url);
             NewWindowRequest(this, args);
 
             if (!args.Cancel)
             {
-                WebKitBrowserCore b = new WebKitBrowserCore(host);
-                webView = (WebView) b.webView;
+                var b = new WebKitBrowserCore(_webKitBrowserHost);
+                WebView = (WebView) b._webView;
                 NewWindowCreated(this, new NewWindowCreatedEventArgs(b));
             }
             else
             {
-                webView = null;
+                WebView = null;
             }
         }
 
-        private void uiDelegate_RunJavaScriptAlertPanelWithMessage(WebView sender, string message)
+        private void UIDelegate_RunJavaScriptAlertPanelWithMessage(WebView Sender, string Message)
         {
-            ShowJavaScriptAlertPanel(this, new ShowJavaScriptAlertPanelEventArgs(message));
+            ShowJavaScriptAlertPanel(this, new ShowJavaScriptAlertPanelEventArgs(Message));
         }
 
-        private int uiDelegate_RunJavaScriptConfirmPanelWithMessage(WebView sender, string message)
+        private int UIDelegate_RunJavaScriptConfirmPanelWithMessage(WebView Sender, string Message)
         {
-            var args = new ShowJavaScriptConfirmPanelEventArgs(message);
+            var args = new ShowJavaScriptConfirmPanelEventArgs(Message);
             ShowJavaScriptConfirmPanel(this, args);
             return args.ReturnValue ? 1 : 0;
         }
 
-        private string uiDelegate_RunJavaScriptTextInputPanelWithPrompt(WebView sender, string message, string defaultText)
+        private string UIDelegate_RunJavaScriptTextInputPanelWithPrompt(WebView Sender, string Message, string DefaultText)
         {
-            var args = new ShowJavaScriptPromptPanelEventArgs(message, defaultText);
+            var args = new ShowJavaScriptPromptPanelEventArgs(Message, DefaultText);
             ShowJavaScriptPromptPanel(this, args);
             return args.ReturnValue;
         }
@@ -850,23 +834,21 @@ namespace WebKit
 
         #region WebNotificationObserver event handlers
 
-        private void webNotificationObserver_OnNotify(IWebNotification notification)
+        private void webNotificationObserver_OnNotify(IWebNotification Notification)
         {
-            switch (notification.name())
+            switch (Notification.name())
             {
                 case "WebProgressStartedNotification":
-                    EventArgs started_args = new EventArgs();
-                    ProgressStarted(this, started_args);
+                    var startedArgs = new EventArgs();
+                    ProgressStarted(this, startedArgs);
                     break;
                 case "WebProgressFinishedNotification":
-                    EventArgs finished_args = new EventArgs();
-                    ProgressFinished(this, finished_args);
+                    var finishedArgs = new EventArgs();
+                    ProgressFinished(this, finishedArgs);
                     break;
                 case "WebProgressEstimateChangedNotification":
-                    ProgressChangedEventArgs changed_args = new ProgressChangedEventArgs((int)(webView.estimatedProgress() * 100), null);
-                    ProgressChanged(this, changed_args);
-                    break;
-                default:
+                    var changedArgs = new ProgressChangedEventArgs((int)(_webView.estimatedProgress() * 100), null);
+                    ProgressChanged(this, changedArgs);
                     break;
             }
         }
@@ -878,19 +860,19 @@ namespace WebKit
         /// <summary>
         /// Navigates to the specified Url.
         /// </summary>
-        /// <param name="url">Url to navigate to.</param>
-        public void Navigate(string url)
+        /// <param name="NewUrl">Url to navigate to.</param>
+        public void Navigate(string NewUrl)
         {
-            if (loaded)
+            if (_loaded)
             {
                 // prepend with "http://" if url not well formed
-                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
-                    url = "http://" + url;
+                if (!Uri.IsWellFormedUriString(NewUrl, UriKind.Absolute))
+                    NewUrl = "http://" + NewUrl;
 
-                activationContext.Activate();
+                _activationContext.Activate();
 
                 WebMutableURLRequest request = new WebMutableURLRequestClass();
-                request.initWithURL(url, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
+                request.initWithURL(NewUrl, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
                 request.setHTTPMethod("GET");
 
                 //use basic authentication if username and password are supplied.
@@ -898,13 +880,13 @@ namespace WebKit
                     request.setValue("Basic " + Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(
                         string.Format("{0}:{1}", UserName, Password))), "Authorization");
 
-                webView.mainFrame().loadRequest((WebURLRequest)request);
+                _webView.mainFrame().loadRequest((WebURLRequest)request);
 
-                activationContext.Deactivate();
+                _activationContext.Deactivate();
             }
             else
             {
-                initialUrl = url.Length == 0 ? null : new Uri(url);
+                _initialUrl = NewUrl.Length == 0 ? null : new Uri(NewUrl);
             }
         }
 
@@ -915,7 +897,7 @@ namespace WebKit
         public bool GoBack()
         {
             bool retVal = CanGoBack;
-            webView.goBack();
+            _webView.goBack();
             return retVal;
         }
 
@@ -926,7 +908,7 @@ namespace WebKit
         public bool GoForward()
         {
             bool retVal = CanGoForward;
-            webView.goForward();
+            _webView.goForward();
             return retVal;
         }
 
@@ -935,14 +917,14 @@ namespace WebKit
         /// </summary>
         public void Reload()
         {
-            webView.mainFrame().reload();
+            _webView.mainFrame().reload();
         }
 
         /// <summary>
         /// Reloads the current web page.
         /// </summary>
-        /// <param name="option">Options for reloading the page.</param>
-        public void Reload(WebBrowserRefreshOption option)
+        /// <param name="Option">Options for reloading the page.</param>
+        public void Reload(WebBrowserRefreshOption Option)
         {
             // TODO: implement
             Reload();
@@ -954,9 +936,9 @@ namespace WebKit
         /// </summary>
         public void Stop()
         {
-            if (webView.isLoading() != 0)
+            if (_webView.isLoading() != 0)
             {
-                webView.mainFrame().stopLoading();
+                _webView.mainFrame().stopLoading();
             }
         }
 
@@ -982,7 +964,7 @@ namespace WebKit
         /// <returns>The WebView object.</returns>
         public object GetWebView()
         {
-            return webView;
+            return _webView;
         }
 
         /// <summary>
@@ -991,20 +973,18 @@ namespace WebKit
         /// <returns>A JSCore.JSContext object representing the script context.</returns>
         public object GetGlobalScriptContext()
         {
-            if (loaded)
-                return new JSContext(webView.mainFrame());
-            else
-                return null;
+            if (_loaded)
+                return new JSContext(_webView.mainFrame());
+            return null;
         }
 
         public void ShowInspector()
         {
-            if (webView != null)
-            {
-                IWebViewPrivate v = (IWebViewPrivate) webView;
-                v.inspector().attach();
-                v.inspector().show();
-            }
+            if (_webView == null)
+                return;
+            var v = (IWebViewPrivate) _webView;
+            v.inspector().attach();
+            v.inspector().show();
         }
 
         #endregion Public Methods
@@ -1016,8 +996,8 @@ namespace WebKit
         /// </summary>
         public void Print()
         {
-            PrintDocument doc = this.GetCommonPrintDocument();
-            PrintManager pm = new PrintManager(doc, this.host, this, false);
+            var doc = this.GetCommonPrintDocument();
+            var pm = new PrintManager(doc, this._webKitBrowserHost, this, false);
             pm.Print();
         }
 
@@ -1026,7 +1006,7 @@ namespace WebKit
         /// </summary>
         public void ShowPageSetupDialog()
         {
-            PageSetupDialog pageSetupDlg = new PageSetupDialog();
+            var pageSetupDlg = new PageSetupDialog();
             pageSetupDlg.EnableMetric = true;
             pageSetupDlg.PageSettings = this.PageSettings;
             pageSetupDlg.AllowPrinter = true;
@@ -1040,13 +1020,13 @@ namespace WebKit
         /// </summary>
         public void ShowPrintDialog()
         {
-            PrintDialog printDlg = new PrintDialog();
-            PrintDocument doc = this.GetCommonPrintDocument();
+            var printDlg = new PrintDialog();
+            var doc = this.GetCommonPrintDocument();
             printDlg.Document = doc;
 
             if (printDlg.ShowDialog() == DialogResult.OK)
             {
-                PrintManager pm = new PrintManager(doc, this.host, this, false);
+                var pm = new PrintManager(doc, this._webKitBrowserHost, this, false);
                 pm.Print();
             }
         }
@@ -1057,10 +1037,10 @@ namespace WebKit
         public void ShowPrintPreviewDialog()
         {
             // TODO: find out why it apparently only shows the first page on the preview...
-            PrintPreviewDialog printDlg = new PrintPreviewDialog();
-            PrintDocument doc = this.GetCommonPrintDocument();
+            var printDlg = new PrintPreviewDialog();
+            var doc = this.GetCommonPrintDocument();
             printDlg.Document = doc;
-            PrintManager pm = new PrintManager(doc, this.host, this, true);
+            var pm = new PrintManager(doc, this._webKitBrowserHost, this, true);
             pm.Print();
             printDlg.ShowDialog();
         }
@@ -1068,7 +1048,7 @@ namespace WebKit
         // Gets a PrintDocument with the current default settings.
         private PrintDocument GetCommonPrintDocument()
         {
-            PrintDocument doc = new PrintDocument();
+            var doc = new PrintDocument();
             doc.DocumentName = this.DocumentTitle;
             doc.DefaultPageSettings = PageSettings;
             doc.OriginAtMargins = true;
@@ -1078,31 +1058,31 @@ namespace WebKit
 
         #endregion
 
-        public void Dispose(bool disposing)
+        public void Dispose(bool Disposing)
         {
-            if(disposed)
+            if(_disposed)
                 return;
             
-            if((--actCtxRefCount) == 0 && activationContext != null)
+            if((--_actCtxRefCount) == 0 && _activationContext != null)
             {
-                activationContext.Dispose();
+                _activationContext.Dispose();
             }
 
-            disposed = true;
+            _disposed = true;
         }
 
-        private void CreateWindowScriptObject(JSContext context)
+        private void CreateWindowScriptObject(JSContext Context)
         {
-            if (ObjectForScripting != null && context != null)
+            if (ObjectForScripting != null && Context != null)
             {
-                JSObject global = context.GetGlobalObject();
-                JSValue window = global.GetProperty("window");
+                var global = Context.GetGlobalObject();
+                var window = global.GetProperty("window");
                 if (window == null || !window.IsObject)
                     return;
-                JSObject windowObj = window.ToObject();
+                var windowObj = window.ToObject();
                 if (windowObj == null)
                     return;
-                windowObj.SetProperty("external", (object) ObjectForScripting);
+                windowObj.SetProperty("external", ObjectForScripting);
             }
         }
     }

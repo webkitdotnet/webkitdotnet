@@ -486,10 +486,10 @@ namespace WebKit
         /// <summary>
         /// Reloads the current web page.
         /// </summary>
-        /// <param name="option">Options for reloading the page.</param>
-        public void Reload(WebBrowserRefreshOption option)
+        /// <param name="Option">Options for reloading the page.</param>
+        public void Reload(WebBrowserRefreshOption Option)
         {
-            core.Reload(option);
+            core.Reload(Option);
         }
 
         /// <summary>

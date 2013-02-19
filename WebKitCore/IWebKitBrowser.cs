@@ -199,8 +199,8 @@ namespace WebKit
         /// <summary>
         /// Reloads the current web page.
         /// </summary>
-        /// <param name="option">Options for reloading the page.</param>
-        void Reload(WebBrowserRefreshOption option);
+        /// <param name="Option">Options for reloading the page.</param>
+        void Reload(WebBrowserRefreshOption Option);
 
         /// <summary>
         /// Stops loading the current web page and any resources associated 
