@@ -81,9 +81,10 @@ namespace WebKitBrowserTest
             this.test2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jSTestPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.test3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testTextAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setLocalStorageDatabaseDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.navigationBar = new WebKitBrowserTest.NavigationBar();
-            this.testTextAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -247,7 +248,8 @@ namespace WebKitBrowserTest
             this.test2ToolStripMenuItem,
             this.jSTestPageToolStripMenuItem,
             this.test3ToolStripMenuItem,
-            this.testTextAreaToolStripMenuItem});
+            this.testTextAreaToolStripMenuItem,
+            this.setLocalStorageDatabaseDirectoryToolStripMenuItem});
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
             this.testToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.testToolStripMenuItem.Text = "Test";
@@ -255,49 +257,63 @@ namespace WebKitBrowserTest
             // testPageToolStripMenuItem
             // 
             this.testPageToolStripMenuItem.Name = "testPageToolStripMenuItem";
-            this.testPageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.testPageToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.testPageToolStripMenuItem.Text = "Test Page";
             this.testPageToolStripMenuItem.Click += new System.EventHandler(this.testPageToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(263, 6);
             // 
             // tToolStripMenuItem
             // 
             this.tToolStripMenuItem.Name = "tToolStripMenuItem";
-            this.tToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.tToolStripMenuItem.Text = "Test 1";
             this.tToolStripMenuItem.Click += new System.EventHandler(this.tToolStripMenuItem_Click);
             // 
             // newWindowToolStripMenuItem
             // 
             this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
-            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.newWindowToolStripMenuItem.Text = "New &Window";
             this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
             // 
             // test2ToolStripMenuItem
             // 
             this.test2ToolStripMenuItem.Name = "test2ToolStripMenuItem";
-            this.test2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.test2ToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.test2ToolStripMenuItem.Text = "Test 2";
             this.test2ToolStripMenuItem.Click += new System.EventHandler(this.test2ToolStripMenuItem_Click);
             // 
             // jSTestPageToolStripMenuItem
             // 
             this.jSTestPageToolStripMenuItem.Name = "jSTestPageToolStripMenuItem";
-            this.jSTestPageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.jSTestPageToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.jSTestPageToolStripMenuItem.Text = "JS Test Page";
             this.jSTestPageToolStripMenuItem.Click += new System.EventHandler(this.jSTestPageToolStripMenuItem_Click);
             // 
             // test3ToolStripMenuItem
             // 
             this.test3ToolStripMenuItem.Name = "test3ToolStripMenuItem";
-            this.test3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.test3ToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.test3ToolStripMenuItem.Text = "Test 3";
             this.test3ToolStripMenuItem.Click += new System.EventHandler(this.test3ToolStripMenuItem_Click);
+            // 
+            // testTextAreaToolStripMenuItem
+            // 
+            this.testTextAreaToolStripMenuItem.Name = "testTextAreaToolStripMenuItem";
+            this.testTextAreaToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.testTextAreaToolStripMenuItem.Text = "Test TextArea";
+            this.testTextAreaToolStripMenuItem.Click += new System.EventHandler(this.testTextAreaToolStripMenuItem_Click);
+            // 
+            // setLocalStorageDatabaseDirectoryToolStripMenuItem
+            // 
+            this.setLocalStorageDatabaseDirectoryToolStripMenuItem.Name = "setLocalStorageDatabaseDirectoryToolStripMenuItem";
+            this.setLocalStorageDatabaseDirectoryToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.setLocalStorageDatabaseDirectoryToolStripMenuItem.Text = "Set Local Storage Database Directory";
+            this.setLocalStorageDatabaseDirectoryToolStripMenuItem.Click += new System.EventHandler(this.setLocalStorageDatabaseDirectoryToolStripMenuItem_Click);
             // 
             // tabControl
             // 
@@ -318,13 +334,6 @@ namespace WebKitBrowserTest
             this.navigationBar.Size = new System.Drawing.Size(662, 49);
             this.navigationBar.TabIndex = 1;
             this.navigationBar.UrlText = "";
-            // 
-            // testTextAreaToolStripMenuItem
-            // 
-            this.testTextAreaToolStripMenuItem.Name = "testTextAreaToolStripMenuItem";
-            this.testTextAreaToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.testTextAreaToolStripMenuItem.Text = "Test TextArea";
-            this.testTextAreaToolStripMenuItem.Click += new System.EventHandler(this.testTextAreaToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -377,6 +386,7 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem setPasswordToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem inspectorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testTextAreaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setLocalStorageDatabaseDirectoryToolStripMenuItem;
 
     }
 }

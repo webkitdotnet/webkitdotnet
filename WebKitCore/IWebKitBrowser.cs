@@ -169,6 +169,11 @@ namespace WebKit
         object ObjectForScripting { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        string LocalStorageDatabaseDirectory { get; set; }
+
+        /// <summary>
         /// Navigates to the specified Url.
         /// </summary>
         /// <param name="url">Url to navigate to.</param>

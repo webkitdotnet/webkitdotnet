@@ -329,5 +329,14 @@ window.onload = function() {
             btn.onclick = new ActionDelegate((args) => { MessageBox.Show("Your textarea says \n\n'" + txt.textContent + "'"); });
             document.getElementById("container").appendChild(btn);
         }
+
+        private void setLocalStorageDatabaseDirectoryToolStripMenuItem_Click(object sender, EventArgs e) 
+        {
+            var dlg = new FolderBrowserDialog();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                currentPage.browser.LocalStorageDatabaseDirectory = dlg.SelectedPath;
+            }
+        }
     }
 }

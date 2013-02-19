@@ -38,6 +38,8 @@ namespace WebKit
         private bool initialAllowDownloads = true;
         private bool initialAllowNewWindows = true;
         private bool initialJavaScriptEnabled = true;
+        private bool initialLocalStorageEnabled = true;
+        private string initialLocalStorageDatabaseDirectory = "";
         private bool _contextMenuEnabled = true;
         private readonly Version version = Assembly.GetExecutingAssembly().GetName().Version;
         private object _scriptObject = null;
@@ -467,30 +469,73 @@ namespace WebKit
         /// <summary>
         /// Gets or sets a value indicating whether JavaScript is enabled.
         /// </summary>
-        public bool IsScriptingEnabled
+        public bool IsScriptingEnabled {
+          get 
+          {
+              if (loaded)
+                  return webView.preferences().isJavaScriptEnabled() != 0;
+              else
+                  return initialJavaScriptEnabled;
+          }
+          set 
+          {
+              if (loaded) 
+              {
+                  var prefs = webView.preferences();
+                  prefs.setJavaScriptEnabled(value ? 1 : 0);
+                  webView.setPreferences(prefs);
+              } 
+              else 
+              {
+                  initialJavaScriptEnabled = value;
+              }
+          }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether LocalStorage is enabled.
+        /// </summary>
+        public bool IsLocalStorageEnabled
         {
             get
             {
                 if (loaded)
-                    return webView.preferences().isJavaScriptEnabled() != 0;
+                    return ((IWebPreferencesPrivate) webView.preferences()).localStorageEnabled() != 0;
                 else
-                    return initialJavaScriptEnabled;
+                    return initialLocalStorageEnabled;
             }
             set
             {
                 if (loaded)
-                {
-                    var prefs = webView.preferences();
-                    prefs.setJavaScriptEnabled(value ? 1 : 0);
-                    webView.setPreferences(prefs);
-                }
+                    ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageEnabled(value ? 1 : 0);
                 else
-                {
-                    initialJavaScriptEnabled = value;
-                }
+                    initialLocalStorageEnabled = value;
             }
         }
 
+        /// <summary>
+        /// Gets or sets the fully qualified path to the directory where 
+        /// local storage database files will be stored.
+        /// </summary>
+        /// <remarks>Value must be a fully qualified directory path.</remarks>
+        public string LocalStorageDatabaseDirectory
+        {
+            get
+            {
+                if (loaded)
+                    return ((IWebPreferencesPrivate) webView.preferences()).localStorageDatabasePath();
+                else
+                    return initialLocalStorageDatabaseDirectory;
+            }
+            set
+            {
+                if (loaded && value != "")
+                    ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageDatabasePath(value);
+                else
+                    initialLocalStorageDatabaseDirectory = value;
+            }
+        }
+        
         /// <summary>
         /// Gets the host.
         /// </summary>
@@ -520,18 +565,6 @@ namespace WebKit
             { 
                 _scriptObject = value; 
                 CreateWindowScriptObject((JSContext)GetGlobalScriptContext()); 
-            }
-        }
-
-        public string LocalStorageDatabasePath
-        {
-            get
-            {
-                return ((IWebPreferencesPrivate) webView.preferences()).localStorageDatabasePath();
-            }
-            set
-            {
-                ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageDatabasePath(value);
             }
         }
 
@@ -699,6 +732,8 @@ namespace WebKit
             }
 
             IsScriptingEnabled = initialJavaScriptEnabled;
+            IsLocalStorageEnabled = initialLocalStorageEnabled;
+            LocalStorageDatabaseDirectory = initialLocalStorageDatabaseDirectory;
         }
 
         private void WebKitBrowser_HandleDestroyed(object sender, EventArgs e)

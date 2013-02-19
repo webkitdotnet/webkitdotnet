@@ -375,6 +375,27 @@ namespace WebKit
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether LocalStorage is enabled.
+        /// </summary>
+        [Browsable(true), DefaultValue(true), Category("Behavior")]
+        [Description("Specifies whether LocalStorage is enabled in the WebKitBrowser")]
+        public bool IsLocalStorageEnabled {
+          get { return core.IsLocalStorageEnabled; }
+          set { core.IsLocalStorageEnabled = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the fully qualified path to the directory where 
+        /// local storage database files will be stored.
+        /// </summary>
+        /// <remarks>Value must be a fully qualified directory path.</remarks>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string LocalStorageDatabaseDirectory {
+          get { return core.LocalStorageDatabaseDirectory; }
+          set { core.LocalStorageDatabaseDirectory = value; }
+        }
+
+        /// <summary>
         /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
