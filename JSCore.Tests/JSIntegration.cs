@@ -50,6 +50,7 @@ namespace JSCore.Tests
             void acceptsObject(JSObject d);
             void acceptsNonGenericDictionary(Dictionary<string, object> d);
             void acceptsDelegate(JavaScriptFunction d);
+            void acceptsJSObject(JSObject d);
             
             void verified(bool r);
 
@@ -179,9 +180,11 @@ namespace JSCore.Tests
             )));
 
             testFunctionsMock.Setup(f => f.acceptsObject(It.Is<JSObject>(d =>
-                (double)(d.ToDictionary(true))["x"] == 1 &&
-                ((object[])(d.ToDictionary(true))["array"]).Length == 3 &&
-                ((JSObject)(d.ToDictionary(true)["nestedObj"])).ToDictionary(true)["z"].Equals("nested")                
+                (double) (d.ToDictionary(true))["x"] == 1 &&
+                ((object[]) (d.ToDictionary(true))["array"]).Length == 3 &&
+                // Test both recursive and non-recursive conversion to dictionary
+                ((JSObject) ((d.ToDictionary())["nestedObj"])).ToDictionary(true)["z"].Equals("nested") &&
+                ((Dictionary<object, object>)(d.ToDictionary(true))["nestedObj"])["z"].Equals("nested")
             )));
 
             Context.EvaluateScript("testFunctions.acceptsBoolean(true)");
