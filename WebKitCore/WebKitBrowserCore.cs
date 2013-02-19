@@ -128,6 +128,22 @@ namespace WebKit
         
         #endregion
 
+        private void SetIfLoaded<T>(T value, ref T initialValue, Action<T> setter)
+        {
+            if (loaded)
+                setter(value);
+            else
+                initialValue = value;
+        }
+
+        private T GetIfLoaded<T>(T initialValue, Func<T> getter)
+        {
+            if (loaded)
+                return getter();
+            else
+                return initialValue;
+        }
+
         #region Public properties
 
         /// <summary>
@@ -157,28 +173,18 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                {
+                return GetIfLoaded(initialUrl, () => {
                     Uri result;
-                    return Uri.TryCreate(webView.mainFrame().dataSource().request().url(), 
-                        UriKind.Absolute, out result) ? result : null;
-                }
-                else
-                {
-                    return initialUrl;
-                }
+                    return Uri.TryCreate(webView.mainFrame().dataSource().request().url(),
+                                         UriKind.Absolute, out result) ? result : null;
+                });
             }
             set
             {
-                if (loaded)
-                {
-                    if (value != null)
-                        Navigate(value.AbsoluteUri);
-                }
-                else
-                {
-                    initialUrl = value;
-                }
+                SetIfLoaded(value, ref initialUrl, Uri => {
+                    if (Uri != null)
+                        Navigate(Uri.AbsoluteUri);
+                });
             }
         }
 
@@ -189,10 +195,7 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                    return (webView.isLoading() > 0);
-                else
-                    return false;
+                return GetIfLoaded(false, () => webView.isLoading() > 0);
             }
         }
 
@@ -203,8 +206,7 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                {
+                return GetIfLoaded(initialText, () => {
                     try
                     {
                         return webView.mainFrame().dataSource().representation().documentSource();
@@ -213,18 +215,12 @@ namespace WebKit
                     {
                         return "";
                     }
-                }
-                else
-                {
-                    return initialText;
-                }
+                });
             }
             set
             {
-                if (loaded)
-                    webView.mainFrame().loadHTMLString(value, null);
-                else
-                    initialText = value;
+                SetIfLoaded(value, ref initialText,
+                                Text => webView.mainFrame().loadHTMLString(Text, null));
             }
         }
 
@@ -235,10 +231,7 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                    return webView.selectedText();
-                else
-                    return "";
+                return GetIfLoaded("", () => webView.selectedText());
             }
         }
 
@@ -249,10 +242,7 @@ namespace WebKit
         {
             get
             {
-                if (webView != null)
-                    return webView.applicationNameForUserAgent();
-                else
-                    return "";
+                return webView != null ? webView.applicationNameForUserAgent() : "";
             }
             set
             {
@@ -268,10 +258,7 @@ namespace WebKit
         {
             get
             {
-                if (webView != null)
-                    return webView.userAgentForURL("");
-                else
-                    return "";
+                return webView != null ? webView.userAgentForURL("") : "";
             }
             set
             {
@@ -287,10 +274,7 @@ namespace WebKit
         {
             get
             {
-                if (webView != null)
-                    return webView.textSizeMultiplier();
-                else
-                    return 1.0f;
+                return webView != null ? webView.textSizeMultiplier() : 1.0f;
             }
             set
             {
@@ -307,17 +291,12 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                    return policyDelegate.AllowNavigation;
-                else
-                    return initialAllowNavigation;
+                return GetIfLoaded(initialAllowNavigation, () => policyDelegate.AllowNavigation);
             }
             set
             {
-                if (loaded)
-                    policyDelegate.AllowInitialNavigation = policyDelegate.AllowNavigation = value;
-                else
-                    initialAllowNavigation = value;
+                SetIfLoaded(value, ref initialAllowNavigation,
+                                B => policyDelegate.AllowInitialNavigation = policyDelegate.AllowNavigation = B);
             }
         }
 
@@ -328,17 +307,12 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                    return policyDelegate.AllowDownloads;
-                else
-                    return initialAllowDownloads;
+                return GetIfLoaded(initialAllowDownloads, () => policyDelegate.AllowDownloads);
             }
             set
             {
-                if (loaded)
-                    policyDelegate.AllowDownloads = value;
-                else
-                    initialAllowDownloads = value;
+                SetIfLoaded(value, ref initialAllowDownloads,
+                                B => policyDelegate.AllowDownloads = policyDelegate.AllowDownloads = B);
             }
         }
 
@@ -349,17 +323,12 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                    return policyDelegate.AllowNewWindows;
-                else
-                    return initialAllowNewWindows;
+                return GetIfLoaded(initialAllowNewWindows, () => policyDelegate.AllowNewWindows);
             }
             set
             {
-                if (loaded)
-                    policyDelegate.AllowNewWindows = value;
-                else
-                    initialAllowNewWindows = value;
+                SetIfLoaded(value, ref initialAllowNewWindows,
+                                B => policyDelegate.AllowNewWindows = policyDelegate.AllowNewWindows = B);
             }
         }
 
@@ -370,7 +339,7 @@ namespace WebKit
         {
             get
             {
-                return loaded ? webView.backForwardList().backListCount() > 0 : false;
+                return GetIfLoaded(false, () => webView.backForwardList().backListCount() > 0);
             }
         }
 
@@ -381,7 +350,7 @@ namespace WebKit
         {
             get
             {
-                return loaded ? webView.backForwardList().forwardListCount() > 0 : false;
+                return GetIfLoaded(false, () => webView.backForwardList().forwardListCount() > 0);
             }
         }
 
@@ -428,7 +397,7 @@ namespace WebKit
             {
                 if (webView != null)
                 {
-                    IWebViewPrivate v = (IWebViewPrivate)webView;
+                    IWebViewPrivate v = (IWebViewPrivate) webView;
                     tagPOINT p = new tagPOINT();
                     p.x = value.X - ScrollOffset.X;
                     p.y = value.Y - ScrollOffset.Y;
@@ -470,25 +439,17 @@ namespace WebKit
         /// Gets or sets a value indicating whether JavaScript is enabled.
         /// </summary>
         public bool IsScriptingEnabled {
-          get 
+          get
           {
-              if (loaded)
-                  return webView.preferences().isJavaScriptEnabled() != 0;
-              else
-                  return initialJavaScriptEnabled;
+              return GetIfLoaded(initialJavaScriptEnabled, () => webView.preferences().isJavaScriptEnabled() != 0);
           }
           set 
           {
-              if (loaded) 
-              {
+              SetIfLoaded(value, ref initialJavaScriptEnabled, B => {
                   var prefs = webView.preferences();
-                  prefs.setJavaScriptEnabled(value ? 1 : 0);
+                  prefs.setJavaScriptEnabled(B ? 1 : 0);
                   webView.setPreferences(prefs);
-              } 
-              else 
-              {
-                  initialJavaScriptEnabled = value;
-              }
+              });
           }
         }
 
@@ -499,17 +460,13 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                    return ((IWebPreferencesPrivate) webView.preferences()).localStorageEnabled() != 0;
-                else
-                    return initialLocalStorageEnabled;
+                return GetIfLoaded(initialLocalStorageEnabled,
+                                       () => ((IWebPreferencesPrivate) webView.preferences()).localStorageEnabled() != 0);
             }
             set
             {
-                if (loaded)
-                    ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageEnabled(value ? 1 : 0);
-                else
-                    initialLocalStorageEnabled = value;
+                SetIfLoaded(value, ref initialLocalStorageEnabled,
+                                B => ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageEnabled(B ? 1 : 0));
             }
         }
 
@@ -522,17 +479,16 @@ namespace WebKit
         {
             get
             {
-                if (loaded)
-                    return ((IWebPreferencesPrivate) webView.preferences()).localStorageDatabasePath();
-                else
-                    return initialLocalStorageDatabaseDirectory;
+                return GetIfLoaded(initialLocalStorageDatabaseDirectory,
+                                () => ((IWebPreferencesPrivate) webView.preferences()).localStorageDatabasePath());
             }
             set
             {
-                if (loaded && value != "")
-                    ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageDatabasePath(value);
-                else
-                    initialLocalStorageDatabaseDirectory = value;
+                SetIfLoaded(value, ref initialLocalStorageDatabaseDirectory,
+                                B => {
+                                    if (!string.IsNullOrEmpty(B))
+                                        ((IWebPreferencesPrivate) webView.preferences()).setLocalStorageDatabasePath(B);
+                                });
             }
         }
         
