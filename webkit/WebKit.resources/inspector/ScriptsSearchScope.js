@@ -29,18 +29,20 @@
 /**
  * @constructor
  * @implements {WebInspector.SearchScope}
+ * @param {WebInspector.Workspace} workspace
  */
-WebInspector.ScriptsSearchScope = function()
+WebInspector.ScriptsSearchScope = function(workspace)
 {
     // FIXME: Add title once it is used by search controller.
     WebInspector.SearchScope.call(this)
     this._searchId = 0;
+    this._workspace = workspace;
 }
 
 WebInspector.ScriptsSearchScope.prototype = {
     /**
      * @param {WebInspector.SearchConfig} searchConfig
-     * @param {function(Object)} searchResultCallback
+     * @param {function(WebInspector.FileBasedSearchResultsPane.SearchResult)} searchResultCallback
      * @param {function(boolean)} searchFinishedCallback
      */
     performSearch: function(searchConfig, searchResultCallback, searchFinishedCallback)
@@ -75,9 +77,12 @@ WebInspector.ScriptsSearchScope.prototype = {
                 searchFinishedCallback(false);
                 return;
             }
-                
             var searchResult = new WebInspector.FileBasedSearchResultsPane.SearchResult(uiSourceCode, searchMatches);
             searchResultCallback(searchResult);
+            if (searchId !== this._searchId) {
+                searchFinishedCallback(false);
+                return;
+            }
             continueSearch.call(this);
         }
         
@@ -95,7 +100,7 @@ WebInspector.ScriptsSearchScope.prototype = {
      */
     createSearchResultsPane: function(searchConfig)
     {
-        return new WebInspector.ScriptsSearchResultsPane(searchConfig);
+        return new WebInspector.FileBasedSearchResultsPane(searchConfig);
     },
 
     /**
@@ -105,84 +110,27 @@ WebInspector.ScriptsSearchScope.prototype = {
     {
         function filterOutAnonymous(uiSourceCode)
         {
-            return !!uiSourceCode.url;
+            return !!uiSourceCode.originURL();
         }
         
         function comparator(a, b)
         {
-            return a.url.localeCompare(b.url);   
+            return a.originURL().compareTo(b.originURL());   
         }
         
-        var uiSourceCodes = WebInspector.debuggerPresentationModel.uiSourceCodes();
+        var projects = this._workspace.projects();
+        var uiSourceCodes = [];
+        for (var i = 0; i < projects.length; ++i) {
+            if (projects[i].isServiceProject())
+                continue;
+            uiSourceCodes = uiSourceCodes.concat(projects[i].uiSourceCodes());
+        }
         
         uiSourceCodes = uiSourceCodes.filter(filterOutAnonymous);
         uiSourceCodes.sort(comparator);
         
         return uiSourceCodes;
-    }
-}
-
-WebInspector.ScriptsSearchScope.prototype.__proto__ = WebInspector.SearchScope.prototype;
-
-/**
- * @constructor
- * @extends {WebInspector.FileBasedSearchResultsPane}
- * @param {WebInspector.SearchConfig} searchConfig
- */
-WebInspector.ScriptsSearchResultsPane = function(searchConfig)
-{
-    WebInspector.FileBasedSearchResultsPane.call(this, searchConfig)
-
-    this._linkifier = WebInspector.debuggerPresentationModel.createLinkifier(new WebInspector.ScriptsSearchResultsPane.LinkifierFormatter());
-}
-
-WebInspector.ScriptsSearchResultsPane.prototype = {
-    /**
-     * @param {Object} file
-     * @param {number} lineNumber
-     * @param {number} columnNumber
-     */
-    createAnchor: function(file, lineNumber, columnNumber)
-    {
-        var uiSourceCode = /** @type {WebInspector.UISourceCode} */ file;
-        var rawLocation = WebInspector.debuggerPresentationModel.uiLocationToRawLocation(uiSourceCode, lineNumber, columnNumber);
-        var anchor = this._linkifier.linkifyRawLocation(rawLocation);
-        anchor.removeChildren();
-        return anchor;
     },
-    
-    /**
-     * @param {Object} file
-     * @return {string}
-     */
-    fileName: function(file)
-    {
-        var uiSourceCode = file;
-        return uiSourceCode.url;
-    },
+
+    __proto__: WebInspector.SearchScope.prototype
 }
-
-WebInspector.ScriptsSearchResultsPane.prototype.__proto__ = WebInspector.FileBasedSearchResultsPane.prototype;
-
-/**
- * @constructor
- * @implements {WebInspector.DebuggerPresentationModel.LinkifierFormatter}
- */
-WebInspector.ScriptsSearchResultsPane.LinkifierFormatter = function()
-{
-}
-
-WebInspector.ScriptsSearchResultsPane.LinkifierFormatter.prototype = {
-    /**
-     * @param {Element} anchor
-     * @param {WebInspector.UILocation} uiLocation
-     */
-    formatLiveAnchor: function(anchor, uiLocation)
-    {
-        // Empty because we don't want to ever update anchor contents after creation.
-    }
-}
-
-WebInspector.ScriptsSearchResultsPane.LinkifierFormatter.prototype.__proto__ = WebInspector.DebuggerPresentationModel.LinkifierFormatter.prototype;
-
-WebInspector.settings.searchInContentScripts = WebInspector.settings.createSetting("searchInContentScripts", false);

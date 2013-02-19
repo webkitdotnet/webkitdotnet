@@ -35,8 +35,9 @@
  * @param {string|undefined} subtype
  * @param {*} value
  * @param {string=} description
+ * @param {RuntimeAgent.ObjectPreview=} preview
  */
-WebInspector.RemoteObject = function(objectId, type, subtype, value, description)
+WebInspector.RemoteObject = function(objectId, type, subtype, value, description, preview)
 {
     this._type = type;
     this._subtype = subtype;
@@ -45,6 +46,7 @@ WebInspector.RemoteObject = function(objectId, type, subtype, value, description
         this._objectId = objectId;
         this._description = description;
         this._hasChildren = true;
+        this._preview = preview;
     } else {
         // Primitive or null object.
         console.assert(type !== "object" || value === null);
@@ -97,14 +99,14 @@ WebInspector.RemoteObject.resolveNode = function(node, objectGroup, callback)
 }
 
 /**
- * @param {RuntimeAgent.RemoteObject} payload
+ * @param {RuntimeAgent.RemoteObject=} payload
  * @return {WebInspector.RemoteObject}
  */
 WebInspector.RemoteObject.fromPayload = function(payload)
 {
     console.assert(typeof payload === "object", "Remote object payload should only be an object");
 
-    return new WebInspector.RemoteObject(payload.objectId, payload.type, payload.subtype, payload.value, payload.description);
+    return new WebInspector.RemoteObject(payload.objectId, payload.type, payload.subtype, payload.value, payload.description, payload.preview);
 }
 
 /**
@@ -154,8 +156,14 @@ WebInspector.RemoteObject.prototype = {
         return this._hasChildren;
     },
 
+    /** @return {RuntimeAgent.ObjectPreview|undefined} */
+    get preview()
+    {
+        return this._preview;
+    },
+
     /**
-     * @param {function(Array.<WebInspector.RemoteObjectProperty>)} callback
+     * @param {function(Array.<WebInspector.RemoteObjectProperty>, Array.<WebInspector.RemoteObjectProperty>=)} callback
      */
     getOwnProperties: function(callback)
     {
@@ -163,7 +171,7 @@ WebInspector.RemoteObject.prototype = {
     },
 
     /**
-     * @param {function(Array.<WebInspector.RemoteObjectProperty>)} callback
+     * @param {function(Array.<WebInspector.RemoteObjectProperty>, Array.<WebInspector.RemoteObjectProperty>=)} callback
      */
     getAllProperties: function(callback)
     {
@@ -172,7 +180,7 @@ WebInspector.RemoteObject.prototype = {
 
     /**
      * @param {boolean} ownProperties
-     * @param {function(Array.<RuntimeAgent.RemoteObject>)} callback
+     * @param {function(Array.<WebInspector.RemoteObjectProperty>, Array.<WebInspector.RemoteObjectProperty>=)} callback
      */
     _getProperties: function(ownProperties, callback)
     {
@@ -183,9 +191,10 @@ WebInspector.RemoteObject.prototype = {
 
         /**
          * @param {?Protocol.Error} error
-         * @param {Array.<WebInspector.RemoteObjectProperty>} properties
+         * @param {Array.<RuntimeAgent.PropertyDescriptor>} properties
+         * @param {Array.<RuntimeAgent.InternalPropertyDescriptor>=} internalProperties
          */
-        function remoteObjectBinder(error, properties)
+        function remoteObjectBinder(error, properties, internalProperties)
         {
             if (error) {
                 callback(null);
@@ -202,7 +211,15 @@ WebInspector.RemoteObject.prototype = {
                 } else
                     result.push(new WebInspector.RemoteObjectProperty(property.name, WebInspector.RemoteObject.fromPayload(property.value), property));
             }
-            callback(result);
+            var internalPropertiesResult;
+            if (internalProperties) {
+                internalPropertiesResult = [];
+                for (var i = 0; i < internalProperties.length; i++) {
+                    var property = internalProperties[i];
+                    internalPropertiesResult.push(new WebInspector.RemoteObjectProperty(property.name, WebInspector.RemoteObject.fromPayload(property.value)));
+                }
+            }
+            callback(result, internalPropertiesResult);
         }
         RuntimeAgent.getProperties(this._objectId, ownProperties, remoteObjectBinder);
     },
@@ -219,7 +236,7 @@ WebInspector.RemoteObject.prototype = {
             return;
         }
 
-        RuntimeAgent.evaluate.invoke({expression:value, doNotPauseOnExceptions:true}, evaluatedCallback.bind(this));
+        RuntimeAgent.evaluate.invoke({expression:value, doNotPauseOnExceptionsAndMuteConsole:true}, evaluatedCallback.bind(this));
 
         /**
          * @param {?Protocol.Error} error
@@ -233,13 +250,14 @@ WebInspector.RemoteObject.prototype = {
                 return;
             }
 
-            function setPropertyValue(propertyName, propertyValue)
-            {
-                this[propertyName] = propertyValue;
-            }
+            var setPropertyValueFunction = "function(a, b) { this[a] = b; }";
+
+            // Special case for NaN, Infinity and -Infinity
+            if (result.type === "number" && typeof result.value !== "number")
+                setPropertyValueFunction = "function(a) { this[a] = " + result.description + "; }";
 
             delete result.description; // Optimize on traffic.
-            RuntimeAgent.callFunctionOn(this._objectId, setPropertyValue.toString(), [{ value:name }, result], undefined, propertySetCallback.bind(this));
+            RuntimeAgent.callFunctionOn(this._objectId, setPropertyValueFunction, [{ value:name }, result], true, undefined, undefined, propertySetCallback.bind(this));
             if (result._objectId)
                 RuntimeAgent.releaseObject(result._objectId);
         }
@@ -260,7 +278,7 @@ WebInspector.RemoteObject.prototype = {
     },
 
     /**
-     * @param {function(DOMAgent.NodeId)} callback
+     * @param {function(?DOMAgent.NodeId)} callback
      */
     pushNodeToFrontend: function(callback)
     {
@@ -270,36 +288,63 @@ WebInspector.RemoteObject.prototype = {
             callback(0);
     },
 
-    /**
-     * @param {string} functionDeclaration
-     * @param {function(?WebInspector.RemoteObject)} callback
-     */
-    callFunction: function(functionDeclaration, callback)
+    highlightAsDOMNode: function()
     {
-        function mycallback(error, result, wasThrown)
-        {
-            callback((error || wasThrown) ? null : WebInspector.RemoteObject.fromPayload(result));
-        }
+        WebInspector.domAgent.highlightDOMNode(undefined, undefined, this._objectId);
+    },
 
-        RuntimeAgent.callFunctionOn(this._objectId, functionDeclaration.toString(), undefined, undefined, mycallback);
+    hideDOMNodeHighlight: function()
+    {
+        WebInspector.domAgent.hideDOMNodeHighlight();
     },
 
     /**
-     * @param {string} functionDeclaration
+     * @param {function(this:Object)} functionDeclaration
+     * @param {Array.<RuntimeAgent.CallArgument>=} args
+     * @param {function(?WebInspector.RemoteObject)=} callback
+     */
+    callFunction: function(functionDeclaration, args, callback)
+    {
+        /**
+         * @param {?Protocol.Error} error
+         * @param {RuntimeAgent.RemoteObject} result
+         * @param {boolean=} wasThrown
+         */
+        function mycallback(error, result, wasThrown)
+        {
+            if (!callback)
+                return;
+
+            callback((error || wasThrown) ? null : WebInspector.RemoteObject.fromPayload(result));
+        }
+
+        RuntimeAgent.callFunctionOn(this._objectId, functionDeclaration.toString(), args, true, undefined, undefined, mycallback);
+    },
+
+    /**
+     * @param {function(this:Object)} functionDeclaration
+     * @param {Array.<RuntimeAgent.CallArgument>|undefined} args
      * @param {function(*)} callback
      */
-    callFunctionJSON: function(functionDeclaration, callback)
+    callFunctionJSON: function(functionDeclaration, args, callback)
     {
+        /**
+         * @param {?Protocol.Error} error
+         * @param {RuntimeAgent.RemoteObject} result
+         * @param {boolean=} wasThrown
+         */
         function mycallback(error, result, wasThrown)
         {
             callback((error || wasThrown) ? null : result.value);
         }
 
-        RuntimeAgent.callFunctionOn(this._objectId, functionDeclaration.toString(), undefined, true, mycallback);
+        RuntimeAgent.callFunctionOn(this._objectId, functionDeclaration.toString(), args, true, true, false, mycallback);
     },
 
     release: function()
     {
+        if (!this._objectId)
+            return;
         RuntimeAgent.releaseObject(this._objectId);
     },
 
@@ -321,7 +366,7 @@ WebInspector.RemoteObject.prototype = {
 /**
  * @constructor
  * @param {string} name
- * @param {WebInspector.RemoteObject} value 
+ * @param {WebInspector.RemoteObject} value
  * @param {Object=} descriptor
  */
 WebInspector.RemoteObjectProperty = function(name, value, descriptor)
@@ -342,6 +387,18 @@ WebInspector.RemoteObjectProperty = function(name, value, descriptor)
 WebInspector.RemoteObjectProperty.fromPrimitiveValue = function(name, value)
 {
     return new WebInspector.RemoteObjectProperty(name, WebInspector.RemoteObject.fromPrimitiveValue(value));
+}
+
+/**
+ * @param {string} name
+ * @param {WebInspector.RemoteObject} value
+ * @return {WebInspector.RemoteObjectProperty}
+ */
+WebInspector.RemoteObjectProperty.fromScopeValue = function(name, value)
+{
+    var result = new WebInspector.RemoteObjectProperty(name, value);
+    result.writable = false;
+    return result;
 }
 
 // The below is a wrapper around a local object that provides an interface comaptible

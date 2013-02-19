@@ -29,6 +29,7 @@
 
 /**
  * @constructor
+ * @param {string|Element} title
  * @param {string=} subtitle
  */
 WebInspector.Section = function(title, subtitle)
@@ -211,9 +212,9 @@ WebInspector.Section.prototype = {
         this.expanded = !this.expanded;
     },
 
-    handleClick: function(e)
+    handleClick: function(event)
     {
         this.toggleExpanded();
-        e.stopPropagation();
+        event.consume();
     }
 }

@@ -40,11 +40,6 @@ WebInspector.ConsolePanel = function()
 }
 
 WebInspector.ConsolePanel.prototype = {
-    get toolbarItemLabel()
-    {
-        return WebInspector.UIString("Console");
-    },
-
     get statusBarItems()
     {
         return this._view.statusBarItems;
@@ -76,6 +71,9 @@ WebInspector.ConsolePanel.prototype = {
         delete this._searchRegex;
     },
 
+    /**
+     * @param {string} query
+     */
     performSearch: function(query)
     {
         WebInspector.searchController.updateSearchMatchesCount(0, this);
@@ -83,7 +81,7 @@ WebInspector.ConsolePanel.prototype = {
         this._searchRegex = createPlainTextSearchRegex(query, "gi");
 
         this._searchResults = [];
-        var messages = WebInspector.consoleView.messages;
+        var messages = WebInspector.console.messages;
         for (var i = 0; i < messages.length; i++) {
             if (messages[i].matchesRegex(this._searchRegex)) {
                 this._searchResults.push(messages[i]);
@@ -111,6 +109,7 @@ WebInspector.ConsolePanel.prototype = {
         if (index === -1)
             index = this._searchResults.length - 1;
         this._jumpToSearchResult(index);
+        return true;
     },
 
     _clearCurrentSearchResultHighlight: function()
@@ -127,6 +126,7 @@ WebInspector.ConsolePanel.prototype = {
     {
         this._clearCurrentSearchResultHighlight();
         this._currentSearchResultIndex = index;
+        WebInspector.searchController.updateCurrentMatchIndex(this._currentSearchResultIndex, this);
         this._searchResults[index].highlightSearchResults(this._searchRegex);
     },
 
@@ -150,7 +150,7 @@ WebInspector.ConsolePanel.prototype = {
         this._searchResults.length = 0;
         if (this.isShowing())
             WebInspector.searchController.updateSearchMatchesCount(0, this);
-    }
-}
+    },
 
-WebInspector.ConsolePanel.prototype.__proto__ = WebInspector.Panel.prototype;
+    __proto__: WebInspector.Panel.prototype
+}

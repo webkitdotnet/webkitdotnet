@@ -65,7 +65,7 @@ WebInspector.PropertiesSidebarPane.prototype = {
                 }
                 return result;
             }
-            object.callFunction(protoList, nodePrototypesReady.bind(this));
+            object.callFunction(protoList, undefined, nodePrototypesReady.bind(this));
             object.release();
         }
 
@@ -99,7 +99,7 @@ WebInspector.PropertiesSidebarPane.prototype = {
                 body.appendChild(section.element);
             }
         }
-    }
-}
+    },
 
-WebInspector.PropertiesSidebarPane.prototype.__proto__ = WebInspector.SidebarPane.prototype;
+    __proto__: WebInspector.SidebarPane.prototype
+}

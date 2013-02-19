@@ -38,6 +38,7 @@ WebInspector.TextEditorHighlighter = function(textModel, damageCallback)
     this._tokenizer = WebInspector.SourceTokenizer.Registry.getInstance().getTokenizer("text/html");
     this._damageCallback = damageCallback;
     this._highlightChunkLimit = 1000;
+    this._highlightLineLimit = 500;
 }
 
 WebInspector.TextEditorHighlighter._MaxLineCount = 10000;
@@ -53,6 +54,14 @@ WebInspector.TextEditorHighlighter.prototype = {
     set highlightChunkLimit(highlightChunkLimit)
     {
         this._highlightChunkLimit = highlightChunkLimit;
+    },
+
+    /**
+     * @param {number} highlightLineLimit
+     */
+    setHighlightLineLimit: function(highlightLineLimit)
+    {
+        this._highlightLineLimit = highlightLineLimit;
     },
 
     /**
@@ -175,11 +184,26 @@ WebInspector.TextEditorHighlighter.prototype = {
                 this._tokenizer.condition = JSON.parse(postConditionStringified);
 
                 // Highlight line.
+                state.ranges = state.ranges || [];
+                state.braces = state.braces || [];
                 do {
                     var newColumn = this._tokenizer.nextToken(lastHighlightedColumn);
                     var tokenType = this._tokenizer.tokenType;
-                    if (tokenType)
-                        state[lastHighlightedColumn] = { length: newColumn - lastHighlightedColumn, tokenType: tokenType };
+                    if (tokenType && lastHighlightedColumn < this._highlightLineLimit) {
+                        if (tokenType === "brace-start" || tokenType === "brace-end" || tokenType === "block-start" || tokenType === "block-end") {
+                            state.braces.push({
+                                startColumn: lastHighlightedColumn,
+                                endColumn: newColumn - 1,
+                                token: tokenType
+                            });
+                        } else {
+                            state.ranges.push({
+                                startColumn: lastHighlightedColumn,
+                                endColumn: newColumn - 1,
+                                token: tokenType
+                            });
+                        }
+                    }
                     lastHighlightedColumn = newColumn;
                     if (++tokensCount > this._highlightChunkLimit)
                         break;

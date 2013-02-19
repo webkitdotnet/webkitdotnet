@@ -79,11 +79,11 @@ WebInspector.ScopeChainSidebarPane.prototype = {
                     if (callFrame.this)
                         extraProperties = [ new WebInspector.RemoteObjectProperty("this", WebInspector.RemoteObject.fromPayload(callFrame.this)) ];
                     if (i == 0) {
-                        var details = WebInspector.debuggerModel.debuggerPausedDetails;
+                        var details = WebInspector.debuggerModel.debuggerPausedDetails();
                         var exception = details.reason === WebInspector.DebuggerModel.BreakReason.Exception ? details.auxData : 0;
                         if (exception) {
                             extraProperties = extraProperties || [];
-                            var exceptionObject = /** @type {RuntimeAgent.RemoteObject} */ exception;
+                            var exceptionObject = /** @type {RuntimeAgent.RemoteObject} */ (exception);
                             extraProperties.push(new WebInspector.RemoteObjectProperty("<exception>", WebInspector.RemoteObject.fromPayload(exceptionObject)));
                         }
                     }
@@ -95,6 +95,7 @@ WebInspector.ScopeChainSidebarPane.prototype = {
                     break;
                 case "catch":
                     title = WebInspector.UIString("Catch");
+                    subtitle = null;
                     break;
                 case "with":
                     title = WebInspector.UIString("With Block");
@@ -111,20 +112,23 @@ WebInspector.ScopeChainSidebarPane.prototype = {
             section.editInSelectedCallFrameWhenPaused = true;
             section.pane = this;
 
-            if (!foundLocalScope || scope.type === "local" || title in this._expandedSections)
+            if (scope.type === "global")
+                section.expanded = false;
+            else if (!foundLocalScope || scope.type === "local" || title in this._expandedSections)
                 section.expanded = true;
 
             this._sections.push(section);
             this.bodyElement.appendChild(section.element);
         }
-    }
-}
+    },
 
-WebInspector.ScopeChainSidebarPane.prototype.__proto__ = WebInspector.SidebarPane.prototype;
+    __proto__: WebInspector.SidebarPane.prototype
+}
 
 /**
  * @constructor
  * @extends {WebInspector.ObjectPropertyTreeElement}
+ * @param {WebInspector.RemoteObjectProperty} property
  */
 WebInspector.ScopeVariableTreeElement = function(property)
 {
@@ -154,31 +158,9 @@ WebInspector.ScopeVariableTreeElement.prototype = {
         if ("_propertyIdentifier" in this)
             return this._propertyIdentifier;
         var section = this.treeOutline.section;
-        this._propertyIdentifier = section.title + ":" + (section.subtitle ? section.subtitle + ":" : "") + this.propertyPath;
+        this._propertyIdentifier = section.title + ":" + (section.subtitle ? section.subtitle + ":" : "") + this.propertyPath();
         return this._propertyIdentifier;
     },
 
-    get propertyPath()
-    {
-        if ("_propertyPath" in this)
-            return this._propertyPath;
-
-        var current = this;
-        var result;
-
-        do {
-            if (current.property) {
-                if (result)
-                    result = current.property.name + "." + result;
-                else
-                    result = current.property.name;
-            }
-            current = current.parent;
-        } while (current && !current.root);
-
-        this._propertyPath = result;
-        return result;
-    }
+    __proto__: WebInspector.ObjectPropertyTreeElement.prototype
 }
-
-WebInspector.ScopeVariableTreeElement.prototype.__proto__ = WebInspector.ObjectPropertyTreeElement.prototype;

@@ -33,7 +33,9 @@ var Preferences = {
     maxInlineTextChildLength: 80,
     minConsoleHeight: 75,
     minSidebarWidth: 100,
+    minSidebarHeight: 75,
     minElementsSidebarWidth: 200,
+    minElementsSidebarHeight: 200,
     minScriptsSidebarWidth: 200,
     styleRulesExpandedState: {},
     showMissingLocalizedStrings: false,
@@ -41,18 +43,26 @@ var Preferences = {
     sharedWorkersDebugNote: undefined,
     localizeUI: true,
     exposeDisableCache: false,
-    exposeWorkersInspection: false,
     applicationTitle: "Web Inspector - %s",
-    showHeapSnapshotObjectsHiddenProperties: false,
-    showDockToRight: false
+    showDockToRight: false,
+    exposeFileSystemInspection: false,
+    experimentsEnabled: true
 }
 
 var Capabilities = {
     samplingCPUProfiler: false,
     debuggerCausesRecompilation: true,
+    separateScriptCompilationAndExecutionEnabled: false,
     profilerCausesRecompilation: true,
-    nativeInstrumentationEnabled: false,
-    heapProfilerPresent: false
+    heapProfilerPresent: false,
+    canOverrideDeviceMetrics: false,
+    timelineSupportsFrameInstrumentation: false,
+    timelineCanMonitorMainThread: false,
+    canOverrideGeolocation: false,
+    canOverrideDeviceOrientation: false,
+    canShowDebugBorders: false,
+    canShowFPSCounter: false,
+    canContinuouslyPaint: false
 }
 
 /**
@@ -62,7 +72,7 @@ WebInspector.Settings = function()
 {
     this._eventSupport = new WebInspector.Object();
 
-    this.colorFormat = this.createSetting("colorFormat", "hex");
+    this.colorFormat = this.createSetting("colorFormat", "original");
     this.consoleHistory = this.createSetting("consoleHistory", []);
     this.debuggerEnabled = this.createSetting("debuggerEnabled", false);
     this.domWordWrap = this.createSetting("domWordWrap", true);
@@ -86,16 +96,33 @@ WebInspector.Settings = function()
     this.cacheDisabled = this.createSetting("cacheDisabled", false);
     this.overrideUserAgent = this.createSetting("overrideUserAgent", "");
     this.userAgent = this.createSetting("userAgent", "");
-    this.showScriptFolders = this.createSetting("showScriptFolders", true);
-    this.dockToRight = this.createSetting("dockToRight", false);
+    this.deviceMetrics = this.createSetting("deviceMetrics", "");
+    this.deviceFitWindow = this.createSetting("deviceFitWindow", false);
     this.emulateTouchEvents = this.createSetting("emulateTouchEvents", false);
     this.showPaintRects = this.createSetting("showPaintRects", false);
+    this.continuousPainting = this.createSetting("continuousPainting", false);
+    this.showDebugBorders = this.createSetting("showDebugBorders", false);
+    this.showFPSCounter = this.createSetting("showFPSCounter", false);
+    this.showShadowDOM = this.createSetting("showShadowDOM", false);
     this.zoomLevel = this.createSetting("zoomLevel", 0);
-
-    // If there are too many breakpoints in a storage, it is likely due to a recent bug that caused
-    // periodical breakpoints duplication leading to inspector slowness.
-    if (window.localStorage.breakpoints && window.localStorage.breakpoints.length > 500000)
-        delete window.localStorage.breakpoints;
+    this.savedURLs = this.createSetting("savedURLs", {});
+    this.javaScriptDisabled = this.createSetting("javaScriptDisabled", false);
+    this.geolocationOverride = this.createSetting("geolocationOverride", "");
+    this.deviceOrientationOverride = this.createSetting("deviceOrientationOverride", "");
+    this.showHeapSnapshotObjectsHiddenProperties = this.createSetting("showHeaSnapshotObjectsHiddenProperties", false);
+    this.showNativeSnapshotUninstrumentedSize = this.createSetting("showNativeSnapshotUninstrumentedSize", false);
+    this.searchInContentScripts = this.createSetting("searchInContentScripts", false);
+    this.textEditorIndent = this.createSetting("textEditorIndent", "    ");
+    this.lastDockState = this.createSetting("lastDockState", "");
+    this.cssReloadEnabled = this.createSetting("cssReloadEnabled", false);
+    this.cssReloadTimeout = this.createSetting("cssReloadTimeout", 1000);
+    this.showCpuOnTimelineRuler = this.createSetting("showCpuOnTimelineRuler", false);
+    this.showMetricsRulers = this.createSetting("showMetricsRulers", false);
+    this.emulatedCSSMedia = this.createSetting("emulatedCSSMedia", "print");
+    this.showToolbarIcons = this.createSetting("showToolbarIcons", false);
+    this.workerInspectorWidth = this.createSetting("workerInspectorWidth", 600);
+    this.workerInspectorHeight = this.createSetting("workerInspectorHeight", 600);
+    this.messageURLFilters = this.createSetting("messageURLFilters", {});
 }
 
 WebInspector.Settings.prototype = {
@@ -174,19 +201,27 @@ WebInspector.ExperimentsSettings = function()
     this._enabledForTest = {};
     
     // Add currently running experiments here.
-    this.sourceFrameAlwaysEditable = this._createExperiment("sourceFrameAlwaysEditable", "Make resources always editable");
-    this.timelineStartAtZero = this._createExperiment("timelineStartAtZero", "Enable start at zero mode in Timeline panel");
-    // FIXME: Enable http/tests/inspector/indexeddb/resources-panel.html when removed from experiments.
-    this.showIndexedDB = this._createExperiment("showIndexedDB", "Show IndexedDB in Resources panel");
-    this.debugCSS = this._createExperiment("debugCSS", "Load CSS via link tags for debugging");
-    this.showShadowDOM = this._createExperiment("showShadowDOM", "Show shadow DOM");
+    this.snippetsSupport = this._createExperiment("snippetsSupport", "Snippets support");
+    this.nativeMemorySnapshots = this._createExperiment("nativeMemorySnapshots", "Native memory profiling");
+    this.liveNativeMemoryChart = this._createExperiment("liveNativeMemoryChart", "Live native memory chart");
+    this.nativeMemoryTimeline = this._createExperiment("nativeMemoryTimeline", "Native memory timeline");
+    this.fileSystemInspection = this._createExperiment("fileSystemInspection", "FileSystem inspection");
+    this.canvasInspection = this._createExperiment("canvasInspection ", "Canvas inspection");
+    this.sass = this._createExperiment("sass", "Support for Sass");
+    this.codemirror = this._createExperiment("codemirror", "Use CodeMirror editor");
+    this.cssRegions = this._createExperiment("cssRegions", "CSS Regions Support");
+    this.showOverridesInDrawer = this._createExperiment("showOverridesInDrawer", "Show Overrides in drawer");
+    this.fileSystemProject = this._createExperiment("fileSystemProject", "File system folders in Sources Panel");
+    this.horizontalPanelSplit = this._createExperiment("horizontalPanelSplit", "Allow horizontal split in Elements and Sources panels");
+    this.showWhitespaceInEditor = this._createExperiment("showWhitespaceInEditor", "Show whitespace characters in editor");
+    this.textEditorSmartBraces = this._createExperiment("textEditorSmartBraces", "Enable smart braces in text editor");
 
     this._cleanUpSetting();
 }
 
 WebInspector.ExperimentsSettings.prototype = {
     /**
-     * @type {Array.<WebInspector.Experiment>}
+     * @return {Array.<WebInspector.Experiment>}
      */
     get experiments()
     {
@@ -194,11 +229,11 @@ WebInspector.ExperimentsSettings.prototype = {
     },
     
     /**
-     * @type {boolean}
+     * @return {boolean}
      */
     get experimentsEnabled()
     {
-        return "experiments" in WebInspector.queryParamsObject;
+        return Preferences.experimentsEnabled || ("experiments" in WebInspector.queryParamsObject);
     },
     
     /**
@@ -310,6 +345,57 @@ WebInspector.Experiment.prototype = {
     enableForTest: function()
     {
         this._experimentsSettings._enableForTest(this._name);
+    }
+}
+
+/**
+ * @constructor
+ */
+WebInspector.VersionController = function()
+{
+}
+
+WebInspector.VersionController.currentVersion = 1;
+
+WebInspector.VersionController.prototype = {
+    updateVersion: function()
+    {
+        var versionSetting = WebInspector.settings.createSetting("inspectorVersion", 0);
+        var currentVersion = WebInspector.VersionController.currentVersion;
+        var oldVersion = versionSetting.get();
+        var methodsToRun = this._methodsToRunToUpdateVersion(oldVersion, currentVersion);
+        for (var i = 0; i < methodsToRun.length; ++i)
+            this[methodsToRun[i]].call(this);
+        versionSetting.set(currentVersion);
+    },
+
+    /**
+     * @param {number} oldVersion
+     * @param {number} currentVersion
+     */
+    _methodsToRunToUpdateVersion: function(oldVersion, currentVersion)
+    {
+        var result = [];
+        for (var i = oldVersion; i < currentVersion; ++i)
+            result.push("_updateVersionFrom" + i + "To" + (i + 1));
+        return result;
+    },
+
+    _updateVersionFrom0To1: function()
+    {
+        this._clearBreakpointsWhenTooMany(WebInspector.settings.breakpoints, 500000);
+    },
+
+    /**
+     * @param {WebInspector.Setting} breakpointsSetting
+     * @param {number} maxBreakpointsCount
+     */
+    _clearBreakpointsWhenTooMany: function(breakpointsSetting, maxBreakpointsCount)
+    {
+        // If there are too many breakpoints in a storage, it is likely due to a recent bug that caused
+        // periodical breakpoints duplication leading to inspector slowness.
+        if (breakpointsSetting.get().length > maxBreakpointsCount)
+            breakpointsSetting.set([]);
     }
 }
 

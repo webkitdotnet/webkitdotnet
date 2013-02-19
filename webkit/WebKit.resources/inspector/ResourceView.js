@@ -44,32 +44,32 @@ WebInspector.ResourceView.prototype = {
     hasContent: function()
     {
         return false;
-    }
+    },
+
+    __proto__: WebInspector.View.prototype
 }
 
-WebInspector.ResourceView.prototype.__proto__ = WebInspector.View.prototype;
-
+/**
+ * @param {WebInspector.Resource} resource
+ */
 WebInspector.ResourceView.hasTextContent = function(resource)
 {
-    switch (resource.category) {
-    case WebInspector.resourceCategories.documents:
-    case WebInspector.resourceCategories.scripts:
-    case WebInspector.resourceCategories.xhr:
-    case WebInspector.resourceCategories.stylesheets:
-        return true;
-    case WebInspector.resourceCategories.other:
+    if (resource.type.isTextType())
+        return true; 
+    if (resource.type === WebInspector.resourceTypes.Other)
         return resource.content && !resource.contentEncoded;
-    default:
-        return false;
-    }
+    return false;
 }
 
+/**
+ * @param {WebInspector.Resource} resource
+ */
 WebInspector.ResourceView.nonSourceViewForResource = function(resource)
 {
-    switch (resource.category) {
-    case WebInspector.resourceCategories.images:
+    switch (resource.type) {
+    case WebInspector.resourceTypes.Image:
         return new WebInspector.ImageView(resource);
-    case WebInspector.resourceCategories.fonts:
+    case WebInspector.resourceTypes.Font:
         return new WebInspector.FontView(resource);
     default:
         return new WebInspector.ResourceView(resource);
@@ -83,19 +83,7 @@ WebInspector.ResourceView.nonSourceViewForResource = function(resource)
 WebInspector.ResourceSourceFrame = function(resource)
 {
     this._resource = resource;
-    WebInspector.SourceFrame.call(this, resource.url);
-}
-
-//This is a map from resource.type to mime types
-//found in WebInspector.SourceTokenizer.Registry.
-WebInspector.ResourceSourceFrame.DefaultMIMETypeForResourceType = {
-    0: "text/html",
-    1: "text/css",
-    4: "text/javascript"
-}
-
-WebInspector.ResourceSourceFrame.mimeTypeForResource = function(resource) {
-    return WebInspector.ResourceSourceFrame.DefaultMIMETypeForResourceType[resource.type] || resource.mimeType;
+    WebInspector.SourceFrame.call(this, resource);
 }
 
 WebInspector.ResourceSourceFrame.prototype = {
@@ -104,107 +92,12 @@ WebInspector.ResourceSourceFrame.prototype = {
         return this._resource;
     },
 
-    requestContent: function(callback)
+    populateTextAreaContextMenu: function(contextMenu, lineNumber)
     {
-        function contentLoaded(text)
-        {
-            var mimeType = WebInspector.ResourceSourceFrame.mimeTypeForResource(this.resource);
-            callback(mimeType, text);
-        }
-
-        this.resource.requestContent(contentLoaded.bind(this));
+        contextMenu.appendApplicableItems(this._resource);
+        if (this._resource.request)
+            contextMenu.appendApplicableItems(this._resource.request);
     },
 
-    suggestedFileName: function()
-    {
-        return this.resource.displayName;
-    }
+    __proto__: WebInspector.SourceFrame.prototype
 }
-
-WebInspector.ResourceSourceFrame.prototype.__proto__ = WebInspector.SourceFrame.prototype;
-
-/**
- * @constructor
- * @extends {WebInspector.ResourceSourceFrame}
- */
-WebInspector.EditableResourceSourceFrame = function(resource)
-{
-    WebInspector.ResourceSourceFrame.call(this, resource);
-}
-
-WebInspector.EditableResourceSourceFrame.prototype = {
-    canEditSource: function()
-    {
-        return this.resource.isEditable() && !this._commitEditingInProgress;
-    },
-
-    editContent: function(newText, callback)
-    {
-        this._clearIncrementalUpdateTimer();
-        var majorChange = true;
-        this.resource.setContent(newText, majorChange, callback);
-    },
-
-    cancelEditing: function()
-    {
-        if (WebInspector.experimentsSettings.sourceFrameAlwaysEditable.isEnabled())
-            return false;
-
-        this._clearIncrementalUpdateTimer();
-        const majorChange = false;
-        if (this._viewerState)
-            this.resource.setContent(this._viewerState.textModelContent, majorChange);
-        WebInspector.SourceFrame.prototype.cancelEditing.call(this);
-        return true;
-    },
-
-    afterTextChanged: function(oldRange, newRange)
-    {
-        function commitIncrementalEdit()
-        {
-            var majorChange = false;
-            this.resource.setContent(this._textModel.text, majorChange, function() {});
-        }
-        const updateTimeout = 200;
-        this._incrementalUpdateTimer = setTimeout(commitIncrementalEdit.bind(this), updateTimeout);
-    },
-
-    _clearIncrementalUpdateTimer: function()
-    {
-        if (this._incrementalUpdateTimer)
-            clearTimeout(this._incrementalUpdateTimer);
-        delete this._incrementalUpdateTimer;
-    },
-}
-
-WebInspector.EditableResourceSourceFrame.prototype.__proto__ = WebInspector.ResourceSourceFrame.prototype;
-
-/**
- * @extends {WebInspector.ResourceSourceFrame}
- * @constructor
- */
-WebInspector.ResourceRevisionSourceFrame = function(revision)
-{
-    WebInspector.ResourceSourceFrame.call(this, revision.resource);
-    this._revision = revision;
-}
-
-WebInspector.ResourceRevisionSourceFrame.prototype = {
-    get resource()
-    {
-        return this._revision.resource;
-    },
-
-    requestContent: function(callback)
-    {
-        function contentLoaded(text)
-        {
-            var mimeType = WebInspector.ResourceSourceFrame.mimeTypeForResource(this.resource);
-            callback(mimeType, text);
-        }
-
-        this._revision.requestContent(contentLoaded.bind(this));
-    },
-}
-
-WebInspector.ResourceRevisionSourceFrame.prototype.__proto__ = WebInspector.ResourceSourceFrame.prototype;

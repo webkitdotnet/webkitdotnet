@@ -31,6 +31,11 @@
 /**
  * @constructor
  * @extends {WebInspector.PopoverHelper}
+ * @param {Element} panelElement
+ * @param {function(Element, Event):Element|undefined} getAnchor
+ * @param {function(Element, function(WebInspector.RemoteObject, boolean, Element=):undefined, string):undefined} queryObject
+ * @param {function()=} onHide
+ * @param {boolean=} disableOnClick
  */
 WebInspector.ObjectPopoverHelper = function(panelElement, getAnchor, queryObject, onHide, disableOnClick)
 {
@@ -42,9 +47,18 @@ WebInspector.ObjectPopoverHelper = function(panelElement, getAnchor, queryObject
 };
 
 WebInspector.ObjectPopoverHelper.prototype = {
+    /**
+     * @param {Element} element
+     * @param {WebInspector.Popover} popover
+     */
     _showObjectPopover: function(element, popover)
     {
-        function showObjectPopover(result, wasThrown)
+        /**
+         * @param {WebInspector.RemoteObject} result
+         * @param {boolean} wasThrown
+         * @param {Element=} anchorOverride
+         */
+        function showObjectPopover(result, wasThrown, anchorOverride)
         {
             if (popover.disposed)
                 return;
@@ -52,6 +66,9 @@ WebInspector.ObjectPopoverHelper.prototype = {
                 this.hidePopover();
                 return;
             }
+
+            var anchorElement = anchorOverride || element;
+
             var popoverContentElement = null;
             if (result.type !== "object") {
                 popoverContentElement = document.createElement("span");
@@ -72,24 +89,26 @@ WebInspector.ObjectPopoverHelper.prototype = {
                         var functionName = title.createChild("span", "function-name");
                         functionName.textContent = response.name || response.inferredName || response.displayName || WebInspector.UIString("(anonymous function)");
 
-                        this._linkifier = WebInspector.debuggerPresentationModel.createLinkifier();
-                        var link = this._linkifier.linkifyRawLocation(response.location, "function-location-link");
+                        this._linkifier = new WebInspector.Linkifier();
+                        var rawLocation = /** @type {WebInspector.DebuggerModel.Location} */ (response.location);
+                        var link = this._linkifier.linkifyRawLocation(rawLocation, "function-location-link");
                         if (link)
                             title.appendChild(link);
 
                         container.appendChild(popoverContentElement);
 
-                        popover.show(container, element);
+                        popover.show(container, anchorElement);
                     }
                     DebuggerAgent.getFunctionDetails(result.objectId, didGetDetails.bind(this));
                     return;
                 }
                 if (result.type === "string")
                     popoverContentElement.textContent = "\"" + popoverContentElement.textContent + "\"";
-                popover.show(popoverContentElement, element);
+                popover.show(popoverContentElement, anchorElement);
             } else {
+                if (result.subtype === "node")
+                    result.highlightAsDOMNode();
                 popoverContentElement = document.createElement("div");
-
                 this._titleElement = document.createElement("div");
                 this._titleElement.className = "source-frame-popover-title monospace";
                 this._titleElement.textContent = result.description;
@@ -108,7 +127,7 @@ WebInspector.ObjectPopoverHelper.prototype = {
 
                 const popoverWidth = 300;
                 const popoverHeight = 250;
-                popover.show(popoverContentElement, element, popoverWidth, popoverHeight);
+                popover.show(popoverContentElement, anchorElement, popoverWidth, popoverHeight);
             }
         }
         this._queryObject(element, showObjectPopover.bind(this), this._popoverObjectGroup);
@@ -116,6 +135,7 @@ WebInspector.ObjectPopoverHelper.prototype = {
 
     _onHideObjectPopover: function()
     {
+        WebInspector.domAgent.hideDOMNodeHighlight();
         if (this._linkifier) {
             this._linkifier.reset();
             delete this._linkifier;
@@ -135,7 +155,7 @@ WebInspector.ObjectPopoverHelper.prototype = {
             }
         }
         this._sectionUpdateProperties(properties, rootTreeElementConstructor, rootPropertyComparer);
-    }
-}
+    },
 
-WebInspector.ObjectPopoverHelper.prototype.__proto__ = WebInspector.PopoverHelper.prototype;
+    __proto__: WebInspector.PopoverHelper.prototype
+}

@@ -76,6 +76,20 @@ WebInspector.DOMPresentationUtils.decorateNodeLabel = function(node, parentEleme
     parentElement.title = title;
 }
 
+/**
+ * @param {Element} container
+ * @param {string} nodeTitle
+ */
+WebInspector.DOMPresentationUtils.createSpansForNodeTitle = function(container, nodeTitle)
+{
+    var match = nodeTitle.match(/([^#.]+)(#[^.]+)?(\..*)?/);
+    container.createChild("span", "webkit-html-tag-name").textContent = match[1];
+    if (match[2])
+        container.createChild("span", "webkit-html-attribute-value").textContent = match[2];
+    if (match[3])
+        container.createChild("span", "webkit-html-attribute-name").textContent = match[3];
+}
+
 WebInspector.DOMPresentationUtils.linkifyNodeReference = function(node)
 {
     var link = document.createElement("span");
@@ -83,7 +97,7 @@ WebInspector.DOMPresentationUtils.linkifyNodeReference = function(node)
     WebInspector.DOMPresentationUtils.decorateNodeLabel(node, link);
 
     link.addEventListener("click", WebInspector.domAgent.inspectElement.bind(WebInspector.domAgent, node.id), false);
-    link.addEventListener("mouseover", WebInspector.domAgent.highlightDOMNode.bind(WebInspector.domAgent, node.id, ""), false);
+    link.addEventListener("mouseover", WebInspector.domAgent.highlightDOMNode.bind(WebInspector.domAgent, node.id, "", undefined), false);
     link.addEventListener("mouseout", WebInspector.domAgent.hideDOMNodeHighlight.bind(WebInspector.domAgent), false);
 
     return link;
@@ -95,4 +109,52 @@ WebInspector.DOMPresentationUtils.linkifyNodeById = function(nodeId)
     if (!node)
         return document.createTextNode(WebInspector.UIString("<node>"));
     return WebInspector.DOMPresentationUtils.linkifyNodeReference(node);
+}
+
+/**
+ * @param {string} imageURL
+ * @param {boolean} showDimensions
+ * @param {function(Element=)} userCallback
+ * @param {Object=} precomputedDimensions
+ */
+WebInspector.DOMPresentationUtils.buildImagePreviewContents = function(imageURL, showDimensions, userCallback, precomputedDimensions)
+{
+    var resource = WebInspector.resourceTreeModel.resourceForURL(imageURL);
+    if (!resource) {
+        userCallback();
+        return;
+    }
+
+    var imageElement = document.createElement("img");
+    imageElement.addEventListener("load", buildContent, false);
+    imageElement.addEventListener("error", errorCallback, false);
+    resource.populateImageSource(imageElement);
+
+    function errorCallback()
+    {
+        // Drop the event parameter when invoking userCallback.
+        userCallback();
+    }
+
+    function buildContent()
+    {
+        var container = document.createElement("table");
+        container.className = "image-preview-container";
+        var naturalWidth = precomputedDimensions ? precomputedDimensions.naturalWidth : imageElement.naturalWidth;
+        var naturalHeight = precomputedDimensions ? precomputedDimensions.naturalHeight : imageElement.naturalHeight;
+        var offsetWidth = precomputedDimensions ? precomputedDimensions.offsetWidth : naturalWidth;
+        var offsetHeight = precomputedDimensions ? precomputedDimensions.offsetHeight : naturalHeight;
+        var description;
+        if (showDimensions) {
+            if (offsetHeight === naturalHeight && offsetWidth === naturalWidth)
+                description = WebInspector.UIString("%d \xd7 %d pixels", offsetWidth, offsetHeight);
+            else
+                description = WebInspector.UIString("%d \xd7 %d pixels (Natural: %d \xd7 %d pixels)", offsetWidth, offsetHeight, naturalWidth, naturalHeight);
+        }
+
+        container.createChild("tr").createChild("td", "image-container").appendChild(imageElement);
+        if (description)
+            container.createChild("tr").createChild("td").createChild("span", "description").textContent = description;
+        userCallback(container);
+    }
 }

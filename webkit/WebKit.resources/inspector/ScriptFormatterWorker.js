@@ -130,13 +130,13 @@ function outline(params)
             column = newColumn;
 
             if (processedChunkCharacters >= chunkSize) {
-                postMessage({ chunk: outlineChunk, id: params.id, total: chunkCount, index: currentChunk++ });
+                postMessage({ chunk: outlineChunk, total: chunkCount, index: currentChunk++ });
                 outlineChunk = [];
                 processedChunkCharacters = 0;
             }
         } while (column < line.length);
     }
-    postMessage({ chunk: outlineChunk, id: params.id, total: chunkCount, index: chunkCount });
+    postMessage({ chunk: outlineChunk, total: chunkCount, index: chunkCount });
 }
 
 function formatScript(content, mapping, offset, formattedOffset, indentString)
@@ -218,10 +218,10 @@ HTMLScriptFormatter.prototype = {
 
     styleSheetEnded: function(cursor)
     {
-    }
-}
+    },
 
-HTMLScriptFormatter.prototype.__proto__ = WebInspector.SourceHTMLTokenizer.prototype;
+    __proto__: WebInspector.SourceHTMLTokenizer.prototype
+}
 
 function require()
 {

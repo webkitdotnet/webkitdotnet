@@ -180,8 +180,6 @@ WebInspector.ApplicationCacheItemsView.prototype = {
         this._size = applicationCache.size;
         this._resources = applicationCache.resources;
 
-        var lastPathComponent = applicationCache.lastPathComponent;
-
         if (!this._dataGrid)
             this._createDataGrid();
 
@@ -235,7 +233,7 @@ WebInspector.ApplicationCacheItemsView.prototype = {
         }
 
         this._resources.sort(comparator);
-        this._dataGrid.removeChildren();
+        this._dataGrid.rootNode().removeChildren();
 
         var nodeToSelect;
         for (var i = 0; i < this._resources.length; ++i) {
@@ -247,15 +245,15 @@ WebInspector.ApplicationCacheItemsView.prototype = {
             var node = new WebInspector.DataGridNode(data);
             node.resource = resource;
             node.selectable = true;
-            this._dataGrid.appendChild(node);
+            this._dataGrid.rootNode().appendChild(node);
             if (resource === selectedResource) {
                 nodeToSelect = node;
                 nodeToSelect.selected = true;
             }
         }
 
-        if (!nodeToSelect && this._dataGrid.children.length)
-            this._dataGrid.children[0].selected = true;
+        if (!nodeToSelect && this._dataGrid.rootNode().children.length)
+            this._dataGrid.rootNode().children[0].selected = true;
     },
 
     _deleteButtonClicked: function(event)
@@ -273,6 +271,7 @@ WebInspector.ApplicationCacheItemsView.prototype = {
         // InspectorBackend.deleteCachedResource(...)
         // this._update();
     },
+
+    __proto__: WebInspector.View.prototype
 }
 
-WebInspector.ApplicationCacheItemsView.prototype.__proto__ = WebInspector.View.prototype;

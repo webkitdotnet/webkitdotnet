@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Google Inc. All rights reserved.
+ * Copyright (C) 2012 Google Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,7 +32,6 @@ function defineCommonExtensionSymbols(apiPrivate)
 {
     if (!apiPrivate.audits)
         apiPrivate.audits = {};
-
     apiPrivate.audits.Severity = {
         Info: "info",
         Warning: "warning",
@@ -48,13 +47,22 @@ function defineCommonExtensionSymbols(apiPrivate)
         Warning: "warning",
         Error: "error"
     };
+
+    if (!apiPrivate.panels)
+        apiPrivate.panels = {};
+    apiPrivate.panels.SearchAction = {
+        CancelSearch: "cancelSearch",
+        PerformSearch: "performSearch",
+        NextSearchResult: "nextSearchResult",
+        PreviousSearchResult: "previousSearchResult"
+    };
+
     apiPrivate.Events = {
         AuditStarted: "audit-started-",
         ButtonClicked: "button-clicked-",
         ConsoleMessageAdded: "console-message-added",
         ElementsPanelObjectSelected: "panel-objectSelected-elements",
         NetworkRequestFinished: "network-request-finished",
-        Reset: "reset",
         OpenResource: "open-resource",
         PanelSearch: "panel-search-",
         Reload: "Reload",
@@ -64,6 +72,7 @@ function defineCommonExtensionSymbols(apiPrivate)
         ViewShown: "view-shown-",
         ViewHidden: "view-hidden-"
     };
+
     apiPrivate.Commands = {
         AddAuditCategory: "addAuditCategory",
         AddAuditResult: "addAuditResult",
@@ -84,8 +93,10 @@ function defineCommonExtensionSymbols(apiPrivate)
         SetSidebarContent: "setSidebarContent",
         SetSidebarHeight: "setSidebarHeight",
         SetSidebarPage: "setSidebarPage",
+        ShowPanel: "showPanel",
         StopAuditCategoryRun: "stopAuditCategoryRun",
         Unsubscribe: "unsubscribe",
+        UpdateAuditProgress: "updateAuditProgress",
         UpdateButton: "updateButton",
         InspectedURLChanged: "inspectedURLChanged"
     };
@@ -100,6 +111,7 @@ defineCommonExtensionSymbols(apiPrivate);
 
 var commands = apiPrivate.Commands;
 var events = apiPrivate.Events;
+var userAction = false;
 
 // Here and below, all constructors are private to API implementation.
 // For a public type Foo, if internal fields are present, these are on
@@ -170,8 +182,6 @@ function InspectorExtensionAPI()
     defineDeprecatedProperty(this, "webInspector", "resources", "network");
     this.timeline = new Timeline();
     this.console = new ConsoleAPI();
-
-    this.onReset = new EventSink(events.Reset);
 }
 
 /**
@@ -305,13 +315,24 @@ Panels.prototype = {
         else {
             function callbackWrapper(message)
             {
-                callback.call(null, message.resource, message.lineNumber);
+                // Allow the panel to show itself when handling the event.
+                userAction = true;
+                try {
+                    callback.call(null, new Resource(message.resource), message.lineNumber);
+                } finally {
+                    userAction = false;
+                }
             }
             extensionServer.registerHandler(events.OpenResource, callbackWrapper);
         }
         // Only send command if we either removed an existing handler or added handler and had none before.
         if (hadHandler === !callback)
             extensionServer.sendRequest({ command: commands.SetOpenResourceHandler, "handlerPresent": !!callback });
+    },
+
+    get SearchAction()
+    {
+        return apiPrivate.panels.SearchAction;
     }
 }
 
@@ -325,7 +346,7 @@ function ExtensionViewImpl(id)
     function dispatchShowEvent(message)
     {
         var frameIndex = message.arguments[0];
-        this._fire(window.top.frames[frameIndex]);
+        this._fire(window.parent.frames[frameIndex]);
     }
     this.onShown = new EventSink(events.ViewShown + id, dispatchShowEvent);
     this.onHidden = new EventSink(events.ViewHidden + id);
@@ -354,10 +375,10 @@ PanelWithSidebarImpl.prototype = {
             callback(new ExtensionSidebarPane(id));
         }
         extensionServer.sendRequest(request, callback && callbackWrapper);
-    }
-}
+    },
 
-PanelWithSidebarImpl.prototype.__proto__ = ExtensionViewImpl.prototype;
+    __proto__: ExtensionViewImpl.prototype
+}
 
 /**
  * @constructor
@@ -394,10 +415,22 @@ ExtensionPanelImpl.prototype = {
         };
         extensionServer.sendRequest(request);
         return new Button(id);
-    }
-};
+    },
 
-ExtensionPanelImpl.prototype.__proto__ = ExtensionViewImpl.prototype;
+    show: function()
+    {
+        if (!userAction)
+            return;
+
+        var request = {
+            command: commands.ShowPanel,
+            id: this._id
+        };
+        extensionServer.sendRequest(request);
+    },
+
+    __proto__: ExtensionViewImpl.prototype
+}
 
 /**
  * @constructor
@@ -414,9 +447,18 @@ ExtensionSidebarPaneImpl.prototype = {
         extensionServer.sendRequest({ command: commands.SetSidebarHeight, id: this._id, height: height });
     },
 
-    setExpression: function(expression, rootTitle, callback)
+    setExpression: function(expression, rootTitle, evaluateOptions)
     {
-        extensionServer.sendRequest({ command: commands.SetSidebarContent, id: this._id, expression: expression, rootTitle: rootTitle, evaluateOnPage: true }, callback);
+        var request = {
+            command: commands.SetSidebarContent,
+            id: this._id,
+            expression: expression,
+            rootTitle: rootTitle,
+            evaluateOnPage: true,
+        };
+        if (typeof evaluateOptions === "object")
+            request.evaluateOptions = evaluateOptions;
+        extensionServer.sendRequest(request, extractCallbackArgument(arguments));
     },
 
     setObject: function(jsonObject, rootTitle, callback)
@@ -464,6 +506,8 @@ Audits.prototype = {
     addCategory: function(displayName, resultCount)
     {
         var id = "extension-audit-category-" + extensionServer.nextObjectId();
+        if (typeof resultCount !== "undefined")
+            console.warn("Passing resultCount to audits.addCategory() is deprecated. Use AuditResult.updateProgress() instead.");
         extensionServer.sendRequest({ command: commands.AddAuditCategory, id: id, displayName: displayName, resultCount: resultCount });
         return new AuditCategory(id);
     }
@@ -498,6 +542,8 @@ function AuditResultImpl(id)
     this.createURL = this._nodeFactory.bind(null, "url");
     this.createSnippet = this._nodeFactory.bind(null, "snippet");
     this.createText = this._nodeFactory.bind(null, "text");
+    this.createObject = this._nodeFactory.bind(null, "object");
+    this.createNode = this._nodeFactory.bind(null, "node");
 }
 
 AuditResultImpl.prototype = {
@@ -521,6 +567,11 @@ AuditResultImpl.prototype = {
     createResult: function()
     {
         return new AuditResultNode(Array.prototype.slice.call(arguments));
+    },
+
+    updateProgress: function(worked, totalWork)
+    {
+        extensionServer.sendRequest({ command: commands.UpdateAuditProgress, resultId: this._id, progress: worked / totalWork });
     },
 
     done: function()
@@ -600,13 +651,23 @@ InspectedWindow.prototype = {
         return extensionServer.sendRequest({ command: commands.Reload, options: options });
     },
 
-    eval: function(expression, callback)
+    eval: function(expression, evaluateOptions)
     {
+        var callback = extractCallbackArgument(arguments);
         function callbackWrapper(result)
         {
-            callback(result.value, result.isException);
+            if (result.isError || result.isException)
+                callback(undefined, result);
+            else
+                callback(result.value);
         }
-        return extensionServer.sendRequest({ command: commands.EvaluateOnInspectedPage, expression: expression }, callback && callbackWrapper);
+        var request = {
+            command: commands.EvaluateOnInspectedPage,
+            expression: expression
+        };
+        if (typeof evaluateOptions === "object")
+            request.evaluateOptions = evaluateOptions;
+        return extensionServer.sendRequest(request, callback && callbackWrapper);
     },
 
     getResources: function(callback)
@@ -684,10 +745,13 @@ function ExtensionServerClient()
     this._port.addEventListener("message", this._onMessage.bind(this), false);
     this._port.start();
 
-    top.postMessage("registerExtension", [ channel.port2 ], "*");
+    window.parent.postMessage("registerExtension", [ channel.port2 ], "*");
 }
 
 ExtensionServerClient.prototype = {
+    /**
+     * @param {function()=} callback
+     */
     sendRequest: function(message, callback)
     {
         if (typeof callback === "function")
@@ -784,6 +848,12 @@ function defineDeprecatedProperty(object, className, oldName, newName)
     object.__defineGetter__(oldName, getter);
 }
 
+function extractCallbackArgument(args)
+{
+    var lastArgument = args[args.length - 1];
+    return typeof lastArgument === "function" ? lastArgument : undefined;
+}
+
 var AuditCategory = declareInterfaceClass(AuditCategoryImpl);
 var AuditResult = declareInterfaceClass(AuditResultImpl);
 var Button = declareInterfaceClass(ButtonImpl);
@@ -795,7 +865,9 @@ var Request = declareInterfaceClass(RequestImpl);
 var Resource = declareInterfaceClass(ResourceImpl);
 var Timeline = declareInterfaceClass(TimelineImpl);
 
-var extensionServer = new ExtensionServerClient();
+// extensionServer is a closure variable defined by the glue below -- make sure we fail if it's not there.
+if (!extensionServer)
+    extensionServer = new ExtensionServerClient();
 
 return new InspectorExtensionAPI();
 }
@@ -814,6 +886,7 @@ function buildPlatformExtensionAPI(extensionInfo)
 function buildExtensionAPIInjectedScript(extensionInfo)
 {
     return "(function(injectedScriptHost, inspectedWindow, injectedScriptId){ " +
+        "var extensionServer;" +
         defineCommonExtensionSymbols.toString() + ";" +
         injectedExtensionAPI.toString() + ";" +
         buildPlatformExtensionAPI(extensionInfo) + ";" +

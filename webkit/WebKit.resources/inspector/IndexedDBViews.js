@@ -53,9 +53,13 @@ WebInspector.IDBDatabaseView = function(database)
     this._nameTreeElement.selectable = false;
     this._headersTreeOutline.appendChild(this._nameTreeElement);
 
-    this._versionTreeElement = new TreeElement("", null, false);
-    this._versionTreeElement.selectable = false;
-    this._headersTreeOutline.appendChild(this._versionTreeElement);
+    this._intVersionTreeElement = new TreeElement("", null, false);
+    this._intVersionTreeElement.selectable = false;
+    this._headersTreeOutline.appendChild(this._intVersionTreeElement);
+
+    this._stringVersionTreeElement = new TreeElement("", null, false);
+    this._stringVersionTreeElement.selectable = false;
+    this._headersTreeOutline.appendChild(this._stringVersionTreeElement);
 
     this.update(database);
 }
@@ -78,7 +82,8 @@ WebInspector.IDBDatabaseView.prototype = {
     {
         this._securityOriginTreeElement.title = this._formatHeader(WebInspector.UIString("Security origin"), this._database.databaseId.securityOrigin);
         this._nameTreeElement.title = this._formatHeader(WebInspector.UIString("Name"), this._database.databaseId.name);
-        this._versionTreeElement.title = this._formatHeader(WebInspector.UIString("Version"), this._database.version);
+        this._stringVersionTreeElement.title = this._formatHeader(WebInspector.UIString("String Version"), this._database.version);
+        this._intVersionTreeElement.title = this._formatHeader(WebInspector.UIString("Integer Version"), this._database.intVersion);
     },
 
     /**
@@ -89,9 +94,10 @@ WebInspector.IDBDatabaseView.prototype = {
         this._database = database;
         this._refreshDatabase();
     },
+
+    __proto__: WebInspector.View.prototype
 }
 
-WebInspector.IDBDatabaseView.prototype.__proto__ = WebInspector.View.prototype;
 
 /**
  * @constructor
@@ -125,6 +131,7 @@ WebInspector.IDBDataView = function(model, databaseId, objectStore, index)
     this._skipCount = 0;
 
     this.update(objectStore, index);
+    this._entries = [];
 }
 
 WebInspector.IDBDataView.prototype = {
@@ -140,13 +147,11 @@ WebInspector.IDBDataView.prototype = {
 
         var keyPath = this._isIndex ? this._index.keyPath : this._objectStore.keyPath;
         columns["key"] = {};
-        var keyColumnTitle = WebInspector.UIString("Key") + this._keyPathHeader(keyPath);
-        columns["key"].title = keyColumnTitle;
-
+        columns["key"].titleDOMFragment = this._keyColumnHeaderFragment(WebInspector.UIString("Key"), keyPath);
+        
         if (this._isIndex) {
             columns["primaryKey"] = {};
-            var primaryKeyColumnTitle = WebInspector.UIString("Primary key") + this._keyPathHeader(this._objectStore.keyPath);
-            columns["primaryKey"].title = primaryKeyColumnTitle;
+            columns["primaryKey"].titleDOMFragment = this._keyColumnHeaderFragment(WebInspector.UIString("Primary key"), this._objectStore.keyPath);
         }
 
         columns["value"] = {};
@@ -157,13 +162,46 @@ WebInspector.IDBDataView.prototype = {
     },
 
     /**
-     * @return {string}
+     * @param {string} prefix
+     * @param {*} keyPath
+     * @return {DocumentFragment}
      */
-    _keyPathHeader: function(keyPath)
+    _keyColumnHeaderFragment: function(prefix, keyPath)
     {
-        if (!keyPath)
-            return "";
-        return " (" + WebInspector.UIString("keyPath") + ": \"" + keyPath + "\")";
+        var keyColumnHeaderFragment = document.createDocumentFragment();
+        keyColumnHeaderFragment.appendChild(document.createTextNode(prefix));
+        if (keyPath === null)
+            return keyColumnHeaderFragment;
+        
+        keyColumnHeaderFragment.appendChild(document.createTextNode(" (" + WebInspector.UIString("Key path: ")));
+        if (keyPath instanceof Array) {
+            keyColumnHeaderFragment.appendChild(document.createTextNode("["));
+            for (var i = 0; i < keyPath.length; ++i) {
+                if (i != 0)
+                    keyColumnHeaderFragment.appendChild(document.createTextNode(", "));
+                keyColumnHeaderFragment.appendChild(this._keyPathStringFragment(keyPath[i]));
+            }
+            keyColumnHeaderFragment.appendChild(document.createTextNode("]"));
+        } else {
+            var keyPathString = /** @type {string} */ (keyPath);
+            keyColumnHeaderFragment.appendChild(this._keyPathStringFragment(keyPathString));
+        }
+        keyColumnHeaderFragment.appendChild(document.createTextNode(")"));
+        return keyColumnHeaderFragment;
+    },
+
+    /**
+     * @param {string} keyPathString
+     * @return {DocumentFragment}
+     */
+    _keyPathStringFragment: function(keyPathString)
+    {
+        var keyPathStringFragment = document.createDocumentFragment();
+        keyPathStringFragment.appendChild(document.createTextNode("\""));
+        var keyPathSpan = keyPathStringFragment.createChild("span", "source-code console-formatted-string");
+        keyPathSpan.textContent = keyPathString;
+        keyPathStringFragment.appendChild(document.createTextNode("\""));
+        return keyPathStringFragment;
     },
 
     /**
@@ -286,7 +324,8 @@ WebInspector.IDBDataView.prototype = {
          */
         function callback(entries, hasMore)
         {
-            this._dataGrid.removeChildren();
+            this.clear();
+            this._entries = entries;
             for (var i = 0; i < entries.length; ++i) {
                 var data = {};
                 data["number"] = i + skipCount;
@@ -295,9 +334,8 @@ WebInspector.IDBDataView.prototype = {
                 data["value"] = entries[i].value;
 
                 var primaryKey = JSON.stringify(this._isIndex ? entries[i].primaryKey : entries[i].key);
-                var valueTitle = this._objectStore.name + "[" + primaryKey + "]";
-                var node = new WebInspector.IDBDataGridNode(valueTitle, data);
-                this._dataGrid.appendChild(node);
+                var node = new WebInspector.IDBDataGridNode(data);
+                this._dataGrid.rootNode().appendChild(node);
             }
 
             this._pageBackButton.disabled = skipCount === 0;
@@ -319,22 +357,30 @@ WebInspector.IDBDataView.prototype = {
     get statusBarItems()
     {
         return [this._refreshButton.element];
-    }
-}
+    },
 
-WebInspector.IDBDataView.prototype.__proto__ = WebInspector.View.prototype;
+    clear: function()
+    {
+        this._dataGrid.rootNode().removeChildren();
+        for (var i = 0; i < this._entries.length; ++i) {
+            this._entries[i].key.release();
+            this._entries[i].primaryKey.release();
+            this._entries[i].value.release();
+        }
+        this._entries = [];
+    },
+
+    __proto__: WebInspector.View.prototype
+}
 
 /**
  * @constructor
  * @extends {WebInspector.DataGridNode}
- * @param {string} valueTitle
  * @param {*} data
  */
-WebInspector.IDBDataGridNode = function(valueTitle, data)
+WebInspector.IDBDataGridNode = function(data)
 {
     WebInspector.DataGridNode.call(this, data, false);
-
-    this._valueTitle = valueTitle;
     this.selectable = false;
 }
 
@@ -346,16 +392,13 @@ WebInspector.IDBDataGridNode.prototype = {
     {
         var cell = WebInspector.DataGridNode.prototype.createCell.call(this, columnIdentifier);
         var value = this.data[columnIdentifier];
-        
+
         switch (columnIdentifier) {
         case "value":
-            cell.removeChildren();
-            this._formatValue(cell, value);
-            break;
         case "key":
         case "primaryKey":
             cell.removeChildren();
-            this._formatValue(cell, new WebInspector.LocalJSONObject(value));
+            this._formatValue(cell, value);
             break;
         default:
         }
@@ -384,7 +427,8 @@ WebInspector.IDBDataGridNode.prototype = {
             contents.addStyleClass("primitive-value");
             contents.appendChild(document.createTextNode(value.description));
         }
-    }
-};
+    },
 
-WebInspector.IDBDataGridNode.prototype.__proto__ = WebInspector.DataGridNode.prototype;
+    __proto__: WebInspector.DataGridNode.prototype
+}
+

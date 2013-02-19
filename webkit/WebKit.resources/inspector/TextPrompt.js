@@ -30,8 +30,9 @@
 /**
  * @constructor
  * @extends WebInspector.Object
- * @param {function(WebInspector.TextPrompt, Range, boolean, function(Array.<string>=))} completions
- * @param {string} stopCharacters
+ * @implements {WebInspector.SuggestBoxDelegate}
+ * @param {function(Element, Range, boolean, function(Array.<string>, number=))} completions
+ * @param {string=} stopCharacters
  */
 WebInspector.TextPrompt = function(completions, stopCharacters)
 {
@@ -41,7 +42,7 @@ WebInspector.TextPrompt = function(completions, stopCharacters)
     this._proxyElement;
     this._proxyElementDisplay = "inline-block";
     this._loadCompletions = completions;
-    this._completionStopCharacters = stopCharacters;
+    this._completionStopCharacters = stopCharacters || " =:[({;,!+-*/&|^<>.";
     this._suggestForceable = true;
 }
 
@@ -51,6 +52,11 @@ WebInspector.TextPrompt.Events = {
 };
 
 WebInspector.TextPrompt.prototype = {
+    userEnteredText: function()
+    {
+        return this._userEnteredText;
+    },
+
     get proxyElement()
     {
         return this._proxyElement;
@@ -105,6 +111,7 @@ WebInspector.TextPrompt.prototype = {
         this._element = element;
 
         this._boundOnKeyDown = this.onKeyDown.bind(this);
+        this._boundOnMouseWheel = this.onMouseWheel.bind(this);
         this._boundSelectStart = this._selectStart.bind(this);
         this._proxyElement = element.ownerDocument.createElement("span");
         this._proxyElement.style.display = this._proxyElementDisplay;
@@ -112,10 +119,11 @@ WebInspector.TextPrompt.prototype = {
         this.proxyElement.appendChild(element);
         this._element.addStyleClass("text-prompt");
         this._element.addEventListener("keydown", this._boundOnKeyDown, false);
-        this._element.addEventListener("selectstart", this._selectStart.bind(this), false);
+        this._element.addEventListener("mousewheel", this._boundOnMouseWheel, false);
+        this._element.addEventListener("selectstart", this._boundSelectStart, false);
 
         if (typeof this._suggestBoxClassName === "string")
-            this._suggestBox = new WebInspector.TextPrompt.SuggestBox(this, this._element, this._suggestBoxClassName);
+            this._suggestBox = new WebInspector.SuggestBox(this, this._element, this._suggestBoxClassName);
 
         return this.proxyElement;
     },
@@ -125,6 +133,10 @@ WebInspector.TextPrompt.prototype = {
         this._removeFromElement();
         this.proxyElement.parentElement.insertBefore(this._element, this.proxyElement);
         this.proxyElement.parentElement.removeChild(this.proxyElement);
+        this._element.removeStyleClass("text-prompt");
+        this._element.removeEventListener("keydown", this._boundOnKeyDown, false);
+        this._element.removeEventListener("mousewheel", this._boundOnMouseWheel, false);
+        this._element.removeEventListener("selectstart", this._boundSelectStart, false);
         delete this._proxyElement;
         WebInspector.restoreFocusFromElement(this._element);
     },
@@ -161,8 +173,6 @@ WebInspector.TextPrompt.prototype = {
 
     _startEditing: function(blurListener)
     {
-        if (!WebInspector.markBeingEdited(this._element, true))
-            return;
         this._isEditing = true;
         this._element.addStyleClass("editing");
         if (blurListener) {
@@ -182,7 +192,6 @@ WebInspector.TextPrompt.prototype = {
             this._element.removeEventListener("blur", this._blurListener, false);
         this._element.removeStyleClass("editing");
         delete this._isEditing;
-        WebInspector.markBeingEdited(this._element, false);
     },
 
     _removeSuggestionAids: function()
@@ -218,6 +227,11 @@ WebInspector.TextPrompt.prototype = {
         this.clearAutoComplete();
         this.autoCompleteSoon(force);
         return false;
+    },
+
+    onMouseWheel: function(event)
+    {
+        // Subclasses can implement. 
     },
 
     onKeyDown: function(event)
@@ -280,10 +294,8 @@ WebInspector.TextPrompt.prototype = {
         if (!handled && invokeDefault)
             handled = this.defaultKeyHandler(event);
 
-        if (handled) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
+        if (handled)
+            event.consume(true);
 
         return handled;
     },
@@ -308,6 +320,7 @@ WebInspector.TextPrompt.prototype = {
             clearTimeout(this._completeTimeout);
             delete this._completeTimeout;
         }
+        delete this._waitingForCompletions;
 
         if (!this.autoCompleteElement)
             return;
@@ -320,7 +333,7 @@ WebInspector.TextPrompt.prototype = {
             return;
 
         this._userEnteredRange.deleteContents();
-        this._element.pruneEmptyTextNodes();
+        this._element.normalize();
 
         var userTextNode = document.createTextNode(this._userEnteredText);
         this._userEnteredRange.insertNode(userTextNode);
@@ -383,7 +396,8 @@ WebInspector.TextPrompt.prototype = {
         }
 
         var wordPrefixRange = selectionRange.startContainer.rangeOfWord(selectionRange.startOffset, this._completionStopCharacters, this._element, "backward");
-        this._loadCompletions(this, wordPrefixRange, force, this._completionsReady.bind(this, selection, auto, wordPrefixRange, !!reverse));
+        this._waitingForCompletions = true;
+        this._loadCompletions(this.proxyElement, wordPrefixRange, force, this._completionsReady.bind(this, selection, auto, wordPrefixRange, !!reverse));
     },
 
     _boxForAnchorAtStart: function(selection, textRange)
@@ -425,13 +439,15 @@ WebInspector.TextPrompt.prototype = {
      * @param {Range} originalWordPrefixRange
      * @param {boolean} reverse
      * @param {Array.<string>=} completions
+     * @param {number=} selectedIndex
      */
-    _completionsReady: function(selection, auto, originalWordPrefixRange, reverse, completions)
+    _completionsReady: function(selection, auto, originalWordPrefixRange, reverse, completions, selectedIndex)
     {
-        if (!completions || !completions.length) {
+        if (!this._waitingForCompletions || !completions || !completions.length) {
             this.hideSuggestBox();
             return;
         }
+        delete this._waitingForCompletions;
 
         var selectionRange = selection.getRangeAt(0);
 
@@ -442,29 +458,31 @@ WebInspector.TextPrompt.prototype = {
         if (originalWordPrefixRange.toString() + selectionRange.toString() != fullWordRange.toString())
             return;
 
+        selectedIndex = selectedIndex || 0;
+
         this._userEnteredRange = fullWordRange;
         this._userEnteredText = fullWordRange.toString();
 
         if (this._suggestBox)
-            this._suggestBox.updateSuggestions(this._boxForAnchorAtStart(selection, fullWordRange), completions, !this.isCaretAtEndOfPrompt());
+            this._suggestBox.updateSuggestions(this._boxForAnchorAtStart(selection, fullWordRange), completions, selectedIndex, !this.isCaretAtEndOfPrompt());
 
         var wordPrefixLength = originalWordPrefixRange.toString().length;
 
         if (auto) {
-            var completionText = completions[0];
+            var completionText = completions[selectedIndex];
             var commonPrefix = this._buildCommonPrefix(completions, wordPrefixLength);
 
             this._commonPrefix = commonPrefix;
         } else {
             if (completions.length === 1) {
-                var completionText = completions[0];
+                var completionText = completions[selectedIndex];
                 wordPrefixLength = completionText.length;
             } else {
                 var commonPrefix = this._buildCommonPrefix(completions, wordPrefixLength);
                 wordPrefixLength = commonPrefix.length;
 
                 if (selection.isCollapsed)
-                    var completionText = completions[0];
+                    var completionText = completions[selectedIndex];
                 else {
                     var currentText = fullWordRange.toString();
 
@@ -476,7 +494,7 @@ WebInspector.TextPrompt.prototype = {
 
                     var nextIndex = foundIndex + (reverse ? -1 : 1);
                     if (foundIndex === null || nextIndex >= completions.length)
-                        var completionText = completions[0];
+                        var completionText = completions[selectedIndex];
                     else if (nextIndex < 0)
                         var completionText = completions[completions.length - 1];
                     else
@@ -488,7 +506,7 @@ WebInspector.TextPrompt.prototype = {
         if (auto) {
             if (this.isCaretAtEndOfPrompt()) {
                 this._userEnteredRange.deleteContents();
-                this._element.pruneEmptyTextNodes();
+                this._element.normalize();
                 var finalSelectionRange = document.createRange();
                 var prefixText = completionText.substring(0, wordPrefixLength);
                 var suffixText = completionText.substring(wordPrefixLength);
@@ -508,12 +526,12 @@ WebInspector.TextPrompt.prototype = {
                 selection.addRange(finalSelectionRange);
             }
         } else
-            this.applySuggestion(completionText, completions.length > 1, originalWordPrefixRange);
+            this._applySuggestion(completionText, completions.length > 1, originalWordPrefixRange);
     },
 
     _completeCommonPrefix: function()
     {
-        if (!this.autoCompleteElement || !this._commonPrefix || !this._userEnteredText || this._commonPrefix.indexOf(this._userEnteredText) !== 0)
+        if (!this.autoCompleteElement || !this._commonPrefix || !this._userEnteredText || !this._commonPrefix.startsWith(this._userEnteredText))
             return;
 
         if (!this.isSuggestBoxVisible()) {
@@ -526,9 +544,20 @@ WebInspector.TextPrompt.prototype = {
     },
 
     /**
+     * @param {string} completionText
+     * @param {boolean=} isIntermediateSuggestion
+     */
+    applySuggestion: function(completionText, isIntermediateSuggestion)
+    {
+        this._applySuggestion(completionText, isIntermediateSuggestion);
+    },
+
+    /**
+     * @param {string} completionText
+     * @param {boolean=} isIntermediateSuggestion
      * @param {Range=} originalPrefixRange
      */
-    applySuggestion: function(completionText, isIntermediateSuggestion, originalPrefixRange)
+    _applySuggestion: function(completionText, isIntermediateSuggestion, originalPrefixRange)
     {
         var wordPrefixLength;
         if (originalPrefixRange)
@@ -537,7 +566,7 @@ WebInspector.TextPrompt.prototype = {
             wordPrefixLength = this._userEnteredText ? this._userEnteredText.length : 0;
 
         this._userEnteredRange.deleteContents();
-        this._element.pruneEmptyTextNodes();
+        this._element.normalize();
         var finalSelectionRange = document.createRange();
         var completionTextNode = document.createTextNode(completionText);
         this._userEnteredRange.insertNode(completionTextNode);
@@ -705,7 +734,7 @@ WebInspector.TextPrompt.prototype = {
     enterKeyPressed: function(event)
     {
         if (this.isSuggestBoxVisible())
-            return this._suggestBox.enterKeyPressed(event);
+            return this._suggestBox.enterKeyPressed();
 
         return false;
     },
@@ -713,7 +742,7 @@ WebInspector.TextPrompt.prototype = {
     upKeyPressed: function(event)
     {
         if (this.isSuggestBoxVisible())
-            return this._suggestBox.upKeyPressed(event);
+            return this._suggestBox.upKeyPressed();
 
         return false;
     },
@@ -721,7 +750,7 @@ WebInspector.TextPrompt.prototype = {
     downKeyPressed: function(event)
     {
         if (this.isSuggestBoxVisible())
-            return this._suggestBox.downKeyPressed(event);
+            return this._suggestBox.downKeyPressed();
 
         return false;
     },
@@ -729,7 +758,7 @@ WebInspector.TextPrompt.prototype = {
     pageUpKeyPressed: function(event)
     {
         if (this.isSuggestBoxVisible())
-            return this._suggestBox.pageUpKeyPressed(event);
+            return this._suggestBox.pageUpKeyPressed();
 
         return false;
     },
@@ -737,19 +766,20 @@ WebInspector.TextPrompt.prototype = {
     pageDownKeyPressed: function(event)
     {
         if (this.isSuggestBoxVisible())
-            return this._suggestBox.pageDownKeyPressed(event);
+            return this._suggestBox.pageDownKeyPressed();
 
         return false;
     },
+
+    __proto__: WebInspector.Object.prototype
 }
 
-WebInspector.TextPrompt.prototype.__proto__ = WebInspector.Object.prototype;
 
 /**
  * @constructor
  * @extends {WebInspector.TextPrompt}
- * @param {function(WebInspector.TextPrompt, Range, boolean, function(Array.<string>=))} completions
- * @param {string} stopCharacters
+ * @param {function(Element, Range, boolean, function(Array.<string>,number=))} completions
+ * @param {string=} stopCharacters
  */
 WebInspector.TextPromptWithHistory = function(completions, stopCharacters)
 {
@@ -885,8 +915,7 @@ WebInspector.TextPromptWithHistory.prototype = {
         }
 
         if (newText !== undefined) {
-            event.stopPropagation();
-            event.preventDefault();
+            event.consume(true);
             this.text = newText;
 
             if (isPrevious) {
@@ -909,362 +938,8 @@ WebInspector.TextPromptWithHistory.prototype = {
         }
 
         return WebInspector.TextPrompt.prototype.defaultKeyHandler.apply(this, arguments);
-    }
+    },
+
+    __proto__: WebInspector.TextPrompt.prototype
 }
 
-WebInspector.TextPromptWithHistory.prototype.__proto__ = WebInspector.TextPrompt.prototype;
-
-/**
- * @constructor
- */
-WebInspector.TextPrompt.SuggestBox = function(textPrompt, inputElement, className)
-{
-    this._textPrompt = textPrompt;
-    this._inputElement = inputElement;
-    this._selectedElement = null;
-    this._boundOnScroll = this._onscrollresize.bind(this, true);
-    this._boundOnResize = this._onscrollresize.bind(this, false);
-    window.addEventListener("scroll", this._boundOnScroll, true);
-    window.addEventListener("resize", this._boundOnResize, true);
-
-    this._bodyElement = inputElement.ownerDocument.body;
-    this._element = inputElement.ownerDocument.createElement("div");
-    this._element.className = "suggest-box " + (className || "");
-    this._element.addEventListener("mousedown", this._onboxmousedown.bind(this), true);
-    this.containerElement = this._element.createChild("div", "container");
-    this.contentElement = this.containerElement.createChild("div", "content");
-}
-
-WebInspector.TextPrompt.SuggestBox.prototype = {
-    get visible()
-    {
-        return !!this._element.parentElement;
-    },
-
-    get hasSelection()
-    {
-        return !!this._selectedElement;
-    },
-
-    _onscrollresize: function(isScroll, event)
-    {
-        if (isScroll && this._element.isAncestor(event.target) || !this.visible)
-            return;
-        this._updateBoxPositionWithExistingAnchor();
-    },
-
-    _updateBoxPositionWithExistingAnchor: function()
-    {
-        this._updateBoxPosition(this._anchorBox);
-    },
-
-    /**
-     * @param {AnchorBox} anchorBox
-     */
-    _updateBoxPosition: function(anchorBox)
-    {
-        // Measure the content element box.
-        this.contentElement.style.display = "inline-block";
-        document.body.appendChild(this.contentElement);
-        this.contentElement.positionAt(0, 0);
-        var contentWidth = this.contentElement.offsetWidth;
-        var contentHeight = this.contentElement.offsetHeight;
-        this.contentElement.style.display = "block";
-        this.containerElement.appendChild(this.contentElement);
-
-        // Lay out the suggest-box relative to the anchorBox.
-        this._anchorBox = anchorBox;
-        const spacer = 6;
-
-        const suggestBoxPaddingX = 21;
-        var maxWidth = document.body.offsetWidth - anchorBox.x - spacer;
-        var width = Math.min(contentWidth, maxWidth - suggestBoxPaddingX) + suggestBoxPaddingX;
-        var paddedWidth = contentWidth + suggestBoxPaddingX;
-        var boxX = anchorBox.x;
-        if (width < paddedWidth) {
-            // Shift the suggest box to the left to accommodate the content without trimming to the BODY edge.
-            maxWidth = document.body.offsetWidth - spacer;
-            width = Math.min(contentWidth, maxWidth - suggestBoxPaddingX) + suggestBoxPaddingX;
-            boxX = document.body.offsetWidth - width;
-        }
-
-        const suggestBoxPaddingY = 2;
-        var boxY;
-        var aboveHeight = anchorBox.y;
-        var underHeight = document.body.offsetHeight - anchorBox.y - anchorBox.height;
-        var maxHeight = Math.max(underHeight, aboveHeight) - spacer;
-        var height = Math.min(contentHeight, maxHeight - suggestBoxPaddingY) + suggestBoxPaddingY;
-        if (underHeight >= aboveHeight) {
-            // Locate the suggest box under the anchorBox.
-            boxY = anchorBox.y + anchorBox.height;
-            this._element.removeStyleClass("above-anchor");
-            this._element.addStyleClass("under-anchor");
-        } else {
-            // Locate the suggest box above the anchorBox.
-            boxY = anchorBox.y - height;
-            this._element.removeStyleClass("under-anchor");
-            this._element.addStyleClass("above-anchor");
-        }
-
-        this._element.positionAt(boxX, boxY);
-        this._element.style.width = width + "px";
-        this._element.style.height = height + "px";
-    },
-
-    _onboxmousedown: function(event)
-    {
-        event.preventDefault();
-    },
-
-    hide: function()
-    {
-        if (!this.visible)
-            return;
-
-        this._element.parentElement.removeChild(this._element);
-        delete this._selectedElement;
-    },
-
-    removeFromElement: function()
-    {
-        window.removeEventListener("scroll", this._boundOnScroll, true);
-        window.removeEventListener("resize", this._boundOnResize, true);
-        this.hide();
-    },
-
-    /**
-     * @param {string=} text
-     * @param {boolean=} isIntermediateSuggestion
-     */
-    _applySuggestion: function(text, isIntermediateSuggestion)
-    {
-        if (!this.visible || !(text || this._selectedElement))
-            return false;
-
-        var suggestion = text || this._selectedElement.textContent;
-        if (!suggestion)
-            return false;
-
-        this._textPrompt.applySuggestion(suggestion, isIntermediateSuggestion);
-        return true;
-    },
-
-    /**
-     * @param {string=} text
-     */
-    acceptSuggestion: function(text)
-    {
-        var result = this._applySuggestion(text, false);
-        this.hide();
-        if (!result)
-            return false;
-
-        this._textPrompt.acceptSuggestion();
-
-        return true;
-    },
-
-    _onNextItem: function(event, isPageScroll)
-    {
-        var children = this.contentElement.childNodes;
-        if (!children.length)
-            return false;
-
-        if (!this._selectedElement)
-            this._selectedElement = this.contentElement.firstChild;
-        else {
-            if (!isPageScroll)
-                this._selectedElement = this._selectedElement.nextSibling || this.contentElement.firstChild;
-            else {
-                var candidate = this._selectedElement;
-
-                for (var itemsLeft = this._rowCountPerViewport; itemsLeft; --itemsLeft) {
-                    if (candidate.nextSibling)
-                        candidate = candidate.nextSibling;
-                    else
-                        break;
-                }
-
-                this._selectedElement = candidate;
-            }
-        }
-        this._updateSelection();
-        this._applySuggestion(undefined, true);
-        return true;
-    },
-
-    _onPreviousItem: function(event, isPageScroll)
-    {
-        var children = this.contentElement.childNodes;
-        if (!children.length)
-            return false;
-
-        if (!this._selectedElement)
-            this._selectedElement = this.contentElement.lastChild;
-        else {
-            if (!isPageScroll)
-                this._selectedElement = this._selectedElement.previousSibling || this.contentElement.lastChild;
-            else {
-                var candidate = this._selectedElement;
-
-                for (var itemsLeft = this._rowCountPerViewport; itemsLeft; --itemsLeft) {
-                    if (candidate.previousSibling)
-                        candidate = candidate.previousSibling;
-                    else
-                        break;
-                }
-
-                this._selectedElement = candidate;
-            }
-        }
-        this._updateSelection();
-        this._applySuggestion(undefined, true);
-        return true;
-    },
-
-    /**
-     * @param {AnchorBox} anchorBox
-     * @param {Array.<string>=} completions
-     * @param {boolean=} canShowForSingleItem
-     */
-    updateSuggestions: function(anchorBox, completions, canShowForSingleItem)
-    {
-        if (this._suggestTimeout) {
-            clearTimeout(this._suggestTimeout);
-            delete this._suggestTimeout;
-        }
-        this._completionsReady(anchorBox, completions, canShowForSingleItem);
-    },
-
-    _onItemMouseDown: function(text, event)
-    {
-        this.acceptSuggestion(text);
-        event.stopPropagation();
-        event.preventDefault();
-    },
-
-    _createItemElement: function(prefix, text)
-    {
-        var element = document.createElement("div");
-        element.className = "suggest-box-content-item source-code";
-        element.tabIndex = -1;
-        if (prefix && prefix.length && !text.indexOf(prefix)) {
-            var prefixElement = element.createChild("span", "prefix");
-            prefixElement.textContent = prefix;
-            var suffixElement = element.createChild("span", "suffix");
-            suffixElement.textContent = text.substring(prefix.length);
-        } else {
-            var suffixElement = element.createChild("span", "suffix");
-            suffixElement.textContent = text;
-        }
-        element.addEventListener("mousedown", this._onItemMouseDown.bind(this, text), false);
-        return element;
-    },
-
-    /**
-     * @param {boolean=} canShowForSingleItem
-     */
-    _updateItems: function(items, canShowForSingleItem)
-    {
-        this.contentElement.removeChildren();
-
-        var userEnteredText = this._textPrompt._userEnteredText;
-        for (var i = 0; i < items.length; ++i) {
-            var item = items[i];
-            var currentItemElement = this._createItemElement(userEnteredText, item);
-            this.contentElement.appendChild(currentItemElement);
-        }
-
-        this._selectedElement = canShowForSingleItem ? this.contentElement.firstChild : null;
-        this._updateSelection();
-    },
-
-    _updateSelection: function()
-    {
-        // FIXME: might want some optimization if becomes a bottleneck.
-        for (var child = this.contentElement.firstChild; child; child = child.nextSibling) {
-            if (child !== this._selectedElement)
-                child.removeStyleClass("selected");
-        }
-        if (this._selectedElement) {
-            this._selectedElement.addStyleClass("selected");
-            this._selectedElement.scrollIntoViewIfNeeded(false);
-        }
-    },
-
-    /**
-     * @param {Array.<string>=} completions
-     * @param {boolean=} canShowForSingleItem
-     */
-    _canShowBox: function(completions, canShowForSingleItem)
-    {
-        if (!completions || !completions.length)
-            return false;
-
-        if (completions.length > 1)
-            return true;
-
-        // Do not show a single suggestion if it is the same as user-entered prefix, even if allowed to show single-item suggest boxes.
-        return canShowForSingleItem && completions[0] !== this._textPrompt._userEnteredText;
-    },
-
-    _rememberRowCountPerViewport: function()
-    {
-        if (!this.contentElement.firstChild)
-            return;
-
-        this._rowCountPerViewport = Math.floor(this.containerElement.offsetHeight / this.contentElement.firstChild.offsetHeight);
-    },
-
-    /**
-     * @param {AnchorBox} anchorBox
-     * @param {Array.<string>=} completions
-     * @param {boolean=} canShowForSingleItem
-     */
-    _completionsReady: function(anchorBox, completions, canShowForSingleItem)
-    {
-        if (this._canShowBox(completions, canShowForSingleItem)) {
-            this._updateItems(completions, canShowForSingleItem);
-            this._updateBoxPosition(anchorBox);
-            if (!this.visible)
-                this._bodyElement.appendChild(this._element);
-            this._rememberRowCountPerViewport();
-        } else
-            this.hide();
-    },
-
-    upKeyPressed: function(event)
-    {
-        return this._onPreviousItem(event, false);
-    },
-
-    downKeyPressed: function(event)
-    {
-        return this._onNextItem(event, false);
-    },
-
-    pageUpKeyPressed: function(event)
-    {
-        return this._onPreviousItem(event, true);
-    },
-
-    pageDownKeyPressed: function(event)
-    {
-        return this._onNextItem(event, true);
-    },
-
-    enterKeyPressed: function(event)
-    {
-        var hasSelectedItem = !!this._selectedElement;
-        this.acceptSuggestion();
-
-        // Report the event as non-handled if there is no selected item,
-        // to commit the input or handle it otherwise.
-        return hasSelectedItem;
-    },
-
-    tabKeyPressed: function(event)
-    {
-        return this.enterKeyPressed(event);
-    }
-}

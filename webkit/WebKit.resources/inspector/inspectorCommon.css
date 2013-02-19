@@ -13,14 +13,15 @@ body {
     font-family: Lucida Grande, sans-serif;
     font-size: 10px;
     margin: 0;
+    tab-size: 4;
     -webkit-user-select: none;
 }
 
-body.dock-to-right {
+body.dock-to-right:not(.undocked) {
     border-left: 1px solid rgb(80, 80, 80);
 }
 
-body.dock-to-right.inactive {
+body.dock-to-right.inactive:not(.undocked) {
     border-left: 1px solid rgb(64%, 64%, 64%);
 }
 
@@ -71,15 +72,11 @@ iframe.view {
 .resources-event-dividers {
     position: absolute;
     left: 0;
-    right: 5px;
+    right: 0;
     height: 100%;
     top: 0;
     z-index: 300;
     pointer-events: none;
-}
-
-.timeline .resources-event-dividers {
-    height: 19px;
 }
 
 .resources-dividers-label-bar {
@@ -92,6 +89,7 @@ iframe.view {
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
     height: 20px;
     z-index: 200;
+    pointer-events: none;
 }
 
 .resources-divider {
@@ -116,22 +114,6 @@ iframe.view {
     top: 0;
     bottom: 0;
     z-index: 300;
-}
-
-.resources-red-divider {
-    background-color: rgba(255, 0, 0, 0.5);
-}
-
-.resources-blue-divider {
-    background-color: rgba(0, 0, 255, 0.5);
-}
-
-.resources-orange-divider {
-    background-color: rgba(255, 178, 23, 0.5);
-}
-
-.resources-divider.last {
-    background-color: transparent;
 }
 
 .resources-divider-label {

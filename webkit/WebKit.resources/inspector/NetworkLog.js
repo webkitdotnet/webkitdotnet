@@ -33,8 +33,9 @@
  */
 WebInspector.NetworkLog = function()
 {
-    this._resources = [];
-    WebInspector.networkManager.addEventListener(WebInspector.NetworkManager.EventTypes.ResourceStarted, this._onResourceStarted, this);
+    this._requests = [];
+    this._requestForId = {};
+    WebInspector.networkManager.addEventListener(WebInspector.NetworkManager.EventTypes.RequestStarted, this._onRequestStarted, this);
     WebInspector.resourceTreeModel.addEventListener(WebInspector.ResourceTreeModel.EventTypes.MainFrameNavigated, this._onMainFrameNavigated, this);
     WebInspector.resourceTreeModel.addEventListener(WebInspector.ResourceTreeModel.EventTypes.OnLoad, this._onLoad, this);
     WebInspector.resourceTreeModel.addEventListener(WebInspector.ResourceTreeModel.EventTypes.DOMContentLoaded, this._onDOMContentLoaded, this);
@@ -42,20 +43,33 @@ WebInspector.NetworkLog = function()
 
 WebInspector.NetworkLog.prototype = {
     /**
-     * @return {Array.<WebInspector.Resource>}
+     * @return {Array.<WebInspector.NetworkRequest>}
      */
-    get resources()
+    get requests()
     {
-        return this._resources;
+        return this._requests;
     },
 
     /**
-     * @param {WebInspector.Resource} resource
+     * @param {string} url
+     * @return {WebInspector.NetworkRequest}
+     */
+    requestForURL: function(url)
+    {
+        for (var i = 0; i < this._requests.length; ++i) {
+            if (this._requests[i].url === url)
+                return this._requests[i];
+        }
+        return null;
+    },
+
+    /**
+     * @param {WebInspector.NetworkRequest} request
      * @return {WebInspector.PageLoad}
      */
-    pageLoadForResource: function(resource)
+    pageLoadForRequest: function(request)
     {
-        return resource.__page;
+        return request.__page;
     },
 
     /**
@@ -64,16 +78,16 @@ WebInspector.NetworkLog.prototype = {
     _onMainFrameNavigated: function(event)
     {
         var mainFrame = /** type {WebInspector.ResourceTreeFrame} */ event.data;
-        // Preserve resources from the new session.
+        // Preserve requests from the new session.
         this._currentPageLoad = null;
-        var oldResources = this._resources.splice(0, this._resources.length);
-        for (var i = 0; i < oldResources.length; ++i) {
-            var resource = oldResources[i];
-            if (resource.loaderId === mainFrame.loaderId) {
+        var oldRequests = this._requests.splice(0, this._requests.length);
+        for (var i = 0; i < oldRequests.length; ++i) {
+            var request = oldRequests[i];
+            if (request.loaderId === mainFrame.loaderId) {
                 if (!this._currentPageLoad)
-                    this._currentPageLoad = new WebInspector.PageLoad(resource);
-                this._resources.push(resource);
-                resource.__page = this._currentPageLoad;
+                    this._currentPageLoad = new WebInspector.PageLoad(request);
+                this._requests.push(request);
+                request.__page = this._currentPageLoad;
             }
         }
     },
@@ -81,11 +95,12 @@ WebInspector.NetworkLog.prototype = {
     /**
      * @param {WebInspector.Event} event
      */
-    _onResourceStarted: function(event)
+    _onRequestStarted: function(event)
     {
-        var resource = /** @type {WebInspector.Resource} */ event.data;
-        this._resources.push(resource);
-        resource.__page = this._currentPageLoad;
+        var request = /** @type {WebInspector.NetworkRequest} */ (event.data);
+        this._requests.push(request);
+        this._requestForId[request.requestId] = request;
+        request.__page = this._currentPageLoad;
     },
 
     /**
@@ -106,6 +121,14 @@ WebInspector.NetworkLog.prototype = {
             this._currentPageLoad.loadTime = event.data;
     },
 
+    /**
+     * @param {NetworkAgent.RequestId} requestId
+     * @return {?WebInspector.NetworkRequest}
+     */
+    requestForId: function(requestId)
+    {
+        return this._requestForId[requestId];
+    }
 }
 
 /**
@@ -115,13 +138,13 @@ WebInspector.networkLog = null;
 
 /**
  * @constructor
- * @param {WebInspector.Resource} mainResource
+ * @param {WebInspector.NetworkRequest} mainRequest
  */
-WebInspector.PageLoad = function(mainResource)
+WebInspector.PageLoad = function(mainRequest)
 {
     this.id = ++WebInspector.PageLoad._lastIdentifier;
-    this.url = mainResource.url;
-    this.startTime = mainResource.startTime;
+    this.url = mainRequest.url;
+    this.startTime = mainRequest.startTime;
 }
 
 WebInspector.PageLoad._lastIdentifier = 0;

@@ -27,6 +27,7 @@
  * @constructor
  * @extends WebInspector.DataGridNode
  * @param {WebInspector.CSSSelectorProfileView} profileView
+ * @param {CSSAgent.SelectorProfile} data
  */
 WebInspector.CSSSelectorDataGridNode = function(profileView, data)
 {
@@ -73,10 +74,10 @@ WebInspector.CSSSelectorDataGridNode.prototype = {
         }
 
         return cell;
-    }
-}
+    },
 
-WebInspector.CSSSelectorDataGridNode.prototype.__proto__ = WebInspector.DataGridNode.prototype;
+    __proto__: WebInspector.DataGridNode.prototype
+}
 
 /**
  * @constructor
@@ -146,18 +147,18 @@ WebInspector.CSSSelectorProfileView.prototype = {
 
     rebuildGridItems: function()
     {
-        this.dataGrid.removeChildren();
+        this.dataGrid.rootNode().removeChildren();
 
         var children = this.profile.children;
         var count = children.length;
 
         for (var index = 0; index < count; ++index)
-            this.dataGrid.appendChild(children[index]);
+            this.dataGrid.rootNode().appendChild(children[index]);
     },
 
     refreshData: function()
     {
-        var child = this.dataGrid.children[0];
+        var child = this.dataGrid.rootNode().children[0];
         while (child) {
             child.refresh();
             child = child.traverseNextNode(false, null, true);
@@ -194,7 +195,7 @@ WebInspector.CSSSelectorProfileView.prototype = {
 
         function selectorComparator(a, b)
         {
-            var result = b.rawData.selector.localeCompare(a.rawData.selector);
+            var result = b.rawData.selector.compareTo(a.rawData.selector);
             return sortAscending ? -result : result;
         }
 
@@ -202,7 +203,7 @@ WebInspector.CSSSelectorProfileView.prototype = {
         {
             var aRawData = a.rawData;
             var bRawData = b.rawData;
-            var result = bRawData.url.localeCompare(aRawData.url);
+            var result = bRawData.url.compareTo(aRawData.url);
             if (!result)
                 result = bRawData.lineNumber - aRawData.lineNumber;
             return sortAscending ? -result : result;
@@ -257,15 +258,15 @@ WebInspector.CSSSelectorProfileView.prototype = {
 
         this.refreshShowAsPercents();
 
-        event.preventDefault();
-        event.stopPropagation();
-    }
-}
+        event.consume(true);
+    },
 
-WebInspector.CSSSelectorProfileView.prototype.__proto__ = WebInspector.View.prototype;
+    __proto__: WebInspector.View.prototype
+}
 
 /**
  * @constructor
+ * @extends {WebInspector.ProfileType}
  */
 WebInspector.CSSSelectorProfileType = function()
 {
@@ -283,12 +284,20 @@ WebInspector.CSSSelectorProfileType.prototype = {
         return this._recording ? WebInspector.UIString("Stop CSS selector profiling.") : WebInspector.UIString("Start CSS selector profiling.");
     },
 
-    buttonClicked: function()
+    /**
+     * @override
+     * @param {WebInspector.ProfilesPanel} profilesPanel
+     * @return {boolean}
+     */
+    buttonClicked: function(profilesPanel)
     {
-        if (this._recording)
-            this.stopRecordingProfile();
-        else
-            this.startRecordingProfile();
+        if (this._recording) {
+            this._stopRecordingProfile(profilesPanel);
+            return false;
+        } else {
+            this._startRecordingProfile(profilesPanel);
+            return true;
+        }
     },
 
     get treeItemTitle()
@@ -306,50 +315,93 @@ WebInspector.CSSSelectorProfileType.prototype = {
         this._profileUid = 1;
     },
 
-    isRecordingProfile: function()
-    {
-        return this._recording;
-    },
-
     setRecordingProfile: function(isProfiling)
     {
         this._recording = isProfiling;
     },
 
-    startRecordingProfile: function()
+    /**
+     * @param {WebInspector.ProfilesPanel} profilesPanel
+     */
+    _startRecordingProfile: function(profilesPanel)
     {
         this._recording = true;
         CSSAgent.startSelectorProfiler();
-        WebInspector.panels.profiles.setRecordingProfile(WebInspector.CSSSelectorProfileType.TypeId, true);
+        profilesPanel.setRecordingProfile(WebInspector.CSSSelectorProfileType.TypeId, true);
     },
 
-    stopRecordingProfile: function()
+    /**
+     * @param {WebInspector.ProfilesPanel} profilesPanel
+     */
+    _stopRecordingProfile: function(profilesPanel)
     {
+        /**
+         * @param {?Protocol.Error} error
+         * @param {CSSAgent.SelectorProfile} profile
+         */
         function callback(error, profile)
         {
             if (error)
                 return;
 
-            profile.uid = this._profileUid++;
-            profile.title = WebInspector.UIString("Profile %d", profile.uid) + String.sprintf(" (%s)", Number.secondsToString(profile.totalTime / 1000));
-            profile.typeId = WebInspector.CSSSelectorProfileType.TypeId;
-            WebInspector.panels.profiles.addProfileHeader(profile);
-            WebInspector.panels.profiles.setRecordingProfile(WebInspector.CSSSelectorProfileType.TypeId, false);
+            var uid = this._profileUid++;
+            var title = WebInspector.UIString("Profile %d", uid) + String.sprintf(" (%s)", Number.secondsToString(profile.totalTime / 1000));
+            var profileHeader = new WebInspector.CSSProfileHeader(this, title, uid, profile);
+            profilesPanel.addProfileHeader(profileHeader);
+            profilesPanel.setRecordingProfile(WebInspector.CSSSelectorProfileType.TypeId, false);
         }
 
         this._recording = false;
         CSSAgent.stopSelectorProfiler(callback.bind(this));
     },
 
-    createSidebarTreeElementForProfile: function(profile)
+    /**
+     * @override
+     * @param {string=} title
+     * @return {WebInspector.ProfileHeader}
+     */
+    createTemporaryProfile: function(title)
     {
-        return new WebInspector.ProfileSidebarTreeElement(profile, profile.title, "profile-sidebar-tree-item");
+        title = title || WebInspector.UIString("Recording\u2026");
+        return new WebInspector.CSSProfileHeader(this, title);
     },
 
-    createView: function(profile)
-    {
-        return new WebInspector.CSSSelectorProfileView(profile);
-    }
+    __proto__: WebInspector.ProfileType.prototype
 }
 
-WebInspector.CSSSelectorProfileType.prototype.__proto__ = WebInspector.ProfileType.prototype;
+
+/**
+ * @constructor
+ * @extends {WebInspector.ProfileHeader}
+ * @param {!WebInspector.CSSSelectorProfileType} type
+ * @param {string} title
+ * @param {number=} uid
+ * @param {CSSAgent.SelectorProfile=} protocolData
+ */
+WebInspector.CSSProfileHeader = function(type, title, uid, protocolData)
+{
+    WebInspector.ProfileHeader.call(this, type, title, uid);
+    this._protocolData = protocolData;
+}
+
+WebInspector.CSSProfileHeader.prototype = {
+    /**
+     * @override
+     */
+    createSidebarTreeElement: function()
+    {
+        return new WebInspector.ProfileSidebarTreeElement(this, this.title, "profile-sidebar-tree-item");
+    },
+
+    /**
+     * @override
+     * @param {WebInspector.ProfilesPanel} profilesPanel
+     */
+    createView: function(profilesPanel)
+    {
+        var profile = /** @type {CSSAgent.SelectorProfile} */ (this._protocolData);
+        return new WebInspector.CSSSelectorProfileView(profile);
+    },
+
+    __proto__: WebInspector.ProfileHeader.prototype
+}

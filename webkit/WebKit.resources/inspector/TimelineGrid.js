@@ -43,13 +43,17 @@ WebInspector.TimelineGrid = function()
     this._dividersElement.className = "resources-dividers";
     this.element.appendChild(this._dividersElement);
 
+    this._gridHeaderElement = document.createElement("div"); 
+
     this._eventDividersElement = document.createElement("div");
     this._eventDividersElement.className = "resources-event-dividers";
-    this.element.appendChild(this._eventDividersElement);
+    this._gridHeaderElement.appendChild(this._eventDividersElement);
 
     this._dividersLabelBarElement = document.createElement("div");
     this._dividersLabelBarElement.className = "resources-dividers-label-bar";
-    this.element.appendChild(this._dividersLabelBarElement);
+    this._gridHeaderElement.appendChild(this._dividersLabelBarElement);
+
+    this.element.appendChild(this._gridHeaderElement);
 }
 
 WebInspector.TimelineGrid.prototype = {
@@ -63,26 +67,35 @@ WebInspector.TimelineGrid.prototype = {
         return this._dividersElement;
     },
 
-    /**
-     * @param {number=} paddingLeft
-     */
-    updateDividers: function(force, calculator, paddingLeft)
+    get dividersLabelBarElement()
     {
-        var dividerCount = Math.round(this._dividersElement.offsetWidth / 64);
-        var slice = calculator.boundarySpan / dividerCount;
-        if (!force && this._currentDividerSlice === slice)
-            return false;
+        return this._dividersLabelBarElement;
+    },
 
-        if (typeof paddingLeft !== "number")
-            paddingLeft = 0;
+    get gridHeaderElement()
+    {
+        return this._gridHeaderElement;
+    },
+
+    removeDividers: function()
+    {
+        this._dividersElement.removeChildren();
+        this._dividersLabelBarElement.removeChildren();
+    },
+
+    updateDividers: function(calculator)
+    {
+        var dividersElementClientWidth = this._dividersElement.clientWidth;
+        var dividerCount = Math.round(dividersElementClientWidth / 64);
+        var slice = calculator.boundarySpan() / dividerCount;
+
         this._currentDividerSlice = slice;
 
         // Reuse divider elements and labels.
         var divider = this._dividersElement.firstChild;
         var dividerLabelBar = this._dividersLabelBarElement.firstChild;
 
-        var dividersElementClientWidth = this._dividersElement.clientWidth;
-        var clientWidth = dividersElementClientWidth - paddingLeft;
+        var paddingLeft = calculator.paddingLeft;
         for (var i = paddingLeft ? 0 : 1; i <= dividerCount; ++i) {
             if (!divider) {
                 divider = document.createElement("div");
@@ -114,14 +127,16 @@ WebInspector.TimelineGrid.prototype = {
                 dividerLabelBar.removeStyleClass("last");
             }
 
-            var left = paddingLeft + clientWidth * (i / dividerCount);
+            var left;
+            if (!slice) {
+                left = dividersElementClientWidth / dividerCount * i + paddingLeft;
+                dividerLabelBar._labelElement.textContent = "";
+            } else {
+                left = calculator.computePosition(calculator.minimumBoundary() + slice * i);
+                dividerLabelBar._labelElement.textContent = calculator.formatTime(slice * i);
+            }
             var percentLeft = 100 * left / dividersElementClientWidth;
             this._setDividerAndBarLeft(divider, dividerLabelBar, percentLeft);
-
-            if (!isNaN(slice))
-                dividerLabelBar._labelElement.textContent = calculator.formatTime(slice * i);
-            else
-                dividerLabelBar._labelElement.textContent = "";
 
             divider = divider.nextSibling;
             dividerLabelBar = dividerLabelBar.nextSibling;
@@ -157,11 +172,12 @@ WebInspector.TimelineGrid.prototype = {
 
     addEventDividers: function(dividers)
     {
-        this.element.removeChild(this._eventDividersElement);
-        for (var i = 0; i < dividers.length; ++i)
+        this._gridHeaderElement.removeChild(this._eventDividersElement);
+        for (var i = 0; i < dividers.length; ++i) {
             if (dividers[i])
                 this._eventDividersElement.appendChild(dividers[i]);
-        this.element.appendChild(this._eventDividersElement);
+        }
+        this._gridHeaderElement.appendChild(this._eventDividersElement);
     },
 
     removeEventDividers: function()
@@ -182,7 +198,27 @@ WebInspector.TimelineGrid.prototype = {
     setScrollAndDividerTop: function(scrollTop, dividersTop)
     {
         this._dividersElement.style.top = scrollTop + "px";
-        this._eventDividersElement.style.top = scrollTop + "px";
-        this._dividersLabelBarElement.style.top = dividersTop + "px";
     }
+}
+
+/**
+ * @interface
+ */
+WebInspector.TimelineGrid.Calculator = function() { }
+
+WebInspector.TimelineGrid.Calculator.prototype = {
+    /** @param {number} time */
+    computePosition: function(time) { },
+
+    /** @param {number} time */
+    formatTime: function(time) { },
+
+    /** @return {number} */
+    minimumBoundary: function() { },
+
+    /** @return {number} */
+    maximumBoundary: function() { },
+
+    /** @return {number} */
+    boundarySpan: function() { }
 }

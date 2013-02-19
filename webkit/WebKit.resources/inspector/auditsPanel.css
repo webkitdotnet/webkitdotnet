@@ -86,12 +86,13 @@
     padding: 16px 0;
 }
 
-.audit-launcher-view div.audit-categories-container {
+.audit-launcher-view fieldset.audit-categories-container {
     position: relative;
     top: 11px;
     left: 0;
     width: 100%;
     overflow-y: auto;
+    border: 0 none;
 }
 
 .audit-launcher-view button {
@@ -114,12 +115,6 @@
 
 .audit-launcher-view input[type="checkbox"] {
     margin-left: 0;
-}
-
-.audit-launcher-view .resource-progress > img {
-    content: url(Images/spinner.gif);
-    vertical-align: text-top;
-    margin: 0 4px 0 8px;
 }
 
 .audit-result-view {
@@ -178,6 +173,18 @@
     margin: 0;
 }
 
+.audit-result-tree ol.outline-disclosure {
+    -webkit-padding-start: 0;
+}
+
+.audit-result-tree .section .header {
+    padding-left: 13px;
+}
+
+.audit-result-tree .section .header::before {
+    left: 2px;
+}
+
 .audit-result-tree li {
     padding: 0 0 0 14px;
     margin-top: 1px;
@@ -220,4 +227,12 @@
     float: left;
     margin-left: -28px;
     margin-top: -1px;
+}
+
+.audit-launcher-view .progress-bar-container {
+    display: inline-block;
+}
+
+.audit-launcher-view .progress-bar-container .progress-bar-stop-button {
+    display: none;
 }

@@ -25,6 +25,8 @@
 
 /**
  * @constructor
+ * @extends {WebInspector.Object}
+ * @implements {WebInspector.ContentProvider}
  * @param {string} scriptId
  * @param {string} sourceURL
  * @param {number} startLine
@@ -33,8 +35,9 @@
  * @param {number} endColumn
  * @param {boolean} isContentScript
  * @param {string=} sourceMapURL
+ * @param {boolean=} hasSourceURL
  */
-WebInspector.Script = function(scriptId, sourceURL, startLine, startColumn, endLine, endColumn, isContentScript, sourceMapURL)
+WebInspector.Script = function(scriptId, sourceURL, startLine, startColumn, endLine, endColumn, isContentScript, sourceMapURL, hasSourceURL)
 {
     this.scriptId = scriptId;
     this.sourceURL = sourceURL;
@@ -44,16 +47,41 @@ WebInspector.Script = function(scriptId, sourceURL, startLine, startColumn, endL
     this.endColumn = endColumn;
     this.isContentScript = isContentScript;
     this.sourceMapURL = sourceMapURL;
+    this.hasSourceURL = hasSourceURL;
+    this._locations = [];
+    this._sourceMappings = [];
 }
+
+WebInspector.Script.Events = {
+    ScriptEdited: "ScriptEdited",
+}
+
+WebInspector.Script.snippetSourceURLPrefix = "snippets:///";
 
 WebInspector.Script.prototype = {
     /**
-     * @param {function(string)} callback
+     * @return {string}
      */
-    requestSource: function(callback)
+    contentURL: function()
+    {
+        return this.sourceURL;
+    },
+
+    /**
+     * @return {WebInspector.ResourceType}
+     */
+    contentType: function()
+    {
+        return WebInspector.resourceTypes.Script;
+    },
+
+    /**
+     * @param {function(?string,boolean,string)} callback
+     */
+    requestContent: function(callback)
     {
         if (this._source) {
-            callback(this._source);
+            callback(this._source, false, "text/javascript");
             return;
         }
 
@@ -65,13 +93,13 @@ WebInspector.Script.prototype = {
         function didGetScriptSource(error, source)
         {
             this._source = error ? "" : source;
-            callback(this._source);
+            callback(this._source, false, "text/javascript");
         }
         if (this.scriptId) {
             // Script failed to parse.
             DebuggerAgent.getScriptSource(this.scriptId, didGetScriptSource.bind(this));
         } else
-            callback("");
+            callback("", false, "text/javascript");
     },
 
     /**
@@ -115,13 +143,17 @@ WebInspector.Script.prototype = {
         /**
          * @this {WebInspector.Script}
          * @param {?Protocol.Error} error
-         * @param {Array.<DebuggerAgent.CallFrame>|undefined} callFrames
+         * @param {Array.<DebuggerAgent.CallFrame>=} callFrames
+         * @param {Object=} debugData
          */
-        function didEditScriptSource(error, callFrames)
+        function didEditScriptSource(error, callFrames, debugData)
         {
+            // FIXME: support debugData.stack_update_needs_step_in flag by calling WebInspector.debugger_model.callStackModified
             if (!error)
                 this._source = newSource;
             callback(error, callFrames);
+            if (!error)
+                this.dispatchEventToListeners(WebInspector.Script.Events.ScriptEdited, newSource);
         }
         if (this.scriptId) {
             // Script failed to parse.
@@ -135,6 +167,176 @@ WebInspector.Script.prototype = {
      */
     isInlineScript: function()
     {
-        return !!this.sourceURL && this.lineOffset !== 0 && this.columnOffset !== 0;
-    }
+        var startsAtZero = !this.lineOffset && !this.columnOffset;
+        return !!this.sourceURL && !startsAtZero;
+    },
+
+    /**
+     * @return {boolean}
+     */
+    isAnonymousScript: function()
+    {
+        return !this.sourceURL;
+    },
+
+    /**
+     * @param {boolean} isDynamicScript
+     */
+    setIsDynamicScript: function(isDynamicScript)
+    {
+        this._isDynamicScript = isDynamicScript;
+    },
+
+    /**
+     * @return {boolean}
+     */
+    isDynamicScript: function()
+    {
+        return !!this._isDynamicScript;
+    },
+
+    /**
+     * @return {boolean}
+     */
+    isSnippet: function()
+    {
+        return this.sourceURL && this.sourceURL.startsWith(WebInspector.Script.snippetSourceURLPrefix);
+    },
+
+    /**
+     * @param {number} lineNumber
+     * @param {number=} columnNumber
+     * @return {WebInspector.UILocation}
+     */
+    rawLocationToUILocation: function(lineNumber, columnNumber)
+    {
+        var sourceMappings = this._enabledSourceMappings();
+        var uiLocation;
+        var rawLocation = new WebInspector.DebuggerModel.Location(this.scriptId, lineNumber, columnNumber || 0);
+        for (var i = sourceMappings.length - 1; !uiLocation && i >= 0; --i)
+            uiLocation = sourceMappings[i].rawLocationToUILocation(rawLocation);
+        console.assert(uiLocation, "Script raw location can not be mapped to any ui location.");
+        return uiLocation.uiSourceCode.overrideLocation(uiLocation);
+    },
+
+    _enabledSourceMappings: function()
+    {
+        function filter(sourceMapping)
+        {
+            return !this._disabledSourceMappings.get(sourceMapping);
+        }
+
+        var sourceMappings = this._disabledSourceMappings ? this._sourceMappings.filter(filter.bind(this)) : this._sourceMappings.slice();
+        console.assert(sourceMappings.length, "Script does not have any source mapping.");
+        return sourceMappings;
+    },
+
+    /**
+     * @param {Array.<WebInspector.SourceMapping>} oldSourceMappings
+     * @param {Array.<WebInspector.SourceMapping>} newSourceMappings
+     */
+    _sourceMappingsDiffer: function(oldSourceMappings, newSourceMappings)
+    {
+        if (oldSourceMappings.length !== newSourceMappings.length)
+            return true;
+        for (var i = 0; i < newSourceMappings.length; ++i) {
+            if (oldSourceMappings[i] !== newSourceMappings[i])
+                return true;
+        }
+        return false;
+    },
+
+    /**
+     * @param {WebInspector.SourceMapping} sourceMapping
+     */
+    disableSourceMapping: function(sourceMapping)
+    {
+        var oldSourceMappings = this._enabledSourceMappings();
+        this._disabledSourceMappings = this._disabledSourceMappings || new Map();
+        this._disabledSourceMappings.put(sourceMapping, true);
+        if (this._sourceMappingsDiffer(oldSourceMappings,this._enabledSourceMappings()))
+            this.updateLocations();
+    },
+
+    /**
+     * @param {WebInspector.SourceMapping} sourceMapping
+     */
+    enableSourceMapping: function(sourceMapping)
+    {
+        var oldSourceMappings = this._enabledSourceMappings();
+        this._disabledSourceMappings.remove(sourceMapping);
+        if (!this._disabledSourceMappings.size())
+            delete this._disabledSourceMappings;
+        if (this._sourceMappingsDiffer(oldSourceMappings,this._enabledSourceMappings()))
+            this.updateLocations();
+    },
+
+    /**
+     * @param {WebInspector.SourceMapping} sourceMapping
+     */
+    pushSourceMapping: function(sourceMapping)
+    {
+        this._sourceMappings.push(sourceMapping);
+        this.updateLocations();
+    },
+
+    popSourceMapping: function()
+    {
+        this._sourceMappings.pop();
+        this.updateLocations();
+    },
+
+    updateLocations: function()
+    {
+        for (var i = 0; i < this._locations.length; ++i)
+            this._locations[i].update();
+    },
+
+    /**
+     * @param {WebInspector.DebuggerModel.Location} rawLocation
+     * @param {function(WebInspector.UILocation):(boolean|undefined)} updateDelegate
+     * @return {WebInspector.Script.Location}
+     */
+    createLiveLocation: function(rawLocation, updateDelegate)
+    {
+        console.assert(rawLocation.scriptId === this.scriptId);
+        var location = new WebInspector.Script.Location(this, rawLocation, updateDelegate);
+        this._locations.push(location);
+        location.update();
+        return location;
+    },
+
+    __proto__: WebInspector.Object.prototype
+}
+
+/**
+ * @constructor
+ * @extends {WebInspector.LiveLocation}
+ * @param {WebInspector.Script} script
+ * @param {WebInspector.DebuggerModel.Location} rawLocation
+ * @param {function(WebInspector.UILocation):(boolean|undefined)} updateDelegate
+ */
+WebInspector.Script.Location = function(script, rawLocation, updateDelegate)
+{
+    WebInspector.LiveLocation.call(this, rawLocation, updateDelegate);
+    this._script = script;
+}
+
+WebInspector.Script.Location.prototype = {
+    /**
+     * @return {WebInspector.UILocation}
+     */
+    uiLocation: function()
+    {
+        var debuggerModelLocation = /** @type {WebInspector.DebuggerModel.Location} */ (this.rawLocation());
+        return this._script.rawLocationToUILocation(debuggerModelLocation.lineNumber, debuggerModelLocation.columnNumber);
+    },
+
+    dispose: function()
+    {
+        WebInspector.LiveLocation.prototype.dispose.call(this);
+        this._script._locations.remove(this);
+    },
+
+    __proto__: WebInspector.LiveLocation.prototype
 }

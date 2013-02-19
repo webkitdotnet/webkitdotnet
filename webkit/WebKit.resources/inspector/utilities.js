@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007 Apple Inc.  All rights reserved.
+ * Copyright (C) 2012 Google Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,395 +25,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Contains diff method based on Javascript Diff Algorithm By John Resig
- * http://ejohn.org/files/jsdiff.js (released under the MIT license).
  */
 
-/**
- * @param {string=} direction
- */
-Node.prototype.rangeOfWord = function(offset, stopCharacters, stayWithinNode, direction)
+Object.isEmpty = function(obj)
 {
-    var startNode;
-    var startOffset = 0;
-    var endNode;
-    var endOffset = 0;
-
-    if (!stayWithinNode)
-        stayWithinNode = this;
-
-    if (!direction || direction === "backward" || direction === "both") {
-        var node = this;
-        while (node) {
-            if (node === stayWithinNode) {
-                if (!startNode)
-                    startNode = stayWithinNode;
-                break;
-            }
-
-            if (node.nodeType === Node.TEXT_NODE) {
-                var start = (node === this ? (offset - 1) : (node.nodeValue.length - 1));
-                for (var i = start; i >= 0; --i) {
-                    if (stopCharacters.indexOf(node.nodeValue[i]) !== -1) {
-                        startNode = node;
-                        startOffset = i + 1;
-                        break;
-                    }
-                }
-            }
-
-            if (startNode)
-                break;
-
-            node = node.traversePreviousNode(stayWithinNode);
-        }
-
-        if (!startNode) {
-            startNode = stayWithinNode;
-            startOffset = 0;
-        }
-    } else {
-        startNode = this;
-        startOffset = offset;
-    }
-
-    if (!direction || direction === "forward" || direction === "both") {
-        node = this;
-        while (node) {
-            if (node === stayWithinNode) {
-                if (!endNode)
-                    endNode = stayWithinNode;
-                break;
-            }
-
-            if (node.nodeType === Node.TEXT_NODE) {
-                var start = (node === this ? offset : 0);
-                for (var i = start; i < node.nodeValue.length; ++i) {
-                    if (stopCharacters.indexOf(node.nodeValue[i]) !== -1) {
-                        endNode = node;
-                        endOffset = i;
-                        break;
-                    }
-                }
-            }
-
-            if (endNode)
-                break;
-
-            node = node.traverseNextNode(stayWithinNode);
-        }
-
-        if (!endNode) {
-            endNode = stayWithinNode;
-            endOffset = stayWithinNode.nodeType === Node.TEXT_NODE ? stayWithinNode.nodeValue.length : stayWithinNode.childNodes.length;
-        }
-    } else {
-        endNode = this;
-        endOffset = offset;
-    }
-
-    var result = this.ownerDocument.createRange();
-    result.setStart(startNode, startOffset);
-    result.setEnd(endNode, endOffset);
-
-    return result;
-}
-
-Node.prototype.traverseNextTextNode = function(stayWithin)
-{
-    var node = this.traverseNextNode(stayWithin);
-    if (!node)
-        return;
-
-    while (node && node.nodeType !== Node.TEXT_NODE)
-        node = node.traverseNextNode(stayWithin);
-
-    return node;
-}
-
-Node.prototype.rangeBoundaryForOffset = function(offset)
-{
-    var node = this.traverseNextTextNode(this);
-    while (node && offset > node.nodeValue.length) {
-        offset -= node.nodeValue.length;
-        node = node.traverseNextTextNode(this);
-    }
-    if (!node)
-        return { container: this, offset: 0 };
-    return { container: node, offset: offset };
-}
-
-Element.prototype.removeStyleClass = function(className)
-{
-    this.classList.remove(className);
-}
-
-Element.prototype.removeMatchingStyleClasses = function(classNameRegex)
-{
-    var regex = new RegExp("(^|\\s+)" + classNameRegex + "($|\\s+)");
-    if (regex.test(this.className))
-        this.className = this.className.replace(regex, " ");
-}
-
-Element.prototype.addStyleClass = function(className)
-{
-    this.classList.add(className);
-}
-
-Element.prototype.hasStyleClass = function(className)
-{
-    return this.classList.contains(className);
-}
-
-Element.prototype.positionAt = function(x, y)
-{
-    this.style.left = x + "px";
-    this.style.top = y + "px";
-}
-
-Element.prototype.pruneEmptyTextNodes = function()
-{
-    var sibling = this.firstChild;
-    while (sibling) {
-        var nextSibling = sibling.nextSibling;
-        if (sibling.nodeType === this.TEXT_NODE && sibling.nodeValue === "")
-            this.removeChild(sibling);
-        sibling = nextSibling;
-    }
-}
-
-Element.prototype.isScrolledToBottom = function()
-{
-    // This code works only for 0-width border
-    return this.scrollTop + this.clientHeight === this.scrollHeight;
-}
-
-Node.prototype.enclosingNodeOrSelfWithNodeNameInArray = function(nameArray)
-{
-    for (var node = this; node && node !== this.ownerDocument; node = node.parentNode)
-        for (var i = 0; i < nameArray.length; ++i)
-            if (node.nodeName.toLowerCase() === nameArray[i].toLowerCase())
-                return node;
-    return null;
-}
-
-Node.prototype.enclosingNodeOrSelfWithNodeName = function(nodeName)
-{
-    return this.enclosingNodeOrSelfWithNodeNameInArray([nodeName]);
-}
-
-Node.prototype.enclosingNodeOrSelfWithClass = function(className)
-{
-    for (var node = this; node && node !== this.ownerDocument; node = node.parentNode)
-        if (node.nodeType === Node.ELEMENT_NODE && node.hasStyleClass(className))
-            return node;
-    return null;
-}
-
-Node.prototype.enclosingNodeWithClass = function(className)
-{
-    if (!this.parentNode)
-        return null;
-    return this.parentNode.enclosingNodeOrSelfWithClass(className);
-}
-
-Element.prototype.query = function(query)
-{
-    return this.ownerDocument.evaluate(query, this, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
-
-Element.prototype.removeChildren = function()
-{
-    if (this.firstChild)
-        this.textContent = "";
-}
-
-Element.prototype.isInsertionCaretInside = function()
-{
-    var selection = window.getSelection();
-    if (!selection.rangeCount || !selection.isCollapsed)
+    for (var i in obj)
         return false;
-    var selectionRange = selection.getRangeAt(0);
-    return selectionRange.startContainer.isSelfOrDescendant(this);
+    return true;
 }
 
-/**
- * @param {string=} className
- */
-Element.prototype.createChild = function(elementName, className)
+Object.values = function(obj)
 {
-    var element = this.ownerDocument.createElement(elementName);
-    if (className)
-        element.className = className;
-    this.appendChild(element);
-    return element;
-}
+    var keys = Object.keys(obj);
+    var result = [];
 
-DocumentFragment.prototype.createChild = Element.prototype.createChild;
-
-/**
- * @return {number}
- */
-Element.prototype.totalOffsetLeft = function()
-{
-    return this.totalOffset().left;
-}
-
-/**
- * @return {number}
- */
-Element.prototype.totalOffsetTop = function()
-{
-    return this.totalOffset().top;
-
-}
-
-Element.prototype.totalOffset = function()
-{
-    var totalLeft = 0;
-    var totalTop = 0;
-
-    for (var element = this; element; element = element.offsetParent) {
-        totalLeft += element.offsetLeft;
-        totalTop += element.offsetTop;
-        if (this !== element) {
-            totalLeft += element.clientLeft - element.scrollLeft;
-            totalTop += element.clientTop - element.scrollTop;
-        }
-    }
-
-    return { left: totalLeft, top: totalTop };
-}
-
-Element.prototype.scrollOffset = function()
-{
-    var curLeft = 0;
-    var curTop = 0;
-    for (var element = this; element; element = element.scrollParent) {
-        curLeft += element.scrollLeft;
-        curTop += element.scrollTop;
-    }
-    return { left: curLeft, top: curTop };
-}
-
-/**
- * @constructor
- * @param {number=} x
- * @param {number=} y
- * @param {number=} width
- * @param {number=} height
- */
-function AnchorBox(x, y, width, height)
-{
-    this.x = x || 0;
-    this.y = y || 0;
-    this.width = width || 0;
-    this.height = height || 0;
-}
-
-/**
- * @param {Window} targetWindow
- * @return {AnchorBox}
- */
-Element.prototype.offsetRelativeToWindow = function(targetWindow)
-{
-    var elementOffset = new AnchorBox();
-    var curElement = this;
-    var curWindow = this.ownerDocument.defaultView;
-    while (curWindow && curElement) {
-        elementOffset.x += curElement.totalOffsetLeft();
-        elementOffset.y += curElement.totalOffsetTop();
-        if (curWindow === targetWindow)
-            break;
-
-        curElement = curWindow.frameElement;
-        curWindow = curWindow.parent;
-    }
-
-    return elementOffset;
-}
-
-/**
- * @param {Window} targetWindow
- * @return {AnchorBox}
- */
-Element.prototype.boxInWindow = function(targetWindow)
-{
-    targetWindow = targetWindow || this.ownerDocument.defaultView;
-
-    var anchorBox = this.offsetRelativeToWindow(window);
-    anchorBox.width = Math.min(this.offsetWidth, window.innerWidth - anchorBox.x);
-    anchorBox.height = Math.min(this.offsetHeight, window.innerHeight - anchorBox.y);
-
-    return anchorBox;
-}
-
-/**
- * @param {string} text
- */
-Element.prototype.setTextAndTitle = function(text)
-{
-    this.textContent = text;
-    this.title = text;
-}
-
-KeyboardEvent.prototype.__defineGetter__("data", function()
-{
-    // Emulate "data" attribute from DOM 3 TextInput event.
-    // See http://www.w3.org/TR/DOM-Level-3-Events/#events-Events-TextEvent-data
-    switch (this.type) {
-        case "keypress":
-            if (!this.ctrlKey && !this.metaKey)
-                return String.fromCharCode(this.charCode);
-            else
-                return "";
-        case "keydown":
-        case "keyup":
-            if (!this.ctrlKey && !this.metaKey && !this.altKey)
-                return String.fromCharCode(this.which);
-            else
-                return "";
-    }
-});
-
-Text.prototype.select = function(start, end)
-{
-    start = start || 0;
-    end = end || this.textContent.length;
-
-    if (start < 0)
-        start = end + start;
-
-    var selection = this.ownerDocument.defaultView.getSelection();
-    selection.removeAllRanges();
-    var range = this.ownerDocument.createRange();
-    range.setStart(this, start);
-    range.setEnd(this, end);
-    selection.addRange(range);
-    return this;
-}
-
-Element.prototype.selectionLeftOffset = function()
-{
-    // Calculate selection offset relative to the current element.
-
-    var selection = window.getSelection();
-    if (!selection.containsNode(this, true))
-        return null;
-
-    var leftOffset = selection.anchorOffset;
-    var node = selection.anchorNode;
-
-    while (node !== this) {
-        while (node.previousSibling) {
-            node = node.previousSibling;
-            leftOffset += node.textContent.length;
-        }
-        node = node.parentNode;
-    }
-
-    return leftOffset;
+    for (var i = 0; i < keys.length; ++i)
+        result.push(obj[keys[i]]);
+    return result;
 }
 
 String.prototype.hasSubstring = function(string, caseInsensitive)
@@ -442,42 +71,6 @@ String.prototype.lineEndings = function()
     return this._lineEndings;
 }
 
-String.prototype.asParsedURL = function()
-{
-    // RegExp groups:
-    // 1 - scheme
-    // 2 - hostname
-    // 3 - ?port
-    // 4 - ?path
-    // 5 - ?fragment
-    var match = this.match(/^([^:]+):\/\/([^\/:]*)(?::([\d]+))?(?:(\/[^#]*)(?:#(.*))?)?$/i);
-    if (!match)
-        return null;
-    var result = {};
-    result.scheme = match[1].toLowerCase();
-    result.host = match[2];
-    result.port = match[3];
-    result.path = match[4] || "/";
-    result.fragment = match[5];
-
-    result.lastPathComponent = "";
-    if (result.path) {
-        // First cut the query params.
-        var path = result.path;
-        var indexOfQuery = path.indexOf("?");
-        if (indexOfQuery !== -1)
-            path = path.substring(0, indexOfQuery);
-
-        // Then take last path component.
-        var lastSlashIndex = path.lastIndexOf("/");
-        if (lastSlashIndex !== -1) {
-            result.firstPathComponents = path.substring(0, lastSlashIndex + 1);
-            result.lastPathComponent = path.substring(lastSlashIndex + 1);
-        }
-    } 
-    return result;
-}
-
 String.prototype.escapeCharacters = function(chars)
 {
     var foundChar = false;
@@ -501,9 +94,14 @@ String.prototype.escapeCharacters = function(chars)
     return result;
 }
 
+String.regexSpecialCharacters = function()
+{
+    return "^[]{}()\\.$*+?|-,";
+}
+
 String.prototype.escapeForRegExp = function()
 {
-    return this.escapeCharacters("^[]{}()\\.$*+?|");
+    return this.escapeCharacters(String.regexSpecialCharacters);
 }
 
 String.prototype.escapeHTML = function()
@@ -540,6 +138,28 @@ String.prototype.trimURL = function(baseURLDomain)
     return result;
 }
 
+/**
+ * @param {string} other
+ * @return {number}
+ */
+String.prototype.compareTo = function(other)
+{
+    if (this > other)
+        return 1;
+    if (this < other)
+        return -1;
+    return 0;
+}
+
+/**
+ * @param {string} href
+ * @return {string}
+ */
+function sanitizeHref(href)
+{
+    return href && href.trim().toLowerCase().startsWith("javascript:") ? "" : href;
+}
+
 String.prototype.removeURLFragment = function()
 {
     var fragmentIndex = this.indexOf("#");
@@ -548,67 +168,14 @@ String.prototype.removeURLFragment = function()
     return this.substring(0, fragmentIndex);
 }
 
-Node.prototype.isAncestor = function(node)
+String.prototype.startsWith = function(substring)
 {
-    if (!node)
-        return false;
-
-    var currentNode = node.parentNode;
-    while (currentNode) {
-        if (this === currentNode)
-            return true;
-        currentNode = currentNode.parentNode;
-    }
-    return false;
+    return !this.lastIndexOf(substring, 0);
 }
 
-Node.prototype.isDescendant = function(descendant)
+String.prototype.endsWith = function(substring)
 {
-    return !!descendant && descendant.isAncestor(this);
-}
-
-Node.prototype.isSelfOrAncestor = function(node)
-{
-    return !!node && (node === this || this.isAncestor(node));
-}
-
-Node.prototype.isSelfOrDescendant = function(node)
-{
-    return !!node && (node === this || this.isDescendant(node));
-}
-
-Node.prototype.traverseNextNode = function(stayWithin)
-{
-    var node = this.firstChild;
-    if (node)
-        return node;
-
-    if (stayWithin && this === stayWithin)
-        return null;
-
-    node = this.nextSibling;
-    if (node)
-        return node;
-
-    node = this;
-    while (node && !node.nextSibling && (!stayWithin || !node.parentNode || node.parentNode !== stayWithin))
-        node = node.parentNode;
-    if (!node)
-        return null;
-
-    return node.nextSibling;
-}
-
-Node.prototype.traversePreviousNode = function(stayWithin)
-{
-    if (stayWithin && this === stayWithin)
-        return null;
-    var node = this.previousSibling;
-    while (node && node.lastChild)
-        node = node.lastChild;
-    if (node)
-        return node;
-    return this.parentNode;
+    return this.indexOf(substring, this.length - substring.length) !== -1;
 }
 
 Number.constrain = function(num, min, max)
@@ -632,12 +199,6 @@ Date.prototype.toISO8601Compact = function()
            leadZero(this.getHours()) +
            leadZero(this.getMinutes()) +
            leadZero(this.getSeconds());
-}
-
-HTMLTextAreaElement.prototype.moveCursorToEnd = function()
-{
-    var length = this.value.length;
-    this.setSelectionRange(length, length);
 }
 
 Object.defineProperty(Array.prototype, "remove",
@@ -698,55 +259,203 @@ Object.defineProperty(Array.prototype, "upperBound",
     }
 });
 
-Array.diff = function(left, right)
+Object.defineProperty(Array.prototype, "rotate",
 {
-    var o = left;
-    var n = right;
-
-    var ns = {};
-    var os = {};
-
-    for (var i = 0; i < n.length; i++) {
-        if (ns[n[i]] == null)
-            ns[n[i]] = { rows: [], o: null };
-        ns[n[i]].rows.push(i);
+    /**
+     * @this {Array.<*>}
+     * @param {number} index
+     * @return {Array.<*>}
+     */
+    value: function(index)
+    {
+        var result = [];
+        for (var i = index; i < index + this.length; ++i)
+            result.push(this[i % this.length]);
+        return result;
     }
+});
 
-    for (var i = 0; i < o.length; i++) {
-        if (os[o[i]] == null)
-            os[o[i]] = { rows: [], n: null };
-        os[o[i]].rows.push(i);
+Object.defineProperty(Uint32Array.prototype, "sort", {
+   value: Array.prototype.sort
+});
+
+(function() {
+var partition = {
+    /**
+     * @this {Array.<number>}
+     * @param {function(number,number):boolean} comparator
+     * @param {number} left
+     * @param {number} right
+     * @param {number} pivotIndex
+     */
+    value: function(comparator, left, right, pivotIndex)
+    {
+        function swap(array, i1, i2)
+        {
+            var temp = array[i1];
+            array[i1] = array[i2];
+            array[i2] = temp;
+        }
+
+        var pivotValue = this[pivotIndex];
+        swap(this, right, pivotIndex);
+        var storeIndex = left;
+        for (var i = left; i < right; ++i) {
+            if (comparator(this[i], pivotValue) < 0) {
+                swap(this, storeIndex, i);
+                ++storeIndex;
+            }
+        }
+        swap(this, right, storeIndex);
+        return storeIndex;
     }
+};
+Object.defineProperty(Array.prototype, "partition", partition);
+Object.defineProperty(Uint32Array.prototype, "partition", partition);
 
-    for (var i in ns) {
-        if (ns[i].rows.length == 1 && typeof(os[i]) != "undefined" && os[i].rows.length == 1) {
-            n[ns[i].rows[0]] = { text: n[ns[i].rows[0]], row: os[i].rows[0] };
-            o[os[i].rows[0]] = { text: o[os[i].rows[0]], row: ns[i].rows[0] };
+var sortRange = {
+    /**
+     * @this {Array.<number>}
+     * @param {function(number,number):boolean} comparator
+     * @param {number} leftBound
+     * @param {number} rightBound
+     * @param {number} k
+     */
+    value: function(comparator, leftBound, rightBound, k)
+    {
+        function quickSortFirstK(array, comparator, left, right, k)
+        {
+            if (right <= left)
+                return;
+            var pivotIndex = Math.floor(Math.random() * (right - left)) + left;
+            var pivotNewIndex = array.partition(comparator, left, right, pivotIndex);
+            quickSortFirstK(array, comparator, left, pivotNewIndex - 1, k);
+            if (pivotNewIndex < left + k - 1)
+                quickSortFirstK(array, comparator, pivotNewIndex + 1, right, k);
+        }
+
+        if (leftBound === 0 && rightBound === (this.length - 1) && k >= this.length)
+            this.sort(comparator);
+        else
+            quickSortFirstK(this, comparator, leftBound, rightBound, k);
+        return this;
+    }
+}
+Object.defineProperty(Array.prototype, "sortRange", sortRange);
+Object.defineProperty(Uint32Array.prototype, "sortRange", sortRange);
+})();
+
+Object.defineProperty(Array.prototype, "qselect",
+{
+    /**
+     * @this {Array.<number>}
+     * @param {number} k
+     * @param {function(number,number):boolean=} comparator
+     */
+    value: function(k, comparator)
+    {
+        if (k < 0 || k >= this.length)
+            return;
+        if (!comparator)
+            comparator = function(a, b) { return a - b; }
+
+        var low = 0;
+        var high = this.length - 1;
+        for (;;) {
+            var pivotPosition = this.partition(comparator, low, high, Math.floor((high + low) / 2));
+            if (pivotPosition === k)
+                return this[k];
+            else if (pivotPosition > k)
+                high = pivotPosition - 1;
+            else
+                low = pivotPosition + 1;
         }
     }
+});
 
-    for (var i = 0; i < n.length - 1; i++) {
-        if (n[i].text != null && n[i + 1].text == null && n[i].row + 1 < o.length && o[n[i].row + 1].text == null && n[i + 1] == o[n[i].row + 1]) {
-            n[i + 1] = { text: n[i + 1], row: n[i].row + 1 };
-            o[n[i].row + 1] = { text: o[n[i].row + 1], row: i + 1 };
-        }
+/**
+ * @param {*} object
+ * @param {Array.<*>} array
+ * @param {function(*, *):number} comparator
+ */
+function binarySearch(object, array, comparator)
+{
+    var first = 0;
+    var last = array.length - 1;
+
+    while (first <= last) {
+        var mid = (first + last) >> 1;
+        var c = comparator(object, array[mid]);
+        if (c > 0)
+            first = mid + 1;
+        else if (c < 0)
+            last = mid - 1;
+        else
+            return mid;
     }
 
-    for (var i = n.length - 1; i > 0; i--) {
-        if (n[i].text != null && n[i - 1].text == null && n[i].row > 0 && o[n[i].row - 1].text == null &&
-            n[i - 1] == o[n[i].row - 1]) {
-            n[i - 1] = { text: n[i - 1], row: n[i].row - 1 };
-            o[n[i].row - 1] = { text: o[n[i].row - 1], row: i - 1 };
-        }
-    }
-
-    return { left: o, right: n };
+    // Return the nearest lesser index, "-1" means "0, "-2" means "1", etc.
+    return -(first + 1);
 }
 
-Array.convert = function(list)
+Object.defineProperty(Array.prototype, "binaryIndexOf",
 {
-    // Cast array-like object to an array.
-    return Array.prototype.slice.call(list);
+    /**
+     * @this {Array.<*>}
+     * @param {function(*, *):number} comparator
+     */
+    value: function(value, comparator)
+    {
+        var result = binarySearch(value, this, comparator);
+        return result >= 0 ? result : -1;
+    }
+});
+
+Object.defineProperty(Array.prototype, "select",
+{
+    /**
+     * @this {Array.<*>}
+     * @param {string} field
+     * @return {Array.<*>}
+     */
+    value: function(field)
+    {
+        var result = new Array(this.length);
+        for (var i = 0; i < this.length; ++i)
+            result[i] = this[i][field];
+        return result;
+    }
+});
+
+Object.defineProperty(Array.prototype, "peekLast",
+{
+    /**
+     * @this {Array.<*>}
+     * @return {*}
+     */
+    value: function()
+    {
+        return this[this.length - 1];
+    }
+});
+
+/**
+ * @param {*} anObject
+ * @param {Array.<*>} aList
+ * @param {function(*, *)} aFunction
+ */
+function insertionIndexForObjectInListSortedByFunction(anObject, aList, aFunction)
+{
+    var index = binarySearch(anObject, aList, aFunction);
+    if (index < 0)
+        // See binarySearch implementation.
+        return -index - 1;
+    else {
+        // Return the first occurance of an item in the list.
+        while (index > 0 && aFunction(anObject, aList[index - 1]) === 0)
+            index--;
+        return index;
+    }
 }
 
 /**
@@ -758,7 +467,7 @@ String.sprintf = function(format, var_arg)
     return String.vsprintf(format, Array.prototype.slice.call(arguments, 1));
 }
 
-String.tokenizeFormatString = function(format)
+String.tokenizeFormatString = function(format, formatters)
 {
     var tokens = [];
     var substitutionIndex = 0;
@@ -773,22 +482,22 @@ String.tokenizeFormatString = function(format)
         tokens.push({ type: "specifier", specifier: specifier, precision: precision, substitutionIndex: substitutionIndex });
     }
 
+    function isDigit(c)
+    {
+        return !!/[0-9]/.exec(c);
+    }
+
     var index = 0;
     for (var precentIndex = format.indexOf("%", index); precentIndex !== -1; precentIndex = format.indexOf("%", index)) {
         addStringToken(format.substring(index, precentIndex));
         index = precentIndex + 1;
 
-        if (format[index] === "%") {
-            addStringToken("%");
-            ++index;
-            continue;
-        }
-
-        if (!isNaN(format[index])) {
+        if (isDigit(format[index])) {
             // The first character is a number, it might be a substitution index.
             var number = parseInt(format.substring(index), 10);
-            while (!isNaN(format[index]))
+            while (isDigit(format[index]))
                 ++index;
+
             // If the number is greater than zero and ends with a "$",
             // then this is a substitution index.
             if (number > 0 && format[index] === "$") {
@@ -805,8 +514,15 @@ String.tokenizeFormatString = function(format)
             precision = parseInt(format.substring(index), 10);
             if (isNaN(precision))
                 precision = 0;
-            while (!isNaN(format[index]))
+
+            while (isDigit(format[index]))
                 ++index;
+        }
+
+        if (!(format[index] in formatters)) {
+            addStringToken(format.substring(precentIndex, index + 1));
+            ++index;
+            continue;
         }
 
         addSpecifierToken(format[index], precision, substitutionIndex);
@@ -865,7 +581,7 @@ String.format = function(format, substitutions, formatters, initialValue, append
     }
 
     var result = initialValue;
-    var tokens = String.tokenizeFormatString(format);
+    var tokens = String.tokenizeFormatString(format, formatters);
     var usedSubstitutionIndexes = {};
 
     for (var i = 0; i < tokens.length; ++i) {
@@ -911,155 +627,6 @@ String.format = function(format, substitutions, formatters, initialValue, append
     return { formattedResult: result, unusedSubstitutions: unusedSubstitutions };
 }
 
-function isEnterKey(event) {
-    // Check if in IME.
-    return event.keyCode !== 229 && event.keyIdentifier === "Enter";
-}
-
-function stopPropagation(e)
-{
-    e.stopPropagation();
-}
-
-/**
- * @param {Element} element
- * @param {number} offset
- * @param {number} length
- * @param {Array.<Object>=} domChanges
- */
-function highlightSearchResult(element, offset, length, domChanges)
-{
-    var result = highlightSearchResults(element, [{offset: offset, length: length }], domChanges);
-    return result.length ? result[0] : null;
-}
-
-/**
- * @param {Element} element
- * @param {Array.<Object>} resultRanges
- * @param {Array.<Object>=} changes
- */
-function highlightSearchResults(element, resultRanges, changes)
-{
-    return highlightRangesWithStyleClass(element, resultRanges, "webkit-search-result", changes);
-    
-}
-
-/**
- * @param {Element} element
- * @param {Array.<Object>} resultRanges
- * @param {string} styleClass
- * @param {Array.<Object>=} changes
- */
-function highlightRangesWithStyleClass(element, resultRanges, styleClass, changes)
-{
-    changes = changes || [];
-    var highlightNodes = [];
-    var lineText = element.textContent;
-    var ownerDocument = element.ownerDocument;
-    var textNodeSnapshot = ownerDocument.evaluate(".//text()", element, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-
-    var snapshotLength = textNodeSnapshot.snapshotLength;
-    if (snapshotLength === 0)
-        return highlightNodes;
-
-    var nodeRanges = [];
-    var rangeEndOffset = 0;
-    for (var i = 0; i < snapshotLength; ++i) {
-        var range = {};
-        range.offset = rangeEndOffset;
-        range.length = textNodeSnapshot.snapshotItem(i).textContent.length;
-        rangeEndOffset = range.offset + range.length;
-        nodeRanges.push(range);
-    }
-
-    var startIndex = 0;
-    for (var i = 0; i < resultRanges.length; ++i) {
-        var startOffset = resultRanges[i].offset;
-        var endOffset = startOffset + resultRanges[i].length;
-
-        while (startIndex < snapshotLength && nodeRanges[startIndex].offset + nodeRanges[startIndex].length <= startOffset)
-            startIndex++;
-        var endIndex = startIndex; 
-        while (endIndex < snapshotLength && nodeRanges[endIndex].offset + nodeRanges[endIndex].length < endOffset)
-            endIndex++;
-        if (endIndex === snapshotLength)
-            break;
-        
-        var highlightNode = ownerDocument.createElement("span");
-        highlightNode.className = styleClass;
-        highlightNode.textContent = lineText.substring(startOffset, endOffset);
-
-        var lastTextNode = textNodeSnapshot.snapshotItem(endIndex);
-        var lastText = lastTextNode.textContent;
-        lastTextNode.textContent = lastText.substring(endOffset - nodeRanges[endIndex].offset);
-        changes.push({ node: lastTextNode, type: "changed", oldText: lastText, newText: lastTextNode.textContent });
-        
-        if (startIndex === endIndex) {
-            lastTextNode.parentElement.insertBefore(highlightNode, lastTextNode);
-            changes.push({ node: highlightNode, type: "added", nextSibling: lastTextNode, parent: lastTextNode.parentElement });
-            highlightNodes.push(highlightNode);
-            
-            var prefixNode = ownerDocument.createTextNode(lastText.substring(0, startOffset - nodeRanges[startIndex].offset));
-            lastTextNode.parentElement.insertBefore(prefixNode, highlightNode);
-            changes.push({ node: prefixNode, type: "added", nextSibling: highlightNode, parent: lastTextNode.parentElement });
-        } else {
-            var firstTextNode = textNodeSnapshot.snapshotItem(startIndex);
-            var firstText = firstTextNode.textContent;
-            var anchorElement = firstTextNode.nextSibling;
-
-            firstTextNode.parentElement.insertBefore(highlightNode, anchorElement);
-            changes.push({ node: highlightNode, type: "added", nextSibling: anchorElement, parent: firstTextNode.parentElement });
-            highlightNodes.push(highlightNode);
-
-            firstTextNode.textContent = firstText.substring(0, startOffset - nodeRanges[startIndex].offset);
-            changes.push({ node: firstTextNode, type: "changed", oldText: firstText, newText: firstTextNode.textContent });
-
-            for (var j = startIndex + 1; j < endIndex; j++) {
-                var textNode = textNodeSnapshot.snapshotItem(j);
-                var text = textNode.textContent;
-                textNode.textContent = "";
-                changes.push({ node: textNode, type: "changed", oldText: text, newText: textNode.textContent });
-            }
-        }
-        startIndex = endIndex;
-        nodeRanges[startIndex].offset = endOffset;
-        nodeRanges[startIndex].length = lastTextNode.textContent.length;
-            
-    }
-    return highlightNodes;
-}
-
-function applyDomChanges(domChanges)
-{
-    for (var i = 0, size = domChanges.length; i < size; ++i) {
-        var entry = domChanges[i];
-        switch (entry.type) {
-        case "added":
-            entry.parent.insertBefore(entry.node, entry.nextSibling);
-            break;
-        case "changed":
-            entry.node.textContent = entry.newText;
-            break;
-        }
-    }
-}
-
-function revertDomChanges(domChanges)
-{
-    for (var i = domChanges.length - 1; i >= 0; --i) {
-        var entry = domChanges[i];
-        switch (entry.type) {
-        case "added":
-            if (entry.node.parentElement)
-                entry.node.parentElement.removeChild(entry.node);
-            break;
-        case "changed":
-            entry.node.textContent = entry.oldText;
-            break;
-        }
-    }
-}
-
 /**
  * @param {string} query
  * @param {boolean} caseSensitive
@@ -1088,12 +655,12 @@ function createSearchRegex(query, caseSensitive, isRegex)
 /**
  * @param {string} query
  * @param {string=} flags
- * @return {RegExp}
+ * @return {!RegExp}
  */
 function createPlainTextSearchRegex(query, flags)
 {
     // This should be kept the same as the one in ContentSearchUtils.cpp.
-    var regexSpecialCharacters = "[](){}+-*.,?\\^$|";
+    var regexSpecialCharacters = String.regexSpecialCharacters();
     var regex = "";
     for (var i = 0; i < query.length; ++i) {
         var c = query.charAt(i);
@@ -1138,49 +705,10 @@ function numberToStringWithSpacesPadding(value, symbolsCount)
 /**
  * @constructor
  */
-function TextDiff()
-{
-    this.added = [];
-    this.removed = [];
-    this.changed = [];
-} 
-
-/**
- * @param {string} baseContent
- * @param {string} newContent
- * @return {TextDiff}
- */
-TextDiff.compute = function(baseContent, newContent)
-{
-    var oldLines = baseContent.split(/\r?\n/);
-    var newLines = newContent.split(/\r?\n/);
-
-    var diff = Array.diff(oldLines, newLines);
-
-    var diffData = new TextDiff();
-
-    var offset = 0;
-    var right = diff.right;
-    for (var i = 0; i < right.length; ++i) {
-        if (typeof right[i] === "string") {
-            if (right.length > i + 1 && right[i + 1].row === i + 1 - offset)
-                diffData.changed.push(i);
-            else {
-                diffData.added.push(i);
-                offset++;
-            }
-        } else
-            offset = i - right[i].row;
-    }
-    return diffData;
-}
-
-/**
- * @constructor
- */
 var Map = function()
 {
     this._map = {};
+    this._size = 0;
 }
 
 Map._lastObjectIdentifier = 0;
@@ -1188,6 +716,7 @@ Map._lastObjectIdentifier = 0;
 Map.prototype = {
     /**
      * @param {Object} key
+     * @param {*=} value
      */
     put: function(key, value)
     {
@@ -1196,7 +725,9 @@ Map.prototype = {
             objectIdentifier = ++Map._lastObjectIdentifier;
             key.__identifier = objectIdentifier;
         }
-        this._map[objectIdentifier] = value;
+        if (!this._map[objectIdentifier])
+            ++this._size;
+        this._map[objectIdentifier] = [key, value];
     },
     
     /**
@@ -1204,27 +735,162 @@ Map.prototype = {
      */
     remove: function(key)
     {
+        var result = this._map[key.__identifier];
+        if (!result)
+            return undefined;
+        --this._size;
         delete this._map[key.__identifier];
+        return result[1];
     },
-    
+
+    /**
+     * @return {Array.<Object>}
+     */
     keys: function()
     {
-        var result = [];
-        for (var key in this._map)
-            result.push(key);
+        return this._list(0);
+    },
+
+    values: function()
+    {
+        return this._list(1);
+    },
+
+    /**
+     * @param {number} index
+     */
+    _list: function(index)
+    {
+        var result = new Array(this._size);
+        var i = 0;
+        for (var objectIdentifier in this._map)
+            result[i++] = this._map[objectIdentifier][index];
         return result;
     },
-    
+
     /**
      * @param {Object} key
      */
     get: function(key)
     {
-        return this._map[key.__identifier];
+        var entry = this._map[key.__identifier];
+        return entry ? entry[1] : undefined;
     },
-    
+
+    size: function()
+    {
+        return this._size;
+    },
+
     clear: function()
     {
         this._map = {};
+        this._size = 0;
     }
+}
+/**
+ * @param {string} url
+ * @param {boolean=} async
+ * @param {function(?string)=} callback
+ * @return {?string}
+ */
+function loadXHR(url, async, callback) 
+{
+    function onReadyStateChanged() 
+    {
+        if (xhr.readyState !== XMLHttpRequest.DONE)
+            return;
+
+        if (xhr.status === 200) {
+            callback(xhr.responseText);
+            return;
+        }
+
+        callback(null); 
+   }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, async);
+    if (async)
+        xhr.onreadystatechange = onReadyStateChanged;        
+    xhr.send(null);
+
+    if (!async) {
+        if (xhr.status === 200) 
+            return xhr.responseText;
+        return null;
+    }
+    return null;
+}
+
+/**
+ * @constructor
+ */
+function StringPool()
+{
+    this.reset();
+}
+
+StringPool.prototype = {
+    /**
+     * @param {string} string
+     * @return {string}
+     */
+    intern: function(string)
+    {
+        // Do not mess with setting __proto__ to anything but null, just handle it explicitly.
+        if (string === "__proto__")
+            return "__proto__";
+        var result = this._strings[string];
+        if (result === undefined) {
+            this._strings[string] = string;
+            result = string;
+        }
+        return result;
+    },
+
+    reset: function()
+    {
+        this._strings = Object.create(null);
+    },
+
+    /**
+     * @param {Object} obj
+     * @param {number=} depthLimit
+     */
+    internObjectStrings: function(obj, depthLimit)
+    {
+        if (typeof depthLimit !== "number")
+            depthLimit = 100;
+        else if (--depthLimit < 0)
+            throw "recursion depth limit reached in StringPool.deepIntern(), perhaps attempting to traverse cyclical references?";
+
+        for (var field in obj) {
+            switch (typeof obj[field]) {
+            case "string":
+                obj[field] = this.intern(obj[field]);
+                break;
+            case "object":
+                this.internObjectStrings(obj[field], depthLimit);
+                break;
+            }
+        }
+    }
+}
+
+var _importedScripts = {};
+
+/**
+ * @param {string} scriptName
+ */
+function importScript(scriptName)
+{
+    if (_importedScripts[scriptName])
+        return;
+    _importedScripts[scriptName] = true;
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", scriptName, false);
+    xhr.send(null);
+    var sourceURL = WebInspector.ParsedURL.completeURL(window.location.href, scriptName); 
+    window.eval(xhr.responseText + "\n//@ sourceURL=" + sourceURL);
 }

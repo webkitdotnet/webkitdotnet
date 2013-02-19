@@ -44,6 +44,11 @@ WebInspector.WorkerManager.isWorkerFrontend = function()
            !!WebInspector.queryParamsObject["isSharedWorker"];
 }
 
+WebInspector.WorkerManager.isDedicatedWorkerFrontend = function()
+{
+    return !!WebInspector.queryParamsObject["dedicatedWorkerId"];
+}
+
 WebInspector.WorkerManager.loaded = function()
 {
     var workerId = WebInspector.queryParamsObject["dedicatedWorkerId"];
@@ -98,7 +103,13 @@ WebInspector.WorkerManager._calculateWorkerInspectorTitle = function()
     var expression = "location.href";
     if (WebInspector.queryParamsObject["isSharedWorker"])
         expression += " + (this.name ? ' (' + this.name + ')' : '')";
-    RuntimeAgent.evaluate.invoke({expression:expression, doNotPauseOnExceptions:true, returnByValue: true}, evalCallback.bind(this));
+    RuntimeAgent.evaluate.invoke({expression:expression, doNotPauseOnExceptionsAndMuteConsole:true, returnByValue: true}, evalCallback.bind(this));
+    
+    /**
+     * @param {?Protocol.Error} error
+     * @param {RuntimeAgent.RemoteObject} result
+     * @param {boolean=} wasThrown
+     */
     function evalCallback(error, result, wasThrown)
     {
         if (error || wasThrown) {
@@ -150,12 +161,21 @@ WebInspector.WorkerManager.prototype = {
 
     _openInspectorWindow: function(workerId, workerIsPaused)
     {
-        var url = window.location.href + "&dedicatedWorkerId=" + workerId;
+        var search = window.location.search;
+        var hash = window.location.hash;
+        var url = window.location.href;
+        // Make sure hash is in rear
+        url = url.replace(hash, "");
+        url += (search ? "&dedicatedWorkerId=" : "?dedicatedWorkerId=") + workerId;
         if (workerIsPaused)
             url += "&workerPaused=true";
         url = url.replace("docked=true&", "");
+        url += hash;
+        var width = WebInspector.settings.workerInspectorWidth.get();
+        var height = WebInspector.settings.workerInspectorHeight.get();
         // Set location=0 just to make sure the front-end will be opened in a separate window, not in new tab.
-        var workerInspectorWindow = window.open(url, undefined, "location=0");
+        var workerInspectorWindow = window.open(url, undefined, "location=0,width=" + width + ",height=" + height);
+        workerInspectorWindow.addEventListener("resize", this._onWorkerInspectorResize.bind(this, workerInspectorWindow), false);
         this._workerIdToWindow[workerId] = workerInspectorWindow;
         workerInspectorWindow.addEventListener("beforeunload", this._workerInspectorClosing.bind(this, workerId), true);
 
@@ -187,8 +207,17 @@ WebInspector.WorkerManager.prototype = {
         }
     },
 
+    _onWorkerInspectorResize: function(workerInspectorWindow)
+    {
+        var doc = workerInspectorWindow.document;
+        WebInspector.settings.workerInspectorWidth.set(doc.width);
+        WebInspector.settings.workerInspectorHeight.set(doc.height);
+    },
+
     _workerInspectorClosing: function(workerId, event)
     {
+        if (event.target.location.href === "about:blank")
+            return;
         if (this._ignoreWorkerInspectorClosing)
             return;
         delete this._workerIdToWindow[workerId];
@@ -197,17 +226,13 @@ WebInspector.WorkerManager.prototype = {
 
     _disconnectedFromWorker: function()
     {
-        function onHide()
-        {
-            WebInspector.debuggerModel.removeEventListener(WebInspector.DebuggerModel.Events.GlobalObjectCleared, screen.hide, screen);
-        }
         var screen = new WebInspector.WorkerTerminatedScreen();
         WebInspector.debuggerModel.addEventListener(WebInspector.DebuggerModel.Events.GlobalObjectCleared, screen.hide, screen);
-        screen.show(onHide.bind(this));
-    }
-}
+        screen.showModal();
+    },
 
-WebInspector.WorkerManager.prototype.__proto__ = WebInspector.Object.prototype;
+    __proto__: WebInspector.Object.prototype
+}
 
 /**
  * @constructor
@@ -264,4 +289,15 @@ WebInspector.WorkerTerminatedScreen = function()
     p.textContent = WebInspector.UIString("Inspected worker has terminated. Once it restarts we will attach to it automatically.");
 }
 
-WebInspector.WorkerTerminatedScreen.prototype.__proto__ = WebInspector.HelpScreen.prototype;
+WebInspector.WorkerTerminatedScreen.prototype = {
+    /**
+     * @override
+     */
+    willHide: function()
+    {
+        WebInspector.debuggerModel.removeEventListener(WebInspector.DebuggerModel.Events.GlobalObjectCleared, this.hide, this);
+        WebInspector.HelpScreen.prototype.willHide.call(this);
+    },
+
+    __proto__: WebInspector.HelpScreen.prototype
+}

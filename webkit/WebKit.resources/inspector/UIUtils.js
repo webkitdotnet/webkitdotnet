@@ -29,51 +29,122 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-WebInspector.elementDragStart = function(element, dividerDrag, elementDragEnd, event, cursor)
+/**
+ * @param {Element} element
+ * @param {?function(Event): boolean} elementDragStart
+ * @param {function(Event)} elementDrag
+ * @param {?function(Event)} elementDragEnd
+ * @param {string} cursor
+ */
+WebInspector.installDragHandle = function(element, elementDragStart, elementDrag, elementDragEnd, cursor)
 {
-    if (WebInspector._elementDraggingEventListener || WebInspector._elementEndDraggingEventListener)
-        WebInspector.elementDragEnd(event);
+    element.addEventListener("mousedown", WebInspector._elementDragStart.bind(WebInspector, elementDragStart, elementDrag, elementDragEnd, cursor), false);
+}
 
-    if (element) {
-        // Install glass pane
-        if (WebInspector._elementDraggingGlassPane)
-            WebInspector._elementDraggingGlassPane.parentElement.removeChild(WebInspector._elementDraggingGlassPane);
+/**
+ * @param {?function(Event)} elementDragStart
+ * @param {function(Event)} elementDrag
+ * @param {?function(Event)} elementDragEnd
+ * @param {string} cursor
+ * @param {Event} event
+ */
+WebInspector._elementDragStart = function(elementDragStart, elementDrag, elementDragEnd, cursor, event)
+{
+    // Only drag upon left button. Right will likely cause a context menu. So will ctrl-click on mac.
+    if (event.button || (WebInspector.isMac() && event.ctrlKey))
+        return;
 
-        var glassPane = document.createElement("div");
-        glassPane.style.cssText = "position:absolute;top:0;bottom:0;left:0;right:0;opacity:0;z-index:1";
-        glassPane.id = "glass-pane-for-drag";
-        element.ownerDocument.body.appendChild(glassPane);
-        WebInspector._elementDraggingGlassPane = glassPane;
+    if (WebInspector._elementDraggingEventListener)
+        return;
+
+    if (elementDragStart && !elementDragStart(event))
+        return;
+
+    if (WebInspector._elementDraggingGlassPane) {
+        WebInspector._elementDraggingGlassPane.dispose();
+        delete WebInspector._elementDraggingGlassPane;
     }
 
-    WebInspector._elementDraggingEventListener = dividerDrag;
-    WebInspector._elementEndDraggingEventListener = elementDragEnd;
-
     var targetDocument = event.target.ownerDocument;
-    targetDocument.addEventListener("mousemove", dividerDrag, true);
-    targetDocument.addEventListener("mouseup", elementDragEnd, true);
+
+    WebInspector._elementDraggingEventListener = elementDrag;
+    WebInspector._elementEndDraggingEventListener = elementDragEnd;
+    WebInspector._mouseOutWhileDraggingTargetDocument = targetDocument;
+
+    targetDocument.addEventListener("mousemove", WebInspector._elementDragMove, true);
+    targetDocument.addEventListener("mouseup", WebInspector._elementDragEnd, true);
+    targetDocument.addEventListener("mouseout", WebInspector._mouseOutWhileDragging, true);
 
     targetDocument.body.style.cursor = cursor;
 
     event.preventDefault();
 }
 
-WebInspector.elementDragEnd = function(event)
+WebInspector._mouseOutWhileDragging = function()
+{
+    WebInspector._unregisterMouseOutWhileDragging();
+    WebInspector._elementDraggingGlassPane = new WebInspector.GlassPane();
+}
+
+WebInspector._unregisterMouseOutWhileDragging = function()
+{
+    if (!WebInspector._mouseOutWhileDraggingTargetDocument)
+        return;
+    WebInspector._mouseOutWhileDraggingTargetDocument.removeEventListener("mouseout", WebInspector._mouseOutWhileDragging, true);
+    delete WebInspector._mouseOutWhileDraggingTargetDocument;
+}
+
+WebInspector._elementDragMove = function(event)
+{
+    if (WebInspector._elementDraggingEventListener(event))
+        WebInspector._cancelDragEvents(event);
+}
+
+WebInspector._cancelDragEvents = function(event)
 {
     var targetDocument = event.target.ownerDocument;
-    targetDocument.removeEventListener("mousemove", WebInspector._elementDraggingEventListener, true);
-    targetDocument.removeEventListener("mouseup", WebInspector._elementEndDraggingEventListener, true);
+    targetDocument.removeEventListener("mousemove", WebInspector._elementDragMove, true);
+    targetDocument.removeEventListener("mouseup", WebInspector._elementDragEnd, true);
+    WebInspector._unregisterMouseOutWhileDragging();
 
     targetDocument.body.style.removeProperty("cursor");
 
     if (WebInspector._elementDraggingGlassPane)
-        WebInspector._elementDraggingGlassPane.parentElement.removeChild(WebInspector._elementDraggingGlassPane);
+        WebInspector._elementDraggingGlassPane.dispose();
 
     delete WebInspector._elementDraggingGlassPane;
     delete WebInspector._elementDraggingEventListener;
     delete WebInspector._elementEndDraggingEventListener;
+}
+
+WebInspector._elementDragEnd = function(event)
+{
+    var elementDragEnd = WebInspector._elementEndDraggingEventListener;
+
+    WebInspector._cancelDragEvents(event);
 
     event.preventDefault();
+    if (elementDragEnd)
+        elementDragEnd(event);
+}
+
+/**
+ * @constructor
+ */
+WebInspector.GlassPane = function()
+{
+    this.element = document.createElement("div");
+    this.element.style.cssText = "position:absolute;top:0;bottom:0;left:0;right:0;background-color:transparent;z-index:1000;";
+    this.element.id = "glass-pane-for-drag";
+    document.body.appendChild(this.element);
+}
+
+WebInspector.GlassPane.prototype = {
+    dispose: function()
+    {
+        if (this.element.parentElement)
+            this.element.parentElement.removeChild(this.element);
+    }
 }
 
 WebInspector.animateStyle = function(animations, duration, callback)
@@ -183,7 +254,18 @@ WebInspector.animateStyle = function(animations, duration, callback)
 
 WebInspector.isBeingEdited = function(element)
 {
-    return element.__editing;
+    if (element.hasStyleClass("text-prompt") || element.nodeName === "INPUT")
+        return true;
+
+    if (!WebInspector.__editingCount)
+        return false;
+
+    while (element) {
+        if (element.__editing)
+            return true;
+        element = element.parentElement;
+    }
+    return false;
 }
 
 WebInspector.markBeingEdited = function(element, value)
@@ -200,17 +282,6 @@ WebInspector.markBeingEdited = function(element, value)
         --WebInspector.__editingCount;
     }
     return true;
-}
-
-WebInspector.isInEditMode = function(event)
-{
-    if (WebInspector.__editingCount > 0)
-        return true;
-    if (event.target.nodeName === "INPUT")
-        return true;
-    if (event.target.enclosingNodeOrSelfWithClass("text-prompt"))
-        return true;
-    return false;
 }
 
 /**
@@ -261,6 +332,190 @@ WebInspector.EditingConfig.prototype = {
     }
 }
 
+WebInspector.CSSNumberRegex = /^(-?(?:\d+(?:\.\d+)?|\.\d+))$/;
+
+WebInspector.StyleValueDelimiters = " \xA0\t\n\"':;,/()";
+
+
+/**
+  * @param {Event} event
+  * @return {?string}
+  */
+WebInspector._valueModificationDirection = function(event)
+{
+    var direction = null;
+    if (event.type === "mousewheel") {
+        if (event.wheelDeltaY > 0)
+            direction = "Up";
+        else if (event.wheelDeltaY < 0)
+            direction = "Down";
+    } else {
+        if (event.keyIdentifier === "Up" || event.keyIdentifier === "PageUp")
+            direction = "Up";
+        else if (event.keyIdentifier === "Down" || event.keyIdentifier === "PageDown")
+            direction = "Down";        
+    }
+    return direction;
+}
+
+/**
+ * @param {string} hexString
+ * @param {Event} event
+ */
+WebInspector._modifiedHexValue = function(hexString, event)
+{
+    var direction = WebInspector._valueModificationDirection(event);
+    if (!direction)
+        return hexString;
+
+    var number = parseInt(hexString, 16);
+    if (isNaN(number) || !isFinite(number))
+        return hexString;
+
+    var maxValue = Math.pow(16, hexString.length) - 1;
+    var arrowKeyOrMouseWheelEvent = (event.keyIdentifier === "Up" || event.keyIdentifier === "Down" || event.type === "mousewheel");
+    var delta;
+
+    if (arrowKeyOrMouseWheelEvent)
+        delta = (direction === "Up") ? 1 : -1;
+    else
+        delta = (event.keyIdentifier === "PageUp") ? 16 : -16;
+
+    if (event.shiftKey)
+        delta *= 16;
+
+    var result = number + delta;
+    if (result < 0)
+        result = 0; // Color hex values are never negative, so clamp to 0.
+    else if (result > maxValue)
+        return hexString;
+
+    // Ensure the result length is the same as the original hex value.
+    var resultString = result.toString(16).toUpperCase();
+    for (var i = 0, lengthDelta = hexString.length - resultString.length; i < lengthDelta; ++i)
+        resultString = "0" + resultString;
+    return resultString;
+}
+
+/**
+ * @param {number} number
+ * @param {Event} event
+ */
+WebInspector._modifiedFloatNumber = function(number, event)
+{
+    var direction = WebInspector._valueModificationDirection(event);
+    if (!direction)
+        return number;
+    
+    var arrowKeyOrMouseWheelEvent = (event.keyIdentifier === "Up" || event.keyIdentifier === "Down" || event.type === "mousewheel");
+
+    // Jump by 10 when shift is down or jump by 0.1 when Alt/Option is down.
+    // Also jump by 10 for page up and down, or by 100 if shift is held with a page key.
+    var changeAmount = 1;
+    if (event.shiftKey && !arrowKeyOrMouseWheelEvent)
+        changeAmount = 100;
+    else if (event.shiftKey || !arrowKeyOrMouseWheelEvent)
+        changeAmount = 10;
+    else if (event.altKey)
+        changeAmount = 0.1;
+
+    if (direction === "Down")
+        changeAmount *= -1;
+
+    // Make the new number and constrain it to a precision of 6, this matches numbers the engine returns.
+    // Use the Number constructor to forget the fixed precision, so 1.100000 will print as 1.1.
+    var result = Number((number + changeAmount).toFixed(6));
+    if (!String(result).match(WebInspector.CSSNumberRegex))
+        return null;
+
+    return result;
+}
+
+/**
+  * @param {Event} event
+  * @param {Element} element
+  * @param {function(string,string)=} finishHandler
+  * @param {function(string)=} suggestionHandler
+  * @param {function(number):number=} customNumberHandler
+ */
+WebInspector.handleElementValueModifications = function(event, element, finishHandler, suggestionHandler, customNumberHandler)
+{
+    var arrowKeyOrMouseWheelEvent = (event.keyIdentifier === "Up" || event.keyIdentifier === "Down" || event.type === "mousewheel");
+    var pageKeyPressed = (event.keyIdentifier === "PageUp" || event.keyIdentifier === "PageDown");
+    if (!arrowKeyOrMouseWheelEvent && !pageKeyPressed)
+        return false;
+
+    var selection = window.getSelection();
+    if (!selection.rangeCount)
+        return false;
+
+    var selectionRange = selection.getRangeAt(0);
+    if (!selectionRange.commonAncestorContainer.isSelfOrDescendant(element))
+        return false;
+
+    var originalValue = element.textContent;
+    var wordRange = selectionRange.startContainer.rangeOfWord(selectionRange.startOffset, WebInspector.StyleValueDelimiters, element);
+    var wordString = wordRange.toString();
+    
+    if (suggestionHandler && suggestionHandler(wordString))
+        return false;
+
+    var replacementString;
+    var prefix, suffix, number;
+
+    var matches;
+    matches = /(.*#)([\da-fA-F]+)(.*)/.exec(wordString);
+    if (matches && matches.length) {
+        prefix = matches[1];
+        suffix = matches[3];
+        number = WebInspector._modifiedHexValue(matches[2], event);
+        
+        if (customNumberHandler)
+            number = customNumberHandler(number);
+
+        replacementString = prefix + number + suffix;
+    } else {
+        matches = /(.*?)(-?(?:\d+(?:\.\d+)?|\.\d+))(.*)/.exec(wordString);
+        if (matches && matches.length) {
+            prefix = matches[1];
+            suffix = matches[3];
+            number = WebInspector._modifiedFloatNumber(parseFloat(matches[2]), event);
+            
+            // Need to check for null explicitly.
+            if (number === null)                
+                return false;
+            
+            if (customNumberHandler)
+                number = customNumberHandler(number);
+
+            replacementString = prefix + number + suffix;
+        }
+    }
+
+    if (replacementString) {
+        var replacementTextNode = document.createTextNode(replacementString);
+
+        wordRange.deleteContents();
+        wordRange.insertNode(replacementTextNode);
+
+        var finalSelectionRange = document.createRange();
+        finalSelectionRange.setStart(replacementTextNode, 0);
+        finalSelectionRange.setEnd(replacementTextNode, replacementString.length);
+
+        selection.removeAllRanges();
+        selection.addRange(finalSelectionRange);
+
+        event.handled = true;
+        event.preventDefault();
+                
+        if (finishHandler)
+            finishHandler(originalValue, replacementString);
+
+        return true;
+    }
+    return false;
+}
+
 /** 
  * @param {Element} element
  * @param {WebInspector.EditingConfig=} config
@@ -280,8 +535,8 @@ WebInspector.startEditing = function(element, config)
 
     element.addStyleClass("editing");
 
-    var oldTabIndex = element.tabIndex;
-    if (element.tabIndex < 0)
+    var oldTabIndex = element.getAttribute("tabIndex");
+    if (typeof oldTabIndex !== "number" || oldTabIndex < 0)
         element.tabIndex = 0;
 
     function blurEventListener() {
@@ -301,7 +556,11 @@ WebInspector.startEditing = function(element, config)
         WebInspector.markBeingEdited(element, false);
 
         this.removeStyleClass("editing");
-        this.tabIndex = oldTabIndex;
+        
+        if (typeof oldTabIndex !== "number")
+            element.removeAttribute("tabIndex");
+        else
+            this.tabIndex = oldTabIndex;
         this.scrollTop = 0;
         this.scrollLeft = 0;
 
@@ -351,13 +610,11 @@ WebInspector.startEditing = function(element, config)
     {
         if (result === "commit") {
             editingCommitted.call(element);
-            event.preventDefault();
-            event.stopPropagation();
+            event.consume(true);
         } else if (result === "cancel") {
             editingCancelled.call(element);
-            event.preventDefault();
-            event.stopPropagation();
-        } else if (result && result.indexOf("move-") === 0) {
+            event.consume(true);
+        } else if (result && result.startsWith("move-")) {
             moveDirection = result.substring(5);
             if (event.keyIdentifier !== "U+0009")
                 blurEventListener();
@@ -390,56 +647,59 @@ WebInspector.startEditing = function(element, config)
 }
 
 /**
+ * @param {number} seconds
  * @param {boolean=} higherResolution
+ * @return {string}
  */
 Number.secondsToString = function(seconds, higherResolution)
 {
+    if (!isFinite(seconds))
+        return "-";
+
     if (seconds === 0)
         return "0";
 
     var ms = seconds * 1000;
     if (higherResolution && ms < 1000)
-        return WebInspector.UIString("%.3fms", ms);
+        return WebInspector.UIString("%.3f\u2009ms", ms);
     else if (ms < 1000)
-        return WebInspector.UIString("%.0fms", ms);
+        return WebInspector.UIString("%.0f\u2009ms", ms);
 
     if (seconds < 60)
-        return WebInspector.UIString("%.2fs", seconds);
+        return WebInspector.UIString("%.2f\u2009s", seconds);
 
     var minutes = seconds / 60;
     if (minutes < 60)
-        return WebInspector.UIString("%.1fmin", minutes);
+        return WebInspector.UIString("%.1f\u2009min", minutes);
 
     var hours = minutes / 60;
     if (hours < 24)
-        return WebInspector.UIString("%.1fhrs", hours);
+        return WebInspector.UIString("%.1f\u2009hrs", hours);
 
     var days = hours / 24;
-    return WebInspector.UIString("%.1f days", days);
+    return WebInspector.UIString("%.1f\u2009days", days);
 }
 
 /**
- * @param {boolean=} higherResolution
+ * @param {number} bytes
+ * @return {string}
  */
-Number.bytesToString = function(bytes, higherResolution)
+Number.bytesToString = function(bytes)
 {
-    if (typeof higherResolution === "undefined")
-        higherResolution = true;
-
     if (bytes < 1024)
-        return WebInspector.UIString("%.0fB", bytes);
+        return WebInspector.UIString("%.0f\u2009B", bytes);
 
     var kilobytes = bytes / 1024;
-    if (higherResolution && kilobytes < 1024)
-        return WebInspector.UIString("%.2fKB", kilobytes);
-    else if (kilobytes < 1024)
-        return WebInspector.UIString("%.0fKB", kilobytes);
+    if (kilobytes < 100)
+        return WebInspector.UIString("%.1f\u2009KB", kilobytes);
+    if (kilobytes < 1024)
+        return WebInspector.UIString("%.0f\u2009KB", kilobytes);
 
     var megabytes = kilobytes / 1024;
-    if (higherResolution)
-        return WebInspector.UIString("%.2fMB", megabytes);
+    if (megabytes < 100)
+        return WebInspector.UIString("%.1f\u2009MB", megabytes);
     else
-        return WebInspector.UIString("%.0fMB", megabytes);
+        return WebInspector.UIString("%.0f\u2009MB", megabytes);
 }
 
 Number.withThousandsSeparator = function(num)
@@ -449,30 +709,6 @@ Number.withThousandsSeparator = function(num)
     while (str.match(re))
         str = str.replace(re, "$1\u2009$2"); // \u2009 is a thin space.
     return str;
-}
-
-WebInspector._missingLocalizedStrings = {};
-
-/**
- * @param {string} string
- * @param {...*} vararg
- */
-WebInspector.UIString = function(string, vararg)
-{
-    if (Preferences.localizeUI) {
-        if (window.localizedStrings && string in window.localizedStrings)
-            string = window.localizedStrings[string];
-        else {
-            if (!(string in WebInspector._missingLocalizedStrings)) {
-                console.warn("Localized string \"" + string + "\" not found.");
-                WebInspector._missingLocalizedStrings[string] = true;
-            }
-    
-            if (Preferences.showMissingLocalizedStrings)
-                string += " (not localized)";
-        }
-    }
-    return String.vsprintf(string, Array.prototype.slice.call(arguments, 1));
 }
 
 WebInspector.useLowerCaseMenuTitles = function()
@@ -488,11 +724,6 @@ WebInspector.formatLocalized = function(format, substitutions, formatters, initi
 WebInspector.openLinkExternallyLabel = function()
 {
     return WebInspector.UIString(WebInspector.useLowerCaseMenuTitles() ? "Open link in new tab" : "Open Link in New Tab");
-}
-
-WebInspector.openInNetworkPanelLabel = function()
-{
-    return WebInspector.UIString(WebInspector.useLowerCaseMenuTitles() ? "Open in network panel" : "Open in Network Panel");
 }
 
 WebInspector.copyLinkAddressLabel = function()
@@ -515,11 +746,21 @@ WebInspector.isMac = function()
     return WebInspector._isMac;
 }
 
+WebInspector.isWin = function()
+{
+    if (typeof WebInspector._isWin === "undefined")
+        WebInspector._isWin = WebInspector.platform() === "windows";
+
+    return WebInspector._isWin;
+}
+
 WebInspector.PlatformFlavor = {
     WindowsVista: "windows-vista",
     MacTiger: "mac-tiger",
     MacLeopard: "mac-leopard",
-    MacSnowLeopard: "mac-snowleopard"
+    MacSnowLeopard: "mac-snowleopard",
+    MacLion: "mac-lion",
+    MacMountainLion: "mac-mountain-lion"
 }
 
 WebInspector.platformFlavor = function()
@@ -543,8 +784,13 @@ WebInspector.platformFlavor = function()
                 case 5:
                     return WebInspector.PlatformFlavor.MacLeopard;
                 case 6:
-                default:
                     return WebInspector.PlatformFlavor.MacSnowLeopard;
+                case 7:
+                    return WebInspector.PlatformFlavor.MacLion;
+                case 8:
+                    return WebInspector.PlatformFlavor.MacMountainLion;
+                default:
+                    return "";
             }
         }
     }
@@ -669,26 +915,186 @@ WebInspector.resetToolbarColors = function()
 }
 
 /**
- * @param {WebInspector.ContextMenu} contextMenu
- * @param {Node} contextNode
- * @param {Event} event
+ * @param {Element} element
+ * @param {number} offset
+ * @param {number} length
+ * @param {Array.<Object>=} domChanges
  */
-WebInspector.populateHrefContextMenu = function(contextMenu, contextNode, event)
+WebInspector.highlightSearchResult = function(element, offset, length, domChanges)
 {
-    var anchorElement = event.target.enclosingNodeOrSelfWithClass("webkit-html-resource-link") || event.target.enclosingNodeOrSelfWithClass("webkit-html-external-link");
-    if (!anchorElement)
-        return false;
+    var result = WebInspector.highlightSearchResults(element, [{offset: offset, length: length }], domChanges);
+    return result.length ? result[0] : null;
+}
 
-    var resourceURL = WebInspector.resourceURLForRelatedNode(contextNode, anchorElement.href);
-    if (!resourceURL)
-        return false;
+/**
+ * @param {Element} element
+ * @param {Array.<Object>} resultRanges
+ * @param {Array.<Object>=} changes
+ */
+WebInspector.highlightSearchResults = function(element, resultRanges, changes)
+{
+    return WebInspector.highlightRangesWithStyleClass(element, resultRanges, "webkit-search-result", changes);
+}
 
-    // Add resource-related actions.
-    contextMenu.appendItem(WebInspector.openLinkExternallyLabel(), WebInspector.openResource.bind(WebInspector, resourceURL, false));
-    if (WebInspector.resourceForURL(resourceURL))
-        contextMenu.appendItem(WebInspector.UIString(WebInspector.useLowerCaseMenuTitles() ? "Open link in Resources panel" : "Open Link in Resources Panel"), WebInspector.openResource.bind(null, resourceURL, true));
-    contextMenu.appendItem(WebInspector.copyLinkAddressLabel(), InspectorFrontendHost.copyText.bind(InspectorFrontendHost, resourceURL));
-    return true;
+/**
+ * @param {Element} element
+ * @param {Array.<Object>} resultRanges
+ * @param {string} styleClass
+ * @param {Array.<Object>=} changes
+ */
+WebInspector.highlightRangesWithStyleClass = function(element, resultRanges, styleClass, changes)
+{
+    changes = changes || [];
+    var highlightNodes = [];
+    var lineText = element.textContent;
+    var ownerDocument = element.ownerDocument;
+    var textNodeSnapshot = ownerDocument.evaluate(".//text()", element, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+    var snapshotLength = textNodeSnapshot.snapshotLength;
+    if (snapshotLength === 0)
+        return highlightNodes;
+
+    var nodeRanges = [];
+    var rangeEndOffset = 0;
+    for (var i = 0; i < snapshotLength; ++i) {
+        var range = {};
+        range.offset = rangeEndOffset;
+        range.length = textNodeSnapshot.snapshotItem(i).textContent.length;
+        rangeEndOffset = range.offset + range.length;
+        nodeRanges.push(range);
+    }
+
+    var startIndex = 0;
+    for (var i = 0; i < resultRanges.length; ++i) {
+        var startOffset = resultRanges[i].offset;
+        var endOffset = startOffset + resultRanges[i].length;
+
+        while (startIndex < snapshotLength && nodeRanges[startIndex].offset + nodeRanges[startIndex].length <= startOffset)
+            startIndex++;
+        var endIndex = startIndex;
+        while (endIndex < snapshotLength && nodeRanges[endIndex].offset + nodeRanges[endIndex].length < endOffset)
+            endIndex++;
+        if (endIndex === snapshotLength)
+            break;
+
+        var highlightNode = ownerDocument.createElement("span");
+        highlightNode.className = styleClass;
+        highlightNode.textContent = lineText.substring(startOffset, endOffset);
+
+        var lastTextNode = textNodeSnapshot.snapshotItem(endIndex);
+        var lastText = lastTextNode.textContent;
+        lastTextNode.textContent = lastText.substring(endOffset - nodeRanges[endIndex].offset);
+        changes.push({ node: lastTextNode, type: "changed", oldText: lastText, newText: lastTextNode.textContent });
+
+        if (startIndex === endIndex) {
+            lastTextNode.parentElement.insertBefore(highlightNode, lastTextNode);
+            changes.push({ node: highlightNode, type: "added", nextSibling: lastTextNode, parent: lastTextNode.parentElement });
+            highlightNodes.push(highlightNode);
+
+            var prefixNode = ownerDocument.createTextNode(lastText.substring(0, startOffset - nodeRanges[startIndex].offset));
+            lastTextNode.parentElement.insertBefore(prefixNode, highlightNode);
+            changes.push({ node: prefixNode, type: "added", nextSibling: highlightNode, parent: lastTextNode.parentElement });
+        } else {
+            var firstTextNode = textNodeSnapshot.snapshotItem(startIndex);
+            var firstText = firstTextNode.textContent;
+            var anchorElement = firstTextNode.nextSibling;
+
+            firstTextNode.parentElement.insertBefore(highlightNode, anchorElement);
+            changes.push({ node: highlightNode, type: "added", nextSibling: anchorElement, parent: firstTextNode.parentElement });
+            highlightNodes.push(highlightNode);
+
+            firstTextNode.textContent = firstText.substring(0, startOffset - nodeRanges[startIndex].offset);
+            changes.push({ node: firstTextNode, type: "changed", oldText: firstText, newText: firstTextNode.textContent });
+
+            for (var j = startIndex + 1; j < endIndex; j++) {
+                var textNode = textNodeSnapshot.snapshotItem(j);
+                var text = textNode.textContent;
+                textNode.textContent = "";
+                changes.push({ node: textNode, type: "changed", oldText: text, newText: textNode.textContent });
+            }
+        }
+        startIndex = endIndex;
+        nodeRanges[startIndex].offset = endOffset;
+        nodeRanges[startIndex].length = lastTextNode.textContent.length;
+
+    }
+    return highlightNodes;
+}
+
+WebInspector.applyDomChanges = function(domChanges)
+{
+    for (var i = 0, size = domChanges.length; i < size; ++i) {
+        var entry = domChanges[i];
+        switch (entry.type) {
+        case "added":
+            entry.parent.insertBefore(entry.node, entry.nextSibling);
+            break;
+        case "changed":
+            entry.node.textContent = entry.newText;
+            break;
+        }
+    }
+}
+
+WebInspector.revertDomChanges = function(domChanges)
+{
+    for (var i = domChanges.length - 1; i >= 0; --i) {
+        var entry = domChanges[i];
+        switch (entry.type) {
+        case "added":
+            if (entry.node.parentElement)
+                entry.node.parentElement.removeChild(entry.node);
+            break;
+        case "changed":
+            entry.node.textContent = entry.oldText;
+            break;
+        }
+    }
+}
+
+WebInspector._coalescingLevel = 0;
+
+WebInspector.startBatchUpdate = function()
+{
+    if (!WebInspector._coalescingLevel)
+        WebInspector._postUpdateHandlers = new Map();
+    WebInspector._coalescingLevel++;
+}
+
+WebInspector.endBatchUpdate = function()
+{
+    if (--WebInspector._coalescingLevel)
+        return;
+
+    var handlers = WebInspector._postUpdateHandlers;
+    delete WebInspector._postUpdateHandlers;
+
+    var keys = handlers.keys();
+    for (var i = 0; i < keys.length; ++i) {
+        var object = keys[i];
+        var methods = handlers.get(object).keys();
+        for (var j = 0; j < methods.length; ++j)
+            methods[j].call(object);
+    }
+}
+
+/**
+ * @param {Object} object
+ * @param {function()} method
+ */
+WebInspector.invokeOnceAfterBatchUpdate = function(object, method)
+{
+    if (!WebInspector._coalescingLevel) {
+        method.call(object);
+        return;
+    }
+    
+    var methods = WebInspector._postUpdateHandlers.get(object);
+    if (!methods) {
+        methods = new Map();
+        WebInspector._postUpdateHandlers.put(object, methods);
+    }
+    methods.put(method);
 }
 
 ;(function() {

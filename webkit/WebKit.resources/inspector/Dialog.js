@@ -132,8 +132,7 @@ WebInspector.Dialog.prototype = {
 
         if (this._closeKeys.indexOf(event.keyCode) >= 0) {
             this._hide();
-            event.preventDefault();
-            event.stopPropagation();
+            event.consume(true);
         }
     }
 };
@@ -179,7 +178,8 @@ WebInspector.DialogDelegate.prototype = {
 
     onEnter: function() { },
 
-    willHide: function() { }
-};
+    willHide: function() { },
 
-WebInspector.DialogDelegate.prototype.__proto__ = WebInspector.Object.prototype;
+    __proto__: WebInspector.Object.prototype
+}
+

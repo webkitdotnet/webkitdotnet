@@ -56,7 +56,7 @@ WebInspector.ApplicationCacheModel.EventTypes = {
 WebInspector.ApplicationCacheModel.prototype = {
     _frameNavigated: function(event)
     {
-        var frame = /** @type {WebInspector.ResourceTreeFrame} */ event.data;
+        var frame = /** @type {WebInspector.ResourceTreeFrame} */ (event.data);
         if (frame.isMainFrame()) {
             this._mainFrameNavigated();
             return;
@@ -70,7 +70,7 @@ WebInspector.ApplicationCacheModel.prototype = {
      */
     _frameDetached: function(event)
     {
-        var frame = /** @type {WebInspector.ResourceTreeFrame} */ event.data;
+        var frame = /** @type {WebInspector.ResourceTreeFrame} */ (event.data);
         this._frameManifestRemoved(frame.id);
     },
     
@@ -218,10 +218,10 @@ WebInspector.ApplicationCacheModel.prototype = {
     {
         this._onLine = isNowOnline;
         this.dispatchEventToListeners(WebInspector.ApplicationCacheModel.EventTypes.NetworkStateChanged, isNowOnline);
-    }
-}
+    },
 
-WebInspector.ApplicationCacheModel.prototype.__proto__ = WebInspector.Object.prototype;
+    __proto__: WebInspector.Object.prototype
+}
 
 /**
  * @constructor

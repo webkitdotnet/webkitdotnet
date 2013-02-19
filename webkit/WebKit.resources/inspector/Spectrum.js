@@ -28,20 +28,17 @@
 
 /**
  * @constructor
- * @extends {WebInspector.Object}
+ * @extends {WebInspector.View}
  */
 WebInspector.Spectrum = function()
 {
-    this._popover = new WebInspector.Popover();
-    this._popover.setCanShrink(false);
-    this._popover.element.addEventListener("mousedown", stopPropagation, false);
+    WebInspector.View.call(this);
+    this.registerRequiredCSS("spectrum.css");
 
-    this._containerElement = document.createElement('div');
-    this._containerElement.className = "spectrum-container";
-    this._containerElement.tabIndex = 0;
-    this._containerElement.addEventListener("keydown", this._onKeyDown.bind(this), false);
+    this.element.className = "spectrum-container";
+    this.element.tabIndex = 0;
 
-    var topElement = this._containerElement.createChild("div", "spectrum-top");
+    var topElement = this.element.createChild("div", "spectrum-top");
     topElement.createChild("div", "spectrum-fill");
 
     var topInnerElement = topElement.createChild("div", "spectrum-top-inner fill");
@@ -51,7 +48,7 @@ WebInspector.Spectrum = function()
     this._sliderElement = topInnerElement.createChild("div", "spectrum-hue");
     this.slideHelper = this._sliderElement.createChild("div", "spectrum-slider");
 
-    var rangeContainer = this._containerElement.createChild("div", "spectrum-range-container");
+    var rangeContainer = this.element.createChild("div", "spectrum-range-container");
     var alphaLabel = rangeContainer.createChild("label");
     alphaLabel.textContent = WebInspector.UIString("\u03B1:");
 
@@ -65,12 +62,12 @@ WebInspector.Spectrum = function()
     swatchElement.className = "swatch";
     this._swatchInnerElement = swatchElement.createChild("span", "swatch-inner");
 
-    var displayContainer = this._containerElement.createChild("div");
+    var displayContainer = this.element.createChild("div");
     displayContainer.appendChild(swatchElement);
     this._displayElement = displayContainer.createChild("span", "source-code spectrum-display-value");
 
     WebInspector.Spectrum.draggable(this._sliderElement, hueDrag.bind(this));
-    WebInspector.Spectrum.draggable(this._draggerElement, colorDrag.bind(this));
+    WebInspector.Spectrum.draggable(this._draggerElement, colorDrag.bind(this), colorDragStart.bind(this));
 
     function hueDrag(element, dragX, dragY)
     {
@@ -79,8 +76,22 @@ WebInspector.Spectrum = function()
         this._onchange();
     }
 
-    function colorDrag(element, dragX, dragY)
+    var initialHelperOffset;
+
+    function colorDragStart(element, dragX, dragY)
     {
+        initialHelperOffset = { x: this._dragHelperElement.offsetLeft, y: this._dragHelperElement.offsetTop };
+    }
+
+    function colorDrag(element, dragX, dragY, event)
+    {
+        if (event.shiftKey) {
+            if (Math.abs(dragX - initialHelperOffset.x) >= Math.abs(dragY - initialHelperOffset.y))
+                dragY = initialHelperOffset.y;
+            else
+                dragX = initialHelperOffset.x;
+        }
+
         this.hsv[1] = dragX / this.dragWidth;
         this.hsv[2] = (this.dragHeight - dragY) / this.dragHeight;
 
@@ -93,13 +104,10 @@ WebInspector.Spectrum = function()
 
         this._onchange();
     }
-
-    this._hideProxy = this.hide.bind(this);
 };
 
 WebInspector.Spectrum.Events = {
-    ColorChanged: "ColorChanged",
-    Hidden: "Hidden"
+    ColorChanged: "ColorChanged"
 };
 
 WebInspector.Spectrum.hsvaToRGBA = function(h, s, v, a)
@@ -171,7 +179,7 @@ WebInspector.Spectrum.rgbaToHSVA = function(r, g, b, a)
     return [h, s, v, a];
 };
 
-//FIXME: migrate to WebInspector.elementDragStart
+//FIXME: migrate to WebInspector.installDragHandle
 /**
  * @param {Function=} onmove
  * @param {Function=} onstart
@@ -186,13 +194,9 @@ WebInspector.Spectrum.draggable = function(element, onmove, onstart, onstop) {
     var maxHeight;
     var maxWidth;
 
-    function prevent(e)
+    function consume(e)
     {
-        if (e.stopPropagation)
-            e.stopPropagation();
-
-        if (e.preventDefault)
-            e.preventDefault();
+        e.consume(true);
     }
 
     function move(e)
@@ -202,7 +206,7 @@ WebInspector.Spectrum.draggable = function(element, onmove, onstart, onstop) {
             var dragY = Math.max(0, Math.min(e.pageY - offset.top + scrollOffset.top, maxHeight));
 
             if (onmove)
-                onmove(element, dragX, dragY);
+                onmove(element, dragX, dragY, e);
         }
     }
 
@@ -222,21 +226,21 @@ WebInspector.Spectrum.draggable = function(element, onmove, onstart, onstop) {
             scrollOffset = element.scrollOffset();
             offset = element.totalOffset();
 
-            doc.addEventListener("selectstart", prevent, false);
-            doc.addEventListener("dragstart", prevent, false);
+            doc.addEventListener("selectstart", consume, false);
+            doc.addEventListener("dragstart", consume, false);
             doc.addEventListener("mousemove", move, false);
             doc.addEventListener("mouseup", stop, false);
 
             move(e);
-            prevent(e);
+            consume(e);
         }
     }
 
     function stop(e)
     {
         if (dragging) {
-            doc.removeEventListener("selectstart", prevent, false);
-            doc.removeEventListener("dragstart", prevent, false);
+            doc.removeEventListener("selectstart", consume, false);
+            doc.removeEventListener("dragstart", consume, false);
             doc.removeEventListener("mousemove", move, false);
             doc.removeEventListener("mouseup", stop, false);
 
@@ -251,6 +255,9 @@ WebInspector.Spectrum.draggable = function(element, onmove, onstart, onstop) {
 };
 
 WebInspector.Spectrum.prototype = {
+    /**
+     * @type {WebInspector.Color}
+     */
     set color(color)
     {
         var rgba = (color.rgba || color.rgb).slice(0);
@@ -274,12 +281,12 @@ WebInspector.Spectrum.prototype = {
         var colorValue = color.toString(this.outputColorFormat);
         if (!colorValue)
             colorValue = color.toString(); // this.outputColorFormat can be invalid for current color (e.g. "nickname").
-        return new WebInspector.Color(colorValue);
+        return WebInspector.Color.parse(colorValue);
     },
 
     get outputColorFormat()
     {
-        var cf = WebInspector.StylesSidebarPane.ColorFormat;
+        var cf = WebInspector.Color.Format;
         var format = this._originalFormat;
 
         if (this.hsv[3] === 1) {
@@ -308,11 +315,6 @@ WebInspector.Spectrum.prototype = {
     set displayText(text)
     {
         this._displayElement.textContent = text;
-    },
-
-    get visible()
-    {
-        return this._popover.visible;
     },
 
     _onchange: function()
@@ -365,43 +367,76 @@ WebInspector.Spectrum.prototype = {
         this._alphaElement.value = this.hsv[3] * 100;
     },
 
-    toggle: function(element, color, format)
+    wasShown: function()
     {
-        if (this.visible)
-            this.hide();
-        else
-            this.show(element, color, format);
-
-        return this.visible;
-    },
-
-    show: function(element, color, format)
-    {
-        if (this.visible) {
-            if (this.anchorElement === element)
-                return false;
-
-            // Reopen the picker for another anchor element.
-            this.hide();
-        }
-
-        this.reposition(element);
-        this.anchorElement = element;
-
-        document.addEventListener("mousedown", this._hideProxy, false);
-        window.addEventListener("blur", this._hideProxy, false);
-
         this.slideHeight = this._sliderElement.offsetHeight;
         this.dragWidth = this._draggerElement.offsetWidth;
         this.dragHeight = this._draggerElement.offsetHeight;
         this._dragHelperElementHeight = this._dragHelperElement.offsetHeight / 2;
         this.slideHelperHeight = this.slideHelper.offsetHeight / 2;
-
-        this.color = color;
-        this._originalFormat = format || color.format;
-
         this._updateUI();
+    },
 
+    __proto__: WebInspector.View.prototype
+}
+
+/**
+ * @constructor
+ * @extends {WebInspector.Object}
+ */
+WebInspector.SpectrumPopupHelper = function()
+{
+    this._spectrum = new WebInspector.Spectrum();
+    this._spectrum.element.addEventListener("keydown", this._onKeyDown.bind(this), false);
+
+    this._popover = new WebInspector.Popover();
+    this._popover.setCanShrink(false);
+    this._popover.element.addEventListener("mousedown", consumeEvent, false);
+
+    this._hideProxy = this.hide.bind(this, true);
+}
+
+WebInspector.SpectrumPopupHelper.Events = {
+    Hidden: "Hidden"
+};
+
+WebInspector.SpectrumPopupHelper.prototype = {
+    /**
+     * @return {WebInspector.Spectrum}
+     */
+    spectrum: function()
+    {
+        return this._spectrum;
+    },
+
+    toggle: function(element, color, format)
+    {
+        if (this._popover.isShowing())
+            this.hide(true);
+        else
+            this.show(element, color, format);
+
+        return this._popover.isShowing();
+    },
+
+    show: function(element, color, format)
+    {
+        if (this._popover.isShowing()) {
+            if (this._anchorElement === element)
+                return false;
+
+            // Reopen the picker for another anchor element.
+            this.hide(true);
+        }
+
+        this._anchorElement = element;
+
+        this._spectrum.color = color;
+        this._spectrum._originalFormat = format || color.format;
+        this.reposition(element);
+
+        document.addEventListener("mousedown", this._hideProxy, false);
+        window.addEventListener("blur", this._hideProxy, false);
         return true;
     },
 
@@ -409,35 +444,65 @@ WebInspector.Spectrum.prototype = {
     {
         if (!this._previousFocusElement)
             this._previousFocusElement = WebInspector.currentFocusElement();
-        this._popover.show(this._containerElement, element);
-        WebInspector.markBeingEdited(this._containerElement, true);    
-        WebInspector.setCurrentFocusElement(this._containerElement);
+        this._popover.showView(this._spectrum, element);
+        WebInspector.setCurrentFocusElement(this._spectrum.element);
     },
 
-    hide: function()
+    /**
+     * @param {boolean=} commitEdit
+     */
+    hide: function(commitEdit)
     {
-        WebInspector.markBeingEdited(this._containerElement, false);
+        if (!this._popover.isShowing())
+            return;
         this._popover.hide();
 
         document.removeEventListener("mousedown", this._hideProxy, false);
         window.removeEventListener("blur", this._hideProxy, false);
 
-        this.dispatchEventToListeners(WebInspector.Spectrum.Events.Hidden);
+        this.dispatchEventToListeners(WebInspector.SpectrumPopupHelper.Events.Hidden, !!commitEdit);
 
         WebInspector.setCurrentFocusElement(this._previousFocusElement);
         delete this._previousFocusElement;
 
-        delete this.anchorElement;
+        delete this._anchorElement;
     },
 
     _onKeyDown: function(event)
     {
-        if (event.keyIdentifier === "Enter" || event.keyIdentifier === "U+001B") { // Escape key
-            this.hide();
-            event.stopPropagation();
-            event.preventDefault();
+        if (event.keyIdentifier === "Enter") {
+            this.hide(true);
+            event.consume(true);
+            return;
         }
-    }
+        if (event.keyIdentifier === "U+001B") { // Escape key
+            this.hide(false);
+            event.consume(true);
+        }
+    },
+
+    __proto__: WebInspector.Object.prototype
 }
 
-WebInspector.Spectrum.prototype.__proto__ = WebInspector.Object.prototype;
+/**
+ * @constructor
+ */
+WebInspector.ColorSwatch = function()
+{
+    this.element = document.createElement("span");
+    this._swatchInnerElement = this.element.createChild("span", "swatch-inner");
+    this.element.title = WebInspector.UIString("Click to open a colorpicker. Shift-click to change color format");
+    this.element.className = "swatch";
+    this.element.addEventListener("mousedown", consumeEvent, false);
+    this.element.addEventListener("dblclick", consumeEvent, false);
+}
+
+WebInspector.ColorSwatch.prototype = {
+    /**
+     * @param {string} colorString
+     */
+    setColorString: function(colorString)
+    {
+        this._swatchInnerElement.style.backgroundColor = colorString;
+    }
+}

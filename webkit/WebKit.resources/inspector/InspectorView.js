@@ -41,25 +41,64 @@ WebInspector.InspectorView = function()
     this._history = [];
     this._historyIterator = -1;
     document.addEventListener("keydown", this._keyDown.bind(this), false);
+    document.addEventListener("keypress", this._keyPress.bind(this), false);
     this._panelOrder = [];
+    this._panelDescriptors = {};
+
+    // Windows and Mac have two different definitions of '[' and ']', so accept both of each.
+    this._openBracketIdentifiers = ["U+005B", "U+00DB"].keySet();
+    this._closeBracketIdentifiers = ["U+005D", "U+00DD"].keySet();
+    this._footerElementContainer = this.element.createChild("div", "inspector-footer status-bar hidden");
+    this._panelsElement = this.element.createChild("div", "fill");
 }
 
 WebInspector.InspectorView.Events = {
-    PanelSelected: "panel-selected"
+    PanelSelected: "PanelSelected"
 }
 
 WebInspector.InspectorView.prototype = {
-    addPanel: function(panel)
+    /**
+     * @param {WebInspector.PanelDescriptor} panelDescriptor
+     */
+    addPanel: function(panelDescriptor)
     {
-        this._panelOrder.push(panel);
-        WebInspector.toolbar.addPanel(panel);
+        this._panelOrder.push(panelDescriptor.name());
+        this._panelDescriptors[panelDescriptor.name()] = panelDescriptor;
+        WebInspector.toolbar.addPanel(panelDescriptor);
+    },
+
+    /**
+     * @param {string} panelName
+     * @return {?WebInspector.Panel}
+     */
+    panel: function(panelName)
+    {
+        var panelDescriptor = this._panelDescriptors[panelName];
+        if (!panelDescriptor && this._panelOrder.length)
+            panelDescriptor = this._panelDescriptors[this._panelOrder[0]];
+        return panelDescriptor ? panelDescriptor.panel() : null;
+    },
+
+    /**
+     * @param {string} panelName
+     * @return {?WebInspector.Panel}
+     */
+    showPanel: function(panelName)
+    {
+        var panel = this.panel(panelName);
+        if (panel)
+            this.setCurrentPanel(panel);
+        return panel;
     },
 
     currentPanel: function()
     {
         return this._currentPanel;
     },
-
+    
+    /**
+     * @param {WebInspector.Panel} x
+     */
     setCurrentPanel: function(x)
     {
         if (this._currentPanel === x)
@@ -74,7 +113,7 @@ WebInspector.InspectorView.prototype = {
             x.show();
             this.dispatchEventToListeners(WebInspector.InspectorView.Events.PanelSelected);
             // FIXME: remove search controller.
-            WebInspector.searchController.activePanelChanged();
+            WebInspector.searchController.cancelSearch();
         }
         for (var panelName in WebInspector.panels) {
             if (WebInspector.panels[panelName] === x) {
@@ -85,49 +124,78 @@ WebInspector.InspectorView.prototype = {
         }
     },
 
+    _keyPress: function(event)
+    {
+        // BUG 104250: Windows 7 posts a WM_CHAR message upon the Ctrl+']' keypress.
+        // Any charCode < 32 is not going to be a valid keypress.
+        if (event.charCode < 32 && WebInspector.isWin())
+            return;
+        clearTimeout(this._keyDownTimer);
+        delete this._keyDownTimer;
+    },
+
     _keyDown: function(event)
     {
-        switch (event.keyIdentifier) {
-            case "Left":
-                var isBackKey = !event.shiftKey && WebInspector.KeyboardShortcut.eventHasCtrlOrMeta(event) && !WebInspector.isInEditMode(event);
-                if (isBackKey && this._canGoBackInHistory()) {
-                    this._goBackInHistory();
-                    event.preventDefault();
-                }
-                break;
+        if (!WebInspector.KeyboardShortcut.eventHasCtrlOrMeta(event))
+            return;
 
-            case "Right":
-                var isForwardKey = !event.shiftKey && WebInspector.KeyboardShortcut.eventHasCtrlOrMeta(event) && !WebInspector.isInEditMode(event);
-                if (isForwardKey && this._canGoForwardInHistory()) {
-                    this._goForwardInHistory();
-                    event.preventDefault();
-                }
-                break;
+        // Ctrl/Cmd + 1-9 should show corresponding panel.
+        if (!event.shiftKey && !event.altKey && event.keyCode > 0x30 && event.keyCode < 0x3A) {
+            var panelName = this._panelOrder[event.keyCode - 0x31];
+            if (panelName) {
+                this.showPanel(panelName);
+                event.consume(true);
+            }
+            return;
+        }
 
-            // Windows and Mac have two different definitions of [, so accept both.
-            case "U+005B":
-            case "U+00DB": // [ key
-                var isRotateLeft = WebInspector.KeyboardShortcut.eventHasCtrlOrMeta(event) && !event.shiftKey && !event.altKey;
-                if (isRotateLeft) {
-                    var index = this._panelOrder.indexOf(this.currentPanel());
-                    index = (index === 0) ? this._panelOrder.length - 1 : index - 1;
-                    this._panelOrder[index].toolbarItem.click();
-                    event.preventDefault();
-                }
-                break;
+        // BUG85312: On French AZERTY keyboards, AltGr-]/[ combinations (synonymous to Ctrl-Alt-]/[ on Windows) are used to enter ]/[,
+        // so for a ]/[-related keydown we delay the panel switch using a timer, to see if there is a keypress event following this one.
+        // If there is, we cancel the timer and do not consider this a panel switch.
+        if (!WebInspector.isWin() || (!this._openBracketIdentifiers[event.keyIdentifier] && !this._closeBracketIdentifiers[event.keyIdentifier])) {
+            this._keyDownInternal(event);
+            return;
+        }
 
-            // Windows and Mac have two different definitions of ], so accept both.
-            case "U+005D":
-            case "U+00DD":  // ] key
-                var isRotateRight = WebInspector.KeyboardShortcut.eventHasCtrlOrMeta(event) && !event.shiftKey && !event.altKey;
-                if (isRotateRight) {
-                    var index = this._panelOrder.indexOf(this.currentPanel());
-                    index = (index + 1) % this._panelOrder.length;
-                    this._panelOrder[index].toolbarItem.click();
-                    event.preventDefault();
-                }
-    
-                break;
+        this._keyDownTimer = setTimeout(this._keyDownInternal.bind(this, event), 0);
+    },
+
+    _keyDownInternal: function(event)
+    {
+        if (this._openBracketIdentifiers[event.keyIdentifier]) {
+            var isRotateLeft = !event.shiftKey && !event.altKey;
+            if (isRotateLeft) {
+                var index = this._panelOrder.indexOf(this.currentPanel().name);
+                index = (index === 0) ? this._panelOrder.length - 1 : index - 1;
+                this.showPanel(this._panelOrder[index]);
+                event.consume(true);
+                return;
+            }
+
+            var isGoBack = event.altKey;
+            if (isGoBack && this._canGoBackInHistory()) {
+                this._goBackInHistory();
+                event.consume(true);
+            }
+            return;
+        }
+
+        if (this._closeBracketIdentifiers[event.keyIdentifier]) {
+            var isRotateRight = !event.shiftKey && !event.altKey;
+            if (isRotateRight) {
+                var index = this._panelOrder.indexOf(this.currentPanel().name);
+                index = (index + 1) % this._panelOrder.length;
+                this.showPanel(this._panelOrder[index]);
+                event.consume(true);
+                return;
+            }
+
+            var isGoForward = event.altKey;
+            if (isGoForward && this._canGoForwardInHistory()) {
+                this._goForwardInHistory();
+                event.consume(true);
+            }
+            return;
         }
     },
 
@@ -164,10 +232,41 @@ WebInspector.InspectorView.prototype = {
         if (!this._history.length || this._history[this._history.length - 1] !== panelName)
             this._history.push(panelName);
         this._historyIterator = this._history.length - 1;
-    }
-}
+    },
 
-WebInspector.InspectorView.prototype.__proto__ = WebInspector.View.prototype;
+    panelsElement: function()
+    {
+        return this._panelsElement;
+    },
+
+    /**
+     * @param {Element?} element
+     */
+    setFooterElement: function(element)
+    {
+        if (element) {
+            this._footerElementContainer.removeStyleClass("hidden");
+            this._footerElementContainer.appendChild(element);
+            this._panelsElement.style.bottom = this._footerElementContainer.offsetHeight + "px";
+        } else {
+            this._footerElementContainer.addStyleClass("hidden");
+            this._footerElementContainer.removeChildren();
+            this._panelsElement.style.bottom = 0;
+        }
+        this.doResize();
+    },
+
+    /**
+     * @param {WebInspector.Panel} panel
+     */
+    showPanelForAnchorNavigation: function(panel)
+    {
+        WebInspector.searchController.disableSearchUntilExplicitAction();
+        this.setCurrentPanel(panel);
+    },
+
+    __proto__: WebInspector.View.prototype
+}
 
 /**
  * @type {WebInspector.InspectorView}
