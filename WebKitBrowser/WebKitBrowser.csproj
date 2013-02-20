@@ -72,8 +72,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="WebKit.Interop, Version=533.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\bin\Debug\WebKit.Interop.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="WebKitCore, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b967213f6d29a3be, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
