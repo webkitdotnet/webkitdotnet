@@ -60,8 +60,8 @@
     <Compile Include="WebFrameLoadDelegate.cs" />
     <Compile Include="WebKitBrowserCore.cs" />
     <Compile Include="WebKitBrowserEvents.cs" />
-    <Compile Include="WebKitDOMCoreClasses.cs" />
-    <Compile Include="WebKitDOMHTMLClasses.cs" />
+    <Compile Include="DOM\WebKitDOMCoreClasses.cs" />
+    <Compile Include="DOM\WebKitDOMHTMLClasses.cs" />
     <Compile Include="WebKitDownload.cs" />
     <Compile Include="WebKitDownloadEvents.cs" />
     <Compile Include="WebNotificationObserver.cs" />
