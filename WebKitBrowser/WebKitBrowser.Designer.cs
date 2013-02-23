@@ -48,7 +48,7 @@ namespace WebKit
                     components.Dispose();
                 }
 
-                core.Dispose(disposing);
+                _core.Dispose(disposing);
 
                 disposed = true;
                 base.Dispose(disposing);

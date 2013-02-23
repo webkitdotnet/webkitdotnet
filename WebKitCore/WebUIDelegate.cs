@@ -31,16 +31,15 @@
 // do and whether they are actually working in WebKit.
 
 using System;
-using System.Drawing.Printing;
 using WebKit.Interop;
 
 namespace WebKit
 {
-    internal delegate void CreateWebViewWithRequestEvent(IWebURLRequest request, out WebView webView);
+    internal delegate void CreateWebViewWithRequestEvent(IWebURLRequest Request, out WebView WebView);
     internal delegate string FTPDirectoryTemplatePath(WebView WebView);
-    internal delegate void RunJavaScriptAlertPanelWithMessageEvent(WebView sender, string message);
-    internal delegate int RunJavaScriptConfirmPanelWithMessageEvent(WebView sender, string message);
-    internal delegate string RunJavaScriptTextInputPanelWithPromptEvent(WebView sender, string message, string defaultText);
+    internal delegate void RunJavaScriptAlertPanelWithMessageEvent(WebView Sender, string Message);
+    internal delegate int RunJavaScriptConfirmPanelWithMessageEvent(WebView Sender, string Message);
+    internal delegate string RunJavaScriptTextInputPanelWithPromptEvent(WebView Sender, string Message, string DefaultText);
 
     internal class WebUIDelegate : IWebUIDelegate
     {
@@ -50,16 +49,16 @@ namespace WebKit
         public event RunJavaScriptConfirmPanelWithMessageEvent RunJavaScriptConfirmPanelWithMessage;
         public event RunJavaScriptTextInputPanelWithPromptEvent RunJavaScriptTextInputPanelWithPrompt;
 
-        private WebKitBrowserCore owner;
+        private readonly WebKitBrowserCore _owner;
 
-        public WebUIDelegate(WebKitBrowserCore browser)
+        public WebUIDelegate(WebKitBrowserCore Browser)
         {
-            this.owner = browser;
+            this._owner = Browser;
         }
 
         #region IWebUIDelegate Members
 
-        public void addCustomMenuDrawingData(WebView sender, int hMenu)
+        public void addCustomMenuDrawingData(WebView Sender, int hMenu)
         {
         }
 
@@ -73,9 +72,9 @@ namespace WebKit
             throw new NotImplementedException();
         }
 
-        public void canTakeFocus(WebView sender, int forward, out int result)
+        public void canTakeFocus(WebView Sender, int Forward, out int Result)
         {
-            result = 0;            
+            Result = 0;            
         }
 
         public int canUndo()
@@ -83,58 +82,55 @@ namespace WebKit
             return 1;
         }
 
-        public void cleanUpCustomMenuDrawingData(WebView sender, int hMenu)
+        public void cleanUpCustomMenuDrawingData(WebView Sender, int hMenu)
         {
         }
 
-        public void contextMenuItemSelected(WebView sender, IntPtr item, CFDictionaryPropertyBag element)
+        public void contextMenuItemSelected(WebView Sender, IntPtr Item, CFDictionaryPropertyBag Element)
         {
         }
 
-        public int contextMenuItemsForElement(WebView sender, CFDictionaryPropertyBag element, int defaultItemsHMenu)
+        public int contextMenuItemsForElement(WebView Sender, CFDictionaryPropertyBag Element, int DefaultItemsHMenu)
         {
-            return owner.IsWebBrowserContextMenuEnabled ? defaultItemsHMenu : 0;
+            return _owner.IsWebBrowserContextMenuEnabled ? DefaultItemsHMenu : 0;
         }
 
-        public WebView createModalDialog(WebView sender, WebURLRequest request)
+        public WebView createModalDialog(WebView Sender, WebURLRequest Request)
         {
             throw new NotImplementedException();
         }
 
-        public WebView createWebViewWithRequest(WebView sender, WebURLRequest request)
+        public WebView createWebViewWithRequest(WebView Sender, WebURLRequest Request)
         {
             // this should be caught in the WebPolicyDelegate, but isn't in the Cairo build
-            if (owner.AllowNewWindows)
+            if (_owner.AllowNewWindows)
             {
                 WebView view;
-                CreateWebViewWithRequest(request, out view);
+                CreateWebViewWithRequest(Request, out view);
                 return view;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
-        public WebDragDestinationAction dragDestinationActionMaskForDraggingInfo(WebView WebView, IDataObject draggingInfo)
+        public WebDragDestinationAction dragDestinationActionMaskForDraggingInfo(WebView WebView, IDataObject DraggingInfo)
         {
             return WebDragDestinationAction.WebDragDestinationActionNone;            
         }
 
-        public WebDragSourceAction dragSourceActionMaskForPoint(WebView WebView, ref tagPOINT point)
+        public WebDragSourceAction dragSourceActionMaskForPoint(WebView WebView, ref tagPOINT Point)
         {
             return WebDragSourceAction.WebDragSourceActionNone;
         }
 
-        public void drawCustomMenuItem(WebView sender, IntPtr drawItem)
+        public void drawCustomMenuItem(WebView Sender, IntPtr DrawItem)
         {
         }
 
-        public void drawFooterInRect(WebView WebView, ref tagRECT rect, int drawingContext, uint pageIndex, uint pageCount)
+        public void drawFooterInRect(WebView WebView, ref tagRECT Rect, int DrawingContext, uint PageIndex, uint PageCount)
         {
         }
 
-        public void drawHeaderInRect(WebView WebView, ref tagRECT rect, int drawingContext)
+        public void drawHeaderInRect(WebView WebView, ref tagRECT Rect, int DrawingContext)
         {
         }
 
@@ -159,27 +155,27 @@ namespace WebKit
             throw new NotImplementedException();
         }
 
-        public void makeFirstResponder(WebView sender, int responderHWnd)
+        public void makeFirstResponder(WebView Sender, int ResponderHWnd)
         {
         }
 
-        public void measureCustomMenuItem(WebView sender, IntPtr measureItem)
+        public void measureCustomMenuItem(WebView Sender, IntPtr MeasureItem)
         {
         }
 
-        public void mouseDidMoveOverElement(WebView sender, CFDictionaryPropertyBag elementInformation, uint modifierFlags)
+        public void mouseDidMoveOverElement(WebView Sender, CFDictionaryPropertyBag ElementInformation, uint ModifierFlags)
         {
         }
 
-        public void paintCustomScrollCorner(WebView WebView, int hDC, tagRECT rect)
+        public void paintCustomScrollCorner(WebView WebView, int hDC, tagRECT Rect)
         {
         }
 
-        public void paintCustomScrollbar(WebView WebView, int hDC, tagRECT rect, WebScrollBarControlSize size, uint state, WebScrollbarControlPart pressedPart, int vertical, float value, float proportion, uint parts)
+        public void paintCustomScrollbar(WebView WebView, int hDC, tagRECT Rect, WebScrollBarControlSize Size, uint State, WebScrollbarControlPart PressedPart, int Vertical, float Value, float Proportion, uint Parts)
         {
         }
 
-        public void printFrame(WebView WebView, webFrame frame)
+        public void printFrame(WebView WebView, webFrame Frame)
         {
         }
 
@@ -187,88 +183,88 @@ namespace WebKit
         {
         }
 
-        public void registerUndoWithTarget(IWebUndoTarget target, string actionName, object actionArg)
+        public void registerUndoWithTarget(IWebUndoTarget Target, string ActionName, object ActionArg)
         {
         }
 
-        public void removeAllActionsWithTarget(IWebUndoTarget target)
+        public void removeAllActionsWithTarget(IWebUndoTarget Target)
         {
         }
 
-        public int runBeforeUnloadConfirmPanelWithMessage(WebView sender, string message, webFrame initiatedByFrame)
+        public int runBeforeUnloadConfirmPanelWithMessage(WebView Sender, string Message, webFrame InitiatedByFrame)
         {
             throw new NotImplementedException();
         }
 
-        public int runDatabaseSizeLimitPrompt(WebView WebView, string displayName, webFrame initiatedByFrame)
+        public int runDatabaseSizeLimitPrompt(WebView WebView, string DisplayName, webFrame InitiatedByFrame)
         {
             throw new NotImplementedException();
         }
 
-        public void runJavaScriptAlertPanelWithMessage(WebView sender, string message)
+        public void runJavaScriptAlertPanelWithMessage(WebView Sender, string Message)
         {
-            RunJavaScriptAlertPanelWithMessage(sender, message);
+            RunJavaScriptAlertPanelWithMessage(Sender, Message);
         }
 
-        public int runJavaScriptConfirmPanelWithMessage(WebView sender, string message)
+        public int runJavaScriptConfirmPanelWithMessage(WebView Sender, string Message)
         {
-            return RunJavaScriptConfirmPanelWithMessage(sender, message);
+            return RunJavaScriptConfirmPanelWithMessage(Sender, Message);
         }
 
-        public string runJavaScriptTextInputPanelWithPrompt(WebView sender, string message, string defaultText)
+        public string runJavaScriptTextInputPanelWithPrompt(WebView Sender, string Message, string DefaultText)
         {
-            return RunJavaScriptTextInputPanelWithPrompt(sender, message, defaultText);
+            return RunJavaScriptTextInputPanelWithPrompt(Sender, Message, DefaultText);
         }
 
         public void runModal(WebView WebView)
         {
         }
 
-        public void runOpenPanelForFileButtonWithResultListener(WebView sender, IWebOpenPanelResultListener resultListener)
+        public void runOpenPanelForFileButtonWithResultListener(WebView Sender, IWebOpenPanelResultListener ResultListener)
         {
         }
 
-        public void setActionTitle(string actionTitle)
+        public void setActionTitle(string ActionTitle)
         {
         }
 
-        public void setContentRect(WebView sender, ref tagRECT contentRect)
+        public void setContentRect(WebView Sender, ref tagRECT ContentRect)
         {
         }
 
-        public void setFrame(WebView sender, ref tagRECT frame)
+        public void setFrame(WebView Sender, ref tagRECT Frame)
         {
         }
 
-        public void setMenuBarVisible(WebView WebView, int visible)
+        public void setMenuBarVisible(WebView WebView, int Visible)
         {
         }
 
-        public void setResizable(WebView sender, int resizable)
+        public void setResizable(WebView Sender, int Resizable)
         {
         }
 
-        public void setStatusBarVisible(WebView sender, int visible)
+        public void setStatusBarVisible(WebView Sender, int Visible)
         {
         }
 
-        public void setStatusText(WebView sender, string text)
+        public void setStatusText(WebView Sender, string Text)
         {
         }
 
-        public void setToolbarsVisible(WebView sender, int visible)
+        public void setToolbarsVisible(WebView Sender, int Visible)
         {
         }
 
-        public void shouldPerformAction(WebView WebView, uint itemCommandID, uint sender)
+        public void shouldPerformAction(WebView WebView, uint ItemCommandID, uint Sender)
         {
         }
 
-        public void takeFocus(WebView sender, int forward)
+        public void takeFocus(WebView Sender, int Forward)
         {
         }
 
-        public void trackCustomPopupMenu(WebView sender, int hMenu, ref tagPOINT point)
+        public void trackCustomPopupMenu(WebView Sender, int hMenu, ref tagPOINT Point)
         {
         }
 
@@ -276,31 +272,31 @@ namespace WebKit
         {
         }
 
-        public int validateUserInterfaceItem(WebView WebView, uint itemCommandID, int defaultValidation)
+        public int validateUserInterfaceItem(WebView WebView, uint ItemCommandID, int DefaultValidation)
         {
             throw new NotImplementedException();
         }
 
-        public int webViewAreToolbarsVisible(WebView sender)
+        public int webViewAreToolbarsVisible(WebView Sender)
         {
             throw new NotImplementedException();
         }
 
-        public void webViewClose(WebView sender)
+        public void webViewClose(WebView Sender)
         {
         }
 
-        public tagRECT webViewContentRect(WebView sender)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int webViewFirstResponder(WebView sender)
+        public tagRECT webViewContentRect(WebView Sender)
         {
             throw new NotImplementedException();
         }
 
-        public void webViewFocus(WebView sender)
+        public int webViewFirstResponder(WebView Sender)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void webViewFocus(WebView Sender)
         {
         }
 
@@ -309,9 +305,9 @@ namespace WebKit
             return 0;
         }
 
-        public tagRECT webViewFrame(WebView sender)
+        public tagRECT webViewFrame(WebView Sender)
         {
-            return ((IWebViewPrivate)sender).visibleContentRect();
+            return ((IWebViewPrivate)Sender).visibleContentRect();
         }
 
         public float webViewHeaderHeight(WebView WebView)
@@ -319,19 +315,19 @@ namespace WebKit
             return 0;            
         }
 
-        public int webViewIsResizable(WebView sender)
+        public int webViewIsResizable(WebView Sender)
         {
             return 1;            
         }
 
-        public int webViewIsStatusBarVisible(WebView sender)
+        public int webViewIsStatusBarVisible(WebView Sender)
         {
             return 0;
         }
 
         public tagRECT webViewPrintingMarginRect(WebView WebView)
         {
-            PageSettings settings = owner.PageSettings;
+            var settings = _owner.PageSettings;
 
             // WebKit specifies margins in 1000ths of an inch.
             // PrinterResolution.Y returns 0 for some reason,
@@ -342,7 +338,7 @@ namespace WebKit
             int marginTop = settings.Margins.Top;
             int marginBottom = settings.Margins.Bottom;
             
-            tagRECT rect = new tagRECT();
+            var rect = new tagRECT();
             rect.left = marginLeft * 10;
             rect.top = marginTop * 10;
             rect.right = marginRight * 10;
@@ -350,24 +346,24 @@ namespace WebKit
             return rect;
         }
 
-        public void webViewShow(WebView sender)
+        public void webViewShow(WebView Sender)
         {
         }
 
-        public string webViewStatusText(WebView sender)
+        public string webViewStatusText(WebView Sender)
         {
             throw new NotImplementedException();
         }
 
-        public void webViewUnfocus(WebView sender)
+        public void webViewUnfocus(WebView Sender)
         {
         }
 
-        public void willPerformDragDestinationAction(WebView WebView, WebDragDestinationAction action, IDataObject draggingInfo)
+        public void willPerformDragDestinationAction(WebView WebView, WebDragDestinationAction Action, IDataObject DraggingInfo)
         {
         }
 
-        public IDataObject willPerformDragSourceAction(WebView WebView, WebDragSourceAction action, ref tagPOINT point, IDataObject pasteboard)
+        public IDataObject willPerformDragSourceAction(WebView WebView, WebDragSourceAction Action, ref tagPOINT Point, IDataObject Pasteboard)
         {
             throw new NotImplementedException();
         }

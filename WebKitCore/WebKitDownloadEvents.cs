@@ -28,7 +28,6 @@
 // communicate with clients.
 
 using System;
-using WebKit.Interop;
 
 namespace WebKit
 {
@@ -37,23 +36,23 @@ namespace WebKit
     /// <summary>
     /// Represents the method that will handle the WebKitDownload.DownloadStarted event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A DownloadStartedEventArgs that contains the event data.</param>
-    public delegate void DownloadStartedEventHandler(object sender, DownloadStartedEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A DownloadStartedEventArgs that contains the event data.</param>
+    public delegate void DownloadStartedEventHandler(object Sender, DownloadStartedEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitDownload.DownloadReceiveData event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A DownloadReceiveDataEventArgs that contains the event data.</param>
-    public delegate void DownloadReceiveDataEventHandler(object sender, DownloadReceiveDataEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A DownloadReceiveDataEventArgs that contains the event data.</param>
+    public delegate void DownloadReceiveDataEventHandler(object Sender, DownloadReceiveDataEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitDownload.DownloadFinished event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A DownloadFinishedEventArgs that contains the event data.</param>
-    public delegate void DownloadFinishedEventHandler(object sender, DownloadFinishedEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A DownloadFinishedEventArgs that contains the event data.</param>
+    public delegate void DownloadFinishedEventHandler(object Sender, DownloadFinishedEventArgs Args);
 
     #endregion
 
@@ -77,12 +76,12 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the DownloadStartedEventArgs class.
         /// </summary>
-        /// <param name="suggestedFileName">The suggested name for the destination file.</param>
-        /// <param name="fileSize">The file size in bytes.</param>
-        public DownloadStartedEventArgs(string suggestedFileName, long fileSize)
+        /// <param name="SuggestedFileName">The suggested name for the destination file.</param>
+        /// <param name="FileSize">The file size in bytes.</param>
+        public DownloadStartedEventArgs(string SuggestedFileName, long FileSize)
         {
-            this.SuggestedFileName = suggestedFileName;
-            this.FileSize = fileSize;
+            this.SuggestedFileName = SuggestedFileName;
+            this.FileSize = FileSize;
         }
     }
 
@@ -99,8 +98,8 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the DownloadReceiveDataEventArgs class.
         /// </summary>
-        /// <param name="length">The length of the data received in bytes.</param>
-        public DownloadReceiveDataEventArgs(uint length)
+        /// <param name="Length">The length of the data received in bytes.</param>
+        public DownloadReceiveDataEventArgs(uint Length)
         {
             this.Length = Length;
         }

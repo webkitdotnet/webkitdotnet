@@ -27,9 +27,6 @@
 // TODO: make more robust, support for more options etc...
 // Design feels a little messy at the moment.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebKit.Interop;
 
 namespace WebKit
@@ -73,41 +70,35 @@ namespace WebKit
             FilePath = "";
         }
     
-        internal void NotifyDidFailWithError(WebDownload download, WebError error)
+        internal void NotifyDidFailWithError(WebDownload Download, WebError Error)
         {
             // Todo
         }
 
-        internal void NotifyDidFinish(WebDownload download)
+        internal void NotifyDidFinish(WebDownload Download)
         {
             DownloadFinished(this, new DownloadFinishedEventArgs());
         }
 
-        internal void NotifyDecideDestinationWithSuggestedFilename(WebDownload download, string fileName)
+        internal void NotifyDecideDestinationWithSuggestedFilename(WebDownload Download, string FileName)
         {
-            if (FilePath.Length != 0)
-                download.setDestination(FilePath, 1);
-            else
-                download.setDestination(fileName, 1);
+            Download.setDestination(FilePath.Length != 0 ? FilePath : FileName, 1);
         }
 
-        internal bool NotifyDidReceiveDataOfLength(WebDownload download, uint length)
+        internal bool NotifyDidReceiveDataOfLength(WebDownload Download, uint Length)
         {
             if (DidCancel)
             {
-                download.cancel();
+                Download.cancel();
                 return false;
             }
-            else
-            {
-                DownloadReceiveData(this, new DownloadReceiveDataEventArgs(length));
-                return true;
-            }
+            DownloadReceiveData(this, new DownloadReceiveDataEventArgs(Length));
+            return true;
         }
 
-        internal void NotifyDidReceiveResponse(WebDownload download, WebURLResponse response)
+        internal void NotifyDidReceiveResponse(WebDownload Download, WebURLResponse Response)
         {
-            DownloadStarted(this, new DownloadStartedEventArgs(response.suggestedFilename(), response.expectedContentLength()));
+            DownloadStarted(this, new DownloadStartedEventArgs(Response.suggestedFilename(), Response.expectedContentLength()));
         }
 
         /// <summary>

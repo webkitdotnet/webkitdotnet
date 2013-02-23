@@ -29,7 +29,6 @@
 
 using System;
 using System.ComponentModel;
-using WebKit.Interop;
 
 namespace WebKit
 {
@@ -38,72 +37,72 @@ namespace WebKit
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.Error event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A WebKitBrowserErrorEventArgs that contains the event data.</param>
-    public delegate void WebKitBrowserErrorEventHandler (object sender, WebKitBrowserErrorEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A WebKitBrowserErrorEventArgs that contains the event data.</param>
+    public delegate void WebKitBrowserErrorEventHandler (object Sender, WebKitBrowserErrorEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.FileDownloadBegin event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A FileDownloadBeginEventArgs that contains the event data.</param>
-    public delegate void FileDownloadBeginEventHandler (object sender, FileDownloadBeginEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A FileDownloadBeginEventArgs that contains the event data.</param>
+    public delegate void FileDownloadBeginEventHandler (object Sender, FileDownloadBeginEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.NewWindowRequest event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A NewWindowRequestEventArgs that contains the event data.</param>
-    public delegate void NewWindowRequestEventHandler (object sender, NewWindowRequestEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A NewWindowRequestEventArgs that contains the event data.</param>
+    public delegate void NewWindowRequestEventHandler (object Sender, NewWindowRequestEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.NewWindowCreated event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A NewWindowCreatedEventArgs that contains the event data.</param>
-    public delegate void NewWindowCreatedEventHandler (object sender, NewWindowCreatedEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A NewWindowCreatedEventArgs that contains the event data.</param>
+    public delegate void NewWindowCreatedEventHandler (object Sender, NewWindowCreatedEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ProgressStartedEventHandler event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">An EventArgs that contains the event data.</param>
-    public delegate void ProgressStartedEventHandler(object sender, EventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">An EventArgs that contains the event data.</param>
+    public delegate void ProgressStartedEventHandler(object Sender, EventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ProgressFinishedEventHandler event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">An EventArgs that contains the event data.</param>
-    public delegate void ProgressFinishedEventHandler(object sender, EventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">An EventArgs that contains the event data.</param>
+    public delegate void ProgressFinishedEventHandler(object Sender, EventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ProgressChangedEventHandler event.
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A ProgressChangedEventArgs that contains the event data.</param>
-    public delegate void ProgressChangedEventHandler(object sender, ProgressChangedEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A ProgressChangedEventArgs that contains the event data.</param>
+    public delegate void ProgressChangedEventHandler(object Sender, ProgressChangedEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptAlertPanel event. 
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A ShowJavaScriptAlertPanelEventArgs that contains the event data.</param>
-    public delegate void ShowJavaScriptAlertPanelEventHandler(object sender, ShowJavaScriptAlertPanelEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A ShowJavaScriptAlertPanelEventArgs that contains the event data.</param>
+    public delegate void ShowJavaScriptAlertPanelEventHandler(object Sender, ShowJavaScriptAlertPanelEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptConfirmPanel event. 
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A ShowJavaScriptConfirmPanelEventArgs that contains the event data.</param>
-    public delegate void ShowJavaScriptConfirmPanelEventHandler(object sender, ShowJavaScriptConfirmPanelEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A ShowJavaScriptConfirmPanelEventArgs that contains the event data.</param>
+    public delegate void ShowJavaScriptConfirmPanelEventHandler(object Sender, ShowJavaScriptConfirmPanelEventArgs Args);
 
     /// <summary>
     /// Represents the method that will handle the WebKitBrowser.ShowJavaScriptPromptPanel event. 
     /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">A ShowJavaScriptPromptPanelEventArgs that contains the event data.</param>
-    public delegate void ShowJavaScriptPromptPanelEventHandler(object sender, ShowJavaScriptPromptPanelEventArgs e);
+    /// <param name="Sender">The source of the event.</param>
+    /// <param name="Args">A ShowJavaScriptPromptPanelEventArgs that contains the event data.</param>
+    public delegate void ShowJavaScriptPromptPanelEventHandler(object Sender, ShowJavaScriptPromptPanelEventArgs Args);
 
     #endregion
 
@@ -122,10 +121,10 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the WebKitBrowserErrorEventArgs class.
         /// </summary>
-        /// <param name="description">A description of the error that occurred.</param>
-        public WebKitBrowserErrorEventArgs(string description)
+        /// <param name="Description">A description of the error that occurred.</param>
+        public WebKitBrowserErrorEventArgs(string Description)
         {
-            this.Description = description;
+            this.Description = Description;
         }
     }
 
@@ -147,8 +146,8 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the FileDownloadBeginEventArgs class.
         /// </summary>
-        /// <param name="download">A WebKitDownload representing the download.</param>
-        public FileDownloadBeginEventArgs(WebKitDownload download)
+        /// <param name="Download">A WebKitDownload representing the download.</param>
+        public FileDownloadBeginEventArgs(WebKitDownload Download)
         {
             this.Download = Download;
             this.Cancel = false;
@@ -173,11 +172,11 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the NewWindowRequestEventArgs class.
         /// </summary>
-        /// <param name="url">The Url that the new window will attempt to navigate to.</param>
-        public NewWindowRequestEventArgs(string url)
+        /// <param name="Url">The Url that the new window will attempt to navigate to.</param>
+        public NewWindowRequestEventArgs(string Url)
         {
             this.Cancel = false;
-            this.Url = url;
+            this.Url = Url;
         }
     }
 
@@ -194,10 +193,10 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the NewWindowCreatedEventArgs class.
         /// </summary>
-        /// <param name="browser">The WebKitBrowser showing the contents of the new window.</param>
-        public NewWindowCreatedEventArgs(IWebKitBrowser browser)
+        /// <param name="Browser">The WebKitBrowser showing the contents of the new window.</param>
+        public NewWindowCreatedEventArgs(IWebKitBrowser Browser)
         {
-            WebKitBrowser = browser;
+            WebKitBrowser = Browser;
         }
     }
 
@@ -214,10 +213,10 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the ShowJavaScriptAlertPanelEventArgs class.
         /// </summary>
-        /// <param name="message">The message to be shown in the alert panel.</param>
-        public ShowJavaScriptAlertPanelEventArgs(string message)
+        /// <param name="Message">The message to be shown in the alert panel.</param>
+        public ShowJavaScriptAlertPanelEventArgs(string Message)
         {
-            Message = message;
+            this.Message = Message;
         }
     }
 
@@ -239,10 +238,10 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the ShowJavaScriptConfirmPanelEventArgs class.
         /// </summary>
-        /// <param name="message">The message to be shown in the confirm panel.</param>
-        public ShowJavaScriptConfirmPanelEventArgs(string message)
+        /// <param name="Message">The message to be shown in the confirm panel.</param>
+        public ShowJavaScriptConfirmPanelEventArgs(string Message)
         {
-            Message = message;
+            this.Message = Message;
             ReturnValue = false;
         }
     }
@@ -270,13 +269,13 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the ShowJavaScriptConfirmPanelEventArgs class.
         /// </summary>
-        /// <param name="message">The message to be shown in the prompt panel.</param>
-        /// <param name="defaultValue">The default value to be shown in the prompt panel.</param>
-        public ShowJavaScriptPromptPanelEventArgs(string message, string defaultValue)
+        /// <param name="Message">The message to be shown in the prompt panel.</param>
+        /// <param name="DefaultValue">The default value to be shown in the prompt panel.</param>
+        public ShowJavaScriptPromptPanelEventArgs(string Message, string DefaultValue)
         {
-            Message = message;
-            DefaultValue = defaultValue;
-            ReturnValue = defaultValue;
+            this.Message = Message;
+            this.DefaultValue = DefaultValue;
+            ReturnValue = DefaultValue;
         }
     }
 

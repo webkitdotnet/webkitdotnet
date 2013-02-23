@@ -32,27 +32,22 @@
 // cairo build of WebKit yet.
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebKit.Interop;
-using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace WebKit
 {
-    internal delegate void DecideDestinationWithSuggestedFilenameEvent(WebDownload download, string fileName);
-    internal delegate void DidBeginEvent(WebDownload download);
-    internal delegate void DidCancelAuthenticationChallengeEvent(WebDownload download, IWebURLAuthenticationChallenge challenge);
-    internal delegate void DidCreateDestinationEvent(WebDownload download, string destination);
-    internal delegate void DidFailWithErrorEvent(WebDownload download, WebError error);
-    internal delegate void DidFinishEvent(WebDownload download);
-    internal delegate void DidReceiveAuthenticationChallengeEvent(WebDownload download, IWebURLAuthenticationChallenge challenge);
-    internal delegate void DidReceiveDataOfLengthEvent(WebDownload download, uint length);
-    internal delegate void DidReceiveResponseEvent(WebDownload download, WebURLResponse response);
-    internal delegate int ShouldDecodeSourceDataOfMIMETypeEvent(WebDownload download, string encodingType);
-    internal delegate void WillResumeWithResponseEvent(WebDownload download, WebURLResponse response, long fromByte);
-    internal delegate void WillSendRequestEvent(WebDownload download, WebMutableURLRequest request, WebURLResponse redirectResponse, out WebMutableURLRequest finalRequest);
+    internal delegate void DecideDestinationWithSuggestedFilenameEvent(WebDownload Download, string FileName);
+    internal delegate void DidBeginEvent(WebDownload Download);
+    internal delegate void DidCancelAuthenticationChallengeEvent(WebDownload Download, IWebURLAuthenticationChallenge Challenge);
+    internal delegate void DidCreateDestinationEvent(WebDownload Download, string Destination);
+    internal delegate void DidFailWithErrorEvent(WebDownload Download, WebError Error);
+    internal delegate void DidFinishEvent(WebDownload Download);
+    internal delegate void DidReceiveAuthenticationChallengeEvent(WebDownload Download, IWebURLAuthenticationChallenge Challenge);
+    internal delegate void DidReceiveDataOfLengthEvent(WebDownload Download, uint Length);
+    internal delegate void DidReceiveResponseEvent(WebDownload Download, WebURLResponse Response);
+    internal delegate int ShouldDecodeSourceDataOfMIMETypeEvent(WebDownload Download, string EncodingType);
+    internal delegate void WillResumeWithResponseEvent(WebDownload Download, WebURLResponse Response, long FromByte);
+    internal delegate void WillSendRequestEvent(WebDownload Download, WebMutableURLRequest Request, WebURLResponse RedirectResponse, out WebMutableURLRequest FinalRequest);
 
     internal class WebDownloadDelegate : IWebDownloadDelegate
     {
@@ -69,65 +64,65 @@ namespace WebKit
 
         #region IWebDownloadDelegate Members
 
-        public void decideDestinationWithSuggestedFilename(WebDownload download, string fileName)
+        public void decideDestinationWithSuggestedFilename(WebDownload Download, string FileName)
         {
-            DecideDestinationWithSuggestedFilename(download, fileName);
+            DecideDestinationWithSuggestedFilename(Download, FileName);
         }
 
-        public void didBegin(WebDownload download)
+        public void didBegin(WebDownload Download)
         {
-            DidBegin(download);
+            DidBegin(Download);
         }
 
-        public void didCancelAuthenticationChallenge(WebDownload download, IWebURLAuthenticationChallenge challenge)
+        public void didCancelAuthenticationChallenge(WebDownload Download, IWebURLAuthenticationChallenge Challenge)
         {
-            DidCancelAuthenticationChallenge(download, challenge);
+            DidCancelAuthenticationChallenge(Download, Challenge);
         }
 
-        public void didCreateDestination(WebDownload download, string destination)
+        public void didCreateDestination(WebDownload Download, string Destination)
         {
-            DidCreateDestination(download, destination);
+            DidCreateDestination(Download, Destination);
         }
 
-        public void didFailWithError(WebDownload download, WebError error)
+        public void didFailWithError(WebDownload Download, WebError Error)
         {
-            DidFailWithError(download, error);
+            DidFailWithError(Download, Error);
         }
 
-        public void didFinish(WebDownload download)
+        public void didFinish(WebDownload Download)
         {
-            DidFinish(download);
+            DidFinish(Download);
         }
 
-        public void didReceiveAuthenticationChallenge(WebDownload download, IWebURLAuthenticationChallenge challenge)
+        public void didReceiveAuthenticationChallenge(WebDownload Download, IWebURLAuthenticationChallenge Challenge)
         {
-            DidReceiveAuthenticationChallenge(download, challenge);
+            DidReceiveAuthenticationChallenge(Download, Challenge);
         }
 
-        public void didReceiveDataOfLength(WebDownload download, uint length)
+        public void didReceiveDataOfLength(WebDownload Download, uint Length)
         {
-            DidReceiveDataOfLength(download, length);
+            DidReceiveDataOfLength(Download, Length);
         }
 
-        public void didReceiveResponse(WebDownload download, WebURLResponse response)
+        public void didReceiveResponse(WebDownload Download, WebURLResponse Response)
         {
-            DidReceiveResponse(download, response);
+            DidReceiveResponse(Download, Response);
         }
 
-        public int shouldDecodeSourceDataOfMIMEType(WebDownload download, string encodingType)
+        public int shouldDecodeSourceDataOfMIMEType(WebDownload Download, string EncodingType)
         {
             // TODO
             return 0;
         }
 
-        public void willResumeWithResponse(WebDownload download, WebURLResponse response, long fromByte)
+        public void willResumeWithResponse(WebDownload Download, WebURLResponse Response, long FromByte)
         {
-            WillResumeWithResponse(download, response, fromByte);
+            WillResumeWithResponse(Download, Response, FromByte);
         }
 
-        public void willSendRequest(WebDownload download, WebMutableURLRequest request, WebURLResponse redirectResponse, out WebMutableURLRequest finalRequest)
+        public void willSendRequest(WebDownload Download, WebMutableURLRequest Request, WebURLResponse RedirectResponse, out WebMutableURLRequest FinalRequest)
         {
-            finalRequest = request;
+            FinalRequest = Request;
         }
 
         #endregion

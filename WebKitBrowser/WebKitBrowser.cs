@@ -40,25 +40,25 @@ namespace WebKit
     /// </summary>
     public partial class WebKitBrowser : UserControl, IWebKitBrowserHost, IWebKitBrowser
     {
-        private WebKitBrowserCore core;
+        private readonly WebKitBrowserCore _core;
 
         /// <summary>
         /// Processes a command key.  Overridden in WebKitBrowser to forward key events to the WebKit window.
         /// </summary>
-        /// <param name="msg">The window message to process.</param>
-        /// <param name="keyData">The key to process.</param>
+        /// <param name="Msg">The window message to process.</param>
+        /// <param name="KeyData">The key to process.</param>
         /// <returns>Success value.</returns>
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        protected override bool ProcessCmdKey(ref Message Msg, Keys KeyData)
         {
-            Keys key = (Keys) msg.WParam.ToInt32();
+            var key = (Keys) Msg.WParam.ToInt32();
             if (key == Keys.Left || key == Keys.Right || key == Keys.Up ||
                 key == Keys.Down || key == Keys.Tab)
             {
-                NativeMethods.SendMessage(msg.HWnd, (uint) msg.Msg, msg.WParam, msg.LParam);
+                NativeMethods.SendMessage(Msg.HWnd, (uint) Msg.Msg, Msg.WParam, Msg.LParam);
                 return true;
             }
 
-            return base.ProcessCmdKey(ref msg, keyData);
+            return base.ProcessCmdKey(ref Msg, KeyData);
         }
 
         #region WebKitBrowser events
@@ -73,8 +73,8 @@ namespace WebKit
         /// </summary>
         public event EventHandler DocumentTitleChanged
         {
-            add { core.DocumentTitleChanged += value; }
-            remove { core.DocumentTitleChanged -= value; }
+            add { _core.DocumentTitleChanged += value; }
+            remove { _core.DocumentTitleChanged -= value; }
         }
 
         /// <summary>
@@ -82,8 +82,8 @@ namespace WebKit
         /// </summary>
         public event WebBrowserDocumentCompletedEventHandler DocumentCompleted
         {
-            add { core.DocumentCompleted += value; }
-            remove { core.DocumentCompleted -= value; }
+            add { _core.DocumentCompleted += value; }
+            remove { _core.DocumentCompleted -= value; }
         }
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace WebKit
         /// </summary>
         public event WebBrowserNavigatedEventHandler Navigated
         {
-            add { core.Navigated += value; }
-            remove { core.Navigated -= value; }
+            add { _core.Navigated += value; }
+            remove { _core.Navigated -= value; }
         }
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace WebKit
         /// </summary>
         public event WebBrowserNavigatingEventHandler Navigating
         {
-            add { core.Navigating += value; }
-            remove { core.Navigating -= value; }
+            add { _core.Navigating += value; }
+            remove { _core.Navigating -= value; }
         }
 
         /// <summary>
@@ -109,8 +109,8 @@ namespace WebKit
         /// </summary>
         public event WebKitBrowserErrorEventHandler Error
         {
-            add { core.Error += value; }
-            remove { core.Error -= value; }
+            add { _core.Error += value; }
+            remove { _core.Error -= value; }
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace WebKit
         /// </summary>
         public event FileDownloadBeginEventHandler DownloadBegin
         {
-            add { core.DownloadBegin += value; }
-            remove { core.DownloadBegin -= value; }
+            add { _core.DownloadBegin += value; }
+            remove { _core.DownloadBegin -= value; }
         }
 
         /// <summary>
@@ -127,8 +127,8 @@ namespace WebKit
         /// </summary>
         public event NewWindowRequestEventHandler NewWindowRequest
         {
-            add { core.NewWindowRequest += value; }
-            remove { core.NewWindowRequest -= value; }
+            add { _core.NewWindowRequest += value; }
+            remove { _core.NewWindowRequest -= value; }
         }
 
         /// <summary>
@@ -136,8 +136,8 @@ namespace WebKit
         /// </summary>
         public event NewWindowCreatedEventHandler NewWindowCreated
         {
-            add { core.NewWindowCreated += value; }
-            remove { core.NewWindowCreated -= value; }
+            add { _core.NewWindowCreated += value; }
+            remove { _core.NewWindowCreated -= value; }
         }
 
         /// <summary>
@@ -145,8 +145,8 @@ namespace WebKit
         /// </summary>
         public event ShowJavaScriptAlertPanelEventHandler ShowJavaScriptAlertPanel
         {
-            add { core.ShowJavaScriptAlertPanel += value; }
-            remove { core.ShowJavaScriptAlertPanel -= value; }
+            add { _core.ShowJavaScriptAlertPanel += value; }
+            remove { _core.ShowJavaScriptAlertPanel -= value; }
         }
 
         /// <summary>
@@ -154,8 +154,8 @@ namespace WebKit
         /// </summary>
         public event ShowJavaScriptConfirmPanelEventHandler ShowJavaScriptConfirmPanel
         {
-            add { core.ShowJavaScriptConfirmPanel += value; }
-            remove { core.ShowJavaScriptConfirmPanel -= value; }
+            add { _core.ShowJavaScriptConfirmPanel += value; }
+            remove { _core.ShowJavaScriptConfirmPanel -= value; }
         }
 
         /// <summary>
@@ -163,8 +163,8 @@ namespace WebKit
         /// </summary>
         public event ShowJavaScriptPromptPanelEventHandler ShowJavaScriptPromptPanel
         {
-            add { core.ShowJavaScriptPromptPanel += value; }
-            remove { core.ShowJavaScriptPromptPanel -= value; }
+            add { _core.ShowJavaScriptPromptPanel += value; }
+            remove { _core.ShowJavaScriptPromptPanel -= value; }
         }
 
         #endregion
@@ -177,8 +177,8 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public PageSettings PageSettings
         {
-            get { return core.PageSettings; }
-            set { core.PageSettings = value; }
+            get { return _core.PageSettings; }
+            set { _core.PageSettings = value; }
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string DocumentTitle
         {
-            get { return core.DocumentTitle; }
+            get { return _core.DocumentTitle; }
         }
 
         /// <summary>
@@ -197,8 +197,8 @@ namespace WebKit
         [Description("Specifies the Url to navigate to.")]
         public Uri Url
         {
-            get { return core.Url; }
-            set { core.Url = value; }
+            get { return _core.Url; }
+            set { _core.Url = value; }
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsBusy
         {
-            get { return core.IsBusy; }
+            get { return _core.IsBusy; }
         }
 
         /// <summary>
@@ -217,8 +217,8 @@ namespace WebKit
         [Description("The HTML content to be displayed if no Url is specified.")]
         public string DocumentText
         {
-            get { return core.DocumentText; }
-            set { core.DocumentText = value; }
+            get { return _core.DocumentText; }
+            set { _core.DocumentText = value; }
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string SelectedText
         {
-            get { return core.SelectedText; }
+            get { return _core.SelectedText; }
         }
 
         /// <summary>
@@ -236,8 +236,8 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ApplicationName
         {
-            get { return core.ApplicationName; }
-            set { core.ApplicationName = value; }
+            get { return _core.ApplicationName; }
+            set { _core.ApplicationName = value; }
         }
 
         /// <summary>
@@ -246,8 +246,8 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string UserAgent
         {
-            get { return core.UserAgent; }
-            set { core.UserAgent = value; }
+            get { return _core.UserAgent; }
+            set { _core.UserAgent = value; }
         }
 
         /// <summary>
@@ -257,8 +257,8 @@ namespace WebKit
         [Description("Specifies the text size multiplier.")]
         public float TextSize
         {
-            get { return core.TextSize; }
-            set { core.TextSize = value; }
+            get { return _core.TextSize; }
+            set { _core.TextSize = value; }
         }
 
         /// <summary>
@@ -270,8 +270,8 @@ namespace WebKit
             " to another page once it's initial page has loaded.")]
         public bool AllowNavigation
         {
-            get { return core.AllowNavigation; }
-            set { core.AllowNavigation = value; }
+            get { return _core.AllowNavigation; }
+            set { _core.AllowNavigation = value; }
         }
 
         /// <summary>
@@ -281,8 +281,8 @@ namespace WebKit
         [Description("Specifies whether to allow file downloads.")]
         public bool AllowDownloads
         {
-            get { return core.AllowDownloads; }
-            set { core.AllowDownloads = value; }
+            get { return _core.AllowDownloads; }
+            set { _core.AllowDownloads = value; }
         }
 
         /// <summary>
@@ -293,8 +293,8 @@ namespace WebKit
             " opened in a new window.")]
         public bool AllowNewWindows
         {
-            get { return core.AllowNewWindows; }
-            set { core.AllowNewWindows = value; }
+            get { return _core.AllowNewWindows; }
+            set { _core.AllowNewWindows = value; }
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool CanGoBack
         {
-            get { return core.CanGoBack; }
+            get { return _core.CanGoBack; }
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool CanGoForward
         {
-            get { return core.CanGoForward; }
+            get { return _core.CanGoForward; }
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DOM.Document Document
         {
-            get { return core.Document; }
+            get { return _core.Document; }
         }
 
         /// <summary>
@@ -330,7 +330,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Version Version
         {
-            get { return core.Version; }
+            get { return _core.Version; }
         }
 
         /// <summary>
@@ -339,8 +339,8 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Point ScrollOffset
         {
-            get { return core.ScrollOffset; }
-            set { core.ScrollOffset = value; }
+            get { return _core.ScrollOffset; }
+            set { _core.ScrollOffset = value; }
         }
 
         /// <summary>
@@ -349,7 +349,7 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Rectangle VisibleContent
         {
-            get { return core.VisibleContent; }
+            get { return _core.VisibleContent; }
         }
 
         /// <summary>
@@ -359,8 +359,8 @@ namespace WebKit
         [Description("Specifies whether the default browser context menu is enabled")]
         public bool IsWebBrowserContextMenuEnabled
         {
-            get { return core.IsWebBrowserContextMenuEnabled; }
-            set { core.IsWebBrowserContextMenuEnabled = value; }
+            get { return _core.IsWebBrowserContextMenuEnabled; }
+            set { _core.IsWebBrowserContextMenuEnabled = value; }
         }
 
         /// <summary>
@@ -370,8 +370,8 @@ namespace WebKit
         [Description("Specifies whether JavaScript is enabled in the WebKitBrowser")]
         public bool IsScriptingEnabled
         {
-            get { return core.IsScriptingEnabled; }
-            set { core.IsScriptingEnabled = value; }
+            get { return _core.IsScriptingEnabled; }
+            set { _core.IsScriptingEnabled = value; }
         }
 
         /// <summary>
@@ -380,8 +380,8 @@ namespace WebKit
         [Browsable(true), DefaultValue(true), Category("Behavior")]
         [Description("Specifies whether LocalStorage is enabled in the WebKitBrowser")]
         public bool IsLocalStorageEnabled {
-          get { return core.IsLocalStorageEnabled; }
-          set { core.IsLocalStorageEnabled = value; }
+          get { return _core.IsLocalStorageEnabled; }
+          set { _core.IsLocalStorageEnabled = value; }
         }
 
         /// <summary>
@@ -391,8 +391,8 @@ namespace WebKit
         /// <remarks>Value must be a fully qualified directory path.</remarks>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string LocalStorageDatabaseDirectory {
-          get { return core.LocalStorageDatabaseDirectory; }
-          set { core.LocalStorageDatabaseDirectory = value; }
+          get { return _core.LocalStorageDatabaseDirectory; }
+          set { _core.LocalStorageDatabaseDirectory = value; }
         }
 
         /// <summary>
@@ -401,8 +401,8 @@ namespace WebKit
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public object ObjectForScripting
         {
-            get { return core.ObjectForScripting; }
-            set { core.ObjectForScripting = value; }
+            get { return _core.ObjectForScripting; }
+            set { _core.ObjectForScripting = value; }
         }
 
         #endregion
@@ -417,9 +417,9 @@ namespace WebKit
         /// <summary>
         /// Initializes a new instance of the WebKitBrowser control.
         /// </summary>
-        public WebKitBrowser(WebKitBrowserCore bCore)
+        public WebKitBrowser(WebKitBrowserCore BrowserCore)
         {
-            core = bCore;
+            _core = BrowserCore;
             NewWindowCreated += delegate { };
             NewWindowRequest += delegate { };
             DownloadBegin += delegate { };
@@ -433,7 +433,7 @@ namespace WebKit
             ShowJavaScriptPromptPanel += delegate { };
             InitializeComponent();
 
-            core.Initialize(this);
+            _core.Initialize(this);
         }
 
         #endregion
@@ -443,10 +443,10 @@ namespace WebKit
         /// <summary>
         /// Navigates to the specified Url.
         /// </summary>
-        /// <param name="url">Url to navigate to.</param>
-        public void Navigate(string url)
+        /// <param name="Url">Url to navigate to.</param>
+        public void Navigate(string Url)
         {
-            core.Navigate(url);
+            _core.Navigate(Url);
         }
 
         /// <summary>
@@ -454,7 +454,7 @@ namespace WebKit
         /// </summary>
         public void ShowInspector()
         {
-            core.ShowInspector();
+            _core.ShowInspector();
         }
 
         /// <summary>
@@ -463,7 +463,7 @@ namespace WebKit
         /// <returns>Success value.</returns>
         public bool GoBack()
         {
-            return core.GoBack();
+            return _core.GoBack();
         }
 
         /// <summary>
@@ -472,7 +472,7 @@ namespace WebKit
         /// <returns>Success value.</returns>
         public bool GoForward()
         {
-            return core.GoForward();
+            return _core.GoForward();
         }
 
         /// <summary>
@@ -480,7 +480,7 @@ namespace WebKit
         /// </summary>
         public void Reload()
         {
-            core.Reload();
+            _core.Reload();
         }
 
         /// <summary>
@@ -489,7 +489,7 @@ namespace WebKit
         /// <param name="Option">Options for reloading the page.</param>
         public void Reload(WebBrowserRefreshOption Option)
         {
-            core.Reload(Option);
+            _core.Reload(Option);
         }
 
         /// <summary>
@@ -498,7 +498,7 @@ namespace WebKit
         /// </summary>
         public void Stop()
         {
-            core.Stop();
+            _core.Stop();
         }
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace WebKit
         /// <returns></returns>
         public string StringByEvaluatingJavaScriptFromString(string Script)
         {
-            return core.StringByEvaluatingJavaScriptFromString(Script);
+            return _core.StringByEvaluatingJavaScriptFromString(Script);
         }
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace WebKit
         /// <returns>The WebView object.</returns>
         public object GetWebView()
         {
-            return core.GetWebView();
+            return _core.GetWebView();
         }
 
         /// <summary>
@@ -526,7 +526,7 @@ namespace WebKit
         /// <returns>A JSCore.JSContext object representing the script context.</returns>
         public object GetGlobalScriptContext()
         {
-            return core.GetGlobalScriptContext();
+            return _core.GetGlobalScriptContext();
         }
 
         // printing methods
@@ -536,7 +536,7 @@ namespace WebKit
         /// </summary>
         public void Print()
         {
-            core.Print();
+            _core.Print();
         }
 
         /// <summary>
@@ -544,7 +544,7 @@ namespace WebKit
         /// </summary>
         public void ShowPageSetupDialog()
         {
-            core.ShowPageSetupDialog();
+            _core.ShowPageSetupDialog();
         }
 
         /// <summary>
@@ -552,7 +552,7 @@ namespace WebKit
         /// </summary>
         public void ShowPrintDialog()
         {
-            core.ShowPrintDialog();
+            _core.ShowPrintDialog();
         }
 
         /// <summary>
@@ -560,7 +560,7 @@ namespace WebKit
         /// </summary>
         public void ShowPrintPreviewDialog()
         {
-            core.ShowPrintPreviewDialog();
+            _core.ShowPrintPreviewDialog();
         }
 
         #endregion Public Methods

@@ -34,12 +34,12 @@ namespace WebKit
 {
     internal class WebPolicyDelegate : IWebPolicyDelegate
     {
-        public bool AllowDownloads;
-        public bool AllowNewWindows;
-        public bool AllowNavigation;
+        public bool AllowDownloads { get; set; }
+        public bool AllowNewWindows { get; set; }
+        public bool AllowNavigation { get; set; }
 
         // so that we can load and display the first page
-        public bool AllowInitialNavigation;
+        public bool AllowInitialNavigation { get; set; }
 
         public WebPolicyDelegate(bool AllowNavigation, bool AllowDownloads, bool AllowNewWindows)
         {
@@ -51,40 +51,40 @@ namespace WebKit
 
         #region IWebPolicyDelegate Members
 
-        public void decidePolicyForMIMEType(WebView WebView, string type, WebURLRequest request, webFrame frame, IWebPolicyDecisionListener listener)
+        public void decidePolicyForMIMEType(WebView WebView, string Type, WebURLRequest Request, webFrame Frame, IWebPolicyDecisionListener Listener)
         {
             // todo: add support for showing custom MIME type documents
             // and for changing which MIME types are handled here
-            if (WebView.canShowMIMEType(type) == 0)
+            if (WebView.canShowMIMEType(Type) == 0)
             {
                 if (AllowDownloads)
-                    listener.download();
+                    Listener.download();
                 else
-                    listener.ignore();
+                    Listener.ignore();
             }
             else
             {
-                listener.use();
+                Listener.use();
             }
         }
 
-        public void decidePolicyForNavigationAction(WebView WebView, CFDictionaryPropertyBag actionInformation, WebURLRequest request, webFrame frame, IWebPolicyDecisionListener listener)
+        public void decidePolicyForNavigationAction(WebView WebView, CFDictionaryPropertyBag ActionInformation, WebURLRequest Request, webFrame Frame, IWebPolicyDecisionListener Listener)
         {
             if (AllowNavigation || AllowInitialNavigation)
-                listener.use();
+                Listener.use();
             else
-                listener.ignore();
+                Listener.ignore();
         }
 
-        public void decidePolicyForNewWindowAction(WebView WebView, CFDictionaryPropertyBag actionInformation, WebURLRequest request, string frameName, IWebPolicyDecisionListener listener)
+        public void decidePolicyForNewWindowAction(WebView WebView, CFDictionaryPropertyBag ActionInformation, WebURLRequest Request, string FrameName, IWebPolicyDecisionListener Listener)
         {
             if (AllowNewWindows)
-                listener.use();
+                Listener.use();
             else
-                listener.ignore();
+                Listener.ignore();
         }
 
-        public void unableToImplementPolicyWithError(WebView WebView, WebError error, webFrame frame)
+        public void unableToImplementPolicyWithError(WebView WebView, WebError Error, webFrame Frame)
         {
         }
 

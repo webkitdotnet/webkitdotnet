@@ -692,7 +692,7 @@ namespace WebKit
         {
             if (Frame == _webView.mainFrame())
             {
-                Navigated(this, new WebBrowserNavigatedEventArgs(this.Url));
+                Navigated(this, new WebBrowserNavigatedEventArgs(Url));
             }
         }
 
@@ -710,7 +710,7 @@ namespace WebKit
             if (Frame == _webView.mainFrame())
             {
                 _policyDelegate.AllowInitialNavigation = _policyDelegate.AllowNavigation;
-                DocumentCompleted(this, new WebBrowserDocumentCompletedEventArgs(this.Url));
+                DocumentCompleted(this, new WebBrowserDocumentCompletedEventArgs(Url));
             }
         }
 
@@ -1036,7 +1036,6 @@ namespace WebKit
         /// </summary>
         public void ShowPrintPreviewDialog()
         {
-            // TODO: find out why it apparently only shows the first page on the preview...
             var printDlg = new PrintPreviewDialog();
             var doc = this.GetCommonPrintDocument();
             printDlg.Document = doc;

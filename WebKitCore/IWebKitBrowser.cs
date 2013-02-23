@@ -176,8 +176,8 @@ namespace WebKit
         /// <summary>
         /// Navigates to the specified Url.
         /// </summary>
-        /// <param name="url">Url to navigate to.</param>
-        void Navigate(string url);
+        /// <param name="NewUrl">Url to navigate to.</param>
+        void Navigate(string NewUrl);
 
         /// <summary>
         /// Navigates to the previous page in the page history, if available.

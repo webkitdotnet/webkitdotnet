@@ -1,26 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing.Printing;
 using System.ComponentModel;
 using WebKit.Interop;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace WebKit
 {
     internal class PrintManager
     {
-        private PrintDocument _document;
-        private IWebFramePrivate _webFramePrivate;
-        private IWebKitBrowserHost _owner;
-        private IWebKitBrowser _browser;
+        private readonly PrintDocument _document;
+        private readonly IWebFramePrivate _webFramePrivate;
+        private readonly IWebKitBrowserHost _owner;
+        private readonly IWebKitBrowser _browser;
         private Graphics _printGfx;
         private uint _nPages;
         private uint _page;
         private int _hDC;        
-        private bool _preview;
-        private bool _printing = false;
+        private readonly bool _preview;
+        private bool _printing;
 
         public PrintManager(PrintDocument Document, IWebKitBrowserHost Owner, IWebKitBrowser Browser, bool Preview)
         {
@@ -39,23 +36,21 @@ namespace WebKit
                 return;
             _printing = true;
 
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(worker_DoWork);
+            var worker = new BackgroundWorker();
+            worker.DoWork += Worker_DoWork;
             worker.RunWorkerAsync();
         }
 
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void Worker_DoWork(object Sender, DoWorkEventArgs Args)
         {
-            _document.PrintPage += new PrintPageEventHandler(_document_PrintPage);
+            _document.PrintPage += Document_PrintPage;
             if (!_preview)
                 _document.Print();
 
             _printing = false;
         }
 
-        private delegate uint GetPrintedPageCountDelegate();
-
-        private void _document_PrintPage(object sender, PrintPageEventArgs e)
+        private void Document_PrintPage(object Sender, PrintPageEventArgs Args)
         {
             // running on a seperate thread, so we invoke _webFramePrivate
             // methods on the owners ui thread
@@ -63,55 +58,51 @@ namespace WebKit
             if (_printGfx == null)
             {
                 // initialise printing
-                _printGfx = e.Graphics;
+                _printGfx = Args.Graphics;
                 _hDC = _printGfx.GetHdc().ToInt32();
 
-                _ownerInvoke(() => _webFramePrivate.setInPrintingMode(1, _hDC));
+                OwnerInvoke(() => _webFramePrivate.setInPrintingMode(1, _hDC));
 
-                _nPages = _ownerInvoke(() =>
-                {
-                    return _webFramePrivate.getPrintedPageCount(_hDC);
-                });
+                _nPages = OwnerInvoke(() => _webFramePrivate.getPrintedPageCount(_hDC));
 
                 _page = 1;
             } else {
-                _printGfx = e.Graphics;
+                _printGfx = Args.Graphics;
                 _hDC = _printGfx.GetHdc().ToInt32();
             }
 
-            _ownerInvoke(() => _webFramePrivate.spoolPages(_hDC, _page, _page, IntPtr.Zero));
+            OwnerInvoke(() => _webFramePrivate.spoolPages(_hDC, _page, _page, IntPtr.Zero));
 
             ++_page;
             if (_page <= _nPages)
             {
-                e.HasMorePages = true;
+                Args.HasMorePages = true;
             }
             else
             {
-                _ownerInvoke(() => _webFramePrivate.setInPrintingMode(0, _hDC));
-                e.HasMorePages = false;
+                OwnerInvoke(() => _webFramePrivate.setInPrintingMode(0, _hDC));
+                Args.HasMorePages = false;
                 _printGfx = null;
                 _nPages = 0;
             }         
         }
 
-        private delegate TResult Fn<TResult>();
+        private delegate TResult Fn<out TResult>();
         private delegate void Fn();
 
-        private TResult _ownerInvoke<TResult>(Fn<TResult> method)
+        private TResult OwnerInvoke<TResult>(Fn<TResult> Method)
         {
             if (_owner.InvokeRequired)
-                return (TResult)_owner.Invoke(method);
-            else
-                return method();
+                return (TResult)_owner.Invoke(Method);
+            return Method();
         }
 
-        private void _ownerInvoke(Fn method)
+        private void OwnerInvoke(Fn Method)
         {
             if (_owner.InvokeRequired)
-                _owner.Invoke(method);
+                _owner.Invoke(Method);
             else
-                method();
+                Method();
         }
     }
 }

@@ -24,16 +24,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using WebKit;
 using WebKit.Interop;
 
 namespace WebKit
 {
     // Delegate definitions WebNotificationObserver events
-    internal delegate void OnNotifyEvent(IWebNotification notification);
+    internal delegate void OnNotifyEvent(IWebNotification Notification);
 
     internal class WebNotificationObserver : IWebNotificationObserver
     {
@@ -41,9 +37,9 @@ namespace WebKit
 
         #region webNotificationObserver Members
 
-        public void onNotify(IWebNotification notification)
+        public void onNotify(IWebNotification Notification)
         {
-            OnNotify(notification);
+            OnNotify(Notification);
         }
 
         #endregion

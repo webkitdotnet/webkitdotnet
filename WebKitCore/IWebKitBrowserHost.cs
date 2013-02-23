@@ -11,7 +11,7 @@ namespace WebKit
         event EventHandler Resize;
         event EventHandler GotFocus;
         bool InvokeRequired { get; }
-        object Invoke(Delegate @delegate);
+        object Invoke(Delegate Delegate);
         bool InDesignMode { get; }
     }
 }
