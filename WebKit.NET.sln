@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSCore", "JSCore\JSCore.vcx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSCore.Tests", "JSCore.Tests\JSCore.Tests.csproj", "{B07EDAF3-CA6E-42DD-BEAA-10D3DDF998C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebKitBrowser.Tests", "WebKitBrowser.Tests\WebKitBrowser.Tests.csproj", "{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = WebKit.NET.vsmdi
@@ -110,6 +112,18 @@ Global
 		{B07EDAF3-CA6E-42DD-BEAA-10D3DDF998C5}.Release|Win32.ActiveCfg = Release|Any CPU
 		{B07EDAF3-CA6E-42DD-BEAA-10D3DDF998C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{B07EDAF3-CA6E-42DD-BEAA-10D3DDF998C5}.Release|x86.Build.0 = Release|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Release|Win32.ActiveCfg = Release|Any CPU
+		{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
