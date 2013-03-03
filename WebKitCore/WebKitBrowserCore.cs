@@ -416,7 +416,7 @@ namespace WebKit
         /// <summary>
         /// Gets or sets a value indicating whether the context menu of the WebKitBrowser is enabled.
         /// </summary>
-        public bool IsWebBrowserContextMenuEnabled
+        public bool WebBrowserContextMenuEnabled
         {
             get { return _contextMenuEnabled; }
             set { _contextMenuEnabled = value; }
@@ -425,7 +425,7 @@ namespace WebKit
         /// <summary>
         /// Gets or sets a value indicating whether JavaScript is enabled.
         /// </summary>
-        public bool IsScriptingEnabled {
+        public bool ScriptingEnabled {
           get
           {
               return GetIfLoaded(_initialJavaScriptEnabled, () => _webView.preferences().isJavaScriptEnabled() != 0);
@@ -443,7 +443,7 @@ namespace WebKit
         /// <summary>
         /// Gets or sets a value indicating whether LocalStorage is enabled.
         /// </summary>
-        public bool IsLocalStorageEnabled
+        public bool LocalStorageEnabled
         {
             get
             {
@@ -478,7 +478,7 @@ namespace WebKit
                                 });
             }
         }
-        
+
         /// <summary>
         /// Gets the host.
         /// </summary>
@@ -671,8 +671,8 @@ namespace WebKit
                 _policyDelegate.AllowInitialNavigation = false;
             }
 
-            IsScriptingEnabled = _initialJavaScriptEnabled;
-            IsLocalStorageEnabled = _initialLocalStorageEnabled;
+            ScriptingEnabled = _initialJavaScriptEnabled;
+            LocalStorageEnabled = _initialLocalStorageEnabled;
             LocalStorageDatabaseDirectory = _initialLocalStorageDatabaseDirectory;
         }
 

@@ -27,7 +27,7 @@ namespace WebKit.Tests
         public void TestScriptingEnabled()
         {
             _testHarness.InvokeOnBrowser((Browser) => {
-                Browser.IsScriptingEnabled = true;
+                Browser.ScriptingEnabled = true;
             });
             _testHarness.Test(@"TestContent\ScriptingEnabled.html");
         }
@@ -36,7 +36,7 @@ namespace WebKit.Tests
         public void TestScriptingDisabled()
         {
             _testHarness.InvokeOnBrowser((Browser) => {
-                Browser.IsScriptingEnabled = false;
+                Browser.ScriptingEnabled = false;
             });
             _testHarness.Test(@"TestContent\ScriptingDisabled.html");
         }

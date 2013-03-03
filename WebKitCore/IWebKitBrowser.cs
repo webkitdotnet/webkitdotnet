@@ -156,12 +156,12 @@ namespace WebKit
         /// <summary>
         /// Gets or sets a value indicating whether the context menu of the WebKitBrowser is enabled.
         /// </summary>
-        bool IsWebBrowserContextMenuEnabled { get; set; }
+        bool WebBrowserContextMenuEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether JavaScript is enabled.
         /// </summary>
-        bool IsScriptingEnabled { get; set; }
+        bool ScriptingEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
@@ -169,8 +169,15 @@ namespace WebKit
         object ObjectForScripting { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets a value indicating whether LocalStorage is enabled.
         /// </summary>
+        bool LocalStorageEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fully qualified path to the directory where 
+        /// local storage database files will be stored.
+        /// </summary>
+        /// <remarks>Value must be a fully qualified directory path.</remarks>
         string LocalStorageDatabaseDirectory { get; set; }
 
         /// <summary>

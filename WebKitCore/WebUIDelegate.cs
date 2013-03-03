@@ -92,7 +92,7 @@ namespace WebKit
 
         public int contextMenuItemsForElement(WebView Sender, CFDictionaryPropertyBag Element, int DefaultItemsHMenu)
         {
-            return _owner.IsWebBrowserContextMenuEnabled ? DefaultItemsHMenu : 0;
+            return _owner.WebBrowserContextMenuEnabled ? DefaultItemsHMenu : 0;
         }
 
         public WebView createModalDialog(WebView Sender, WebURLRequest Request)

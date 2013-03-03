@@ -357,10 +357,18 @@ namespace WebKit
         /// </summary>
         [Browsable(true), DefaultValue(true), Category("Behavior")]
         [Description("Specifies whether the default browser context menu is enabled")]
+        public bool WebBrowserContextMenuEnabled
+        {
+            get { return _core.WebBrowserContextMenuEnabled; }
+            set { _core.WebBrowserContextMenuEnabled = value; }
+        }
+        
+        [Browsable(false)]
+        [Obsolete("Deprecated: use WebBrowserContextMenuEnabled instead")]
         public bool IsWebBrowserContextMenuEnabled
         {
-            get { return _core.IsWebBrowserContextMenuEnabled; }
-            set { _core.IsWebBrowserContextMenuEnabled = value; }
+            get { return WebBrowserContextMenuEnabled; }
+            set { WebBrowserContextMenuEnabled = value; }
         }
 
         /// <summary>
@@ -368,10 +376,18 @@ namespace WebKit
         /// </summary>
         [Browsable(true), DefaultValue(true), Category("Behavior")]
         [Description("Specifies whether JavaScript is enabled in the WebKitBrowser")]
+        public bool ScriptingEnabled
+        {
+            get { return _core.ScriptingEnabled; }
+            set { _core.ScriptingEnabled = value; }
+        }
+
+        [Browsable(false)]
+        [Obsolete("Deprecated: use ScriptingEnabled instead")]
         public bool IsScriptingEnabled
         {
-            get { return _core.IsScriptingEnabled; }
-            set { _core.IsScriptingEnabled = value; }
+            get { return ScriptingEnabled; }
+            set { ScriptingEnabled = value; }
         }
 
         /// <summary>
@@ -379,9 +395,17 @@ namespace WebKit
         /// </summary>
         [Browsable(true), DefaultValue(true), Category("Behavior")]
         [Description("Specifies whether LocalStorage is enabled in the WebKitBrowser")]
-        public bool IsLocalStorageEnabled {
-          get { return _core.IsLocalStorageEnabled; }
-          set { _core.IsLocalStorageEnabled = value; }
+        public bool LocalStorageEnabled {
+          get { return _core.LocalStorageEnabled; }
+          set { _core.LocalStorageEnabled = value; }
+        }
+
+        [Browsable(false)]
+        [Obsolete("Deprecated: use LocalStorageEnabled instead")]
+        public bool IsLocalStorageEnabled
+        {
+            get { return LocalStorageEnabled; }
+            set { LocalStorageEnabled = value; }
         }
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace WebKit.Tests
             
             var testHarness = new TestHarness(Browser => {
                 Browser.LocalStorageDatabaseDirectory = localStorageDirPath;
-                Browser.IsLocalStorageEnabled = false;
+                Browser.LocalStorageEnabled = false;
             });
 
             testHarness.Test(@"TestContent\LocalStorageDisabled.html");
@@ -37,7 +37,7 @@ namespace WebKit.Tests
 
             var testHarness = new TestHarness(Browser => {
                 Browser.LocalStorageDatabaseDirectory = localStorageDirPath;
-                Browser.IsLocalStorageEnabled = true;
+                Browser.LocalStorageEnabled = true;
             });
 
             testHarness.Test(@"TestContent\LocalStorageEnabled.html");
