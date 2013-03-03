@@ -13,10 +13,6 @@ namespace WebKit.Tests
     [TestClass]
     public class LocalStorage
     {
-        public LocalStorage()
-        {
-        }
-
         [TestMethod]
         public void TestLocalStorage()
         {

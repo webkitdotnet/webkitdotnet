@@ -9,11 +9,18 @@ namespace WebKit.Tests
     [TestClass]
     public class JavaScript
     {
-        private static readonly TestHarness _testHarness;
-
-        static JavaScript()
+        private static TestHarness _testHarness;
+        
+        [ClassInitialize]
+        public static void Initialize(TestContext Context)
         {
             _testHarness = new TestHarness();
+        }
+
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            _testHarness.Stop();
         }
 
         [TestMethod]
