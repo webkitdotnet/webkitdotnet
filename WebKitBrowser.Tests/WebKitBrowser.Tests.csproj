@@ -65,8 +65,10 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JavaScript.cs" />
     <Compile Include="LocalStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestHarness.cs" />
     <Compile Include="WebKitBrowserTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +92,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestContent\ScriptingDisabled.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestContent\ScriptingEnabled.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestContent\LocalStorage.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
