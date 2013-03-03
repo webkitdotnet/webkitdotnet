@@ -8,7 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace WebKitBrowser.Tests
+namespace WebKit.Tests
 {
     [TestClass]
     public class LocalStorage

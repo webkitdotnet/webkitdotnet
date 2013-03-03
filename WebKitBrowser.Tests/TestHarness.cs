@@ -4,13 +4,13 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace WebKitBrowser.Tests
+namespace WebKit.Tests
 {
     class TestHarness
     {
         private Thread _thread;
         private WebKitBrowserTestForm _form;
-        private readonly Action<WebKit.WebKitBrowser> _webKitBrowserInit;
+        private readonly Action<WebKitBrowser> _webKitBrowserInit;
 
         public TestHarness()
             : this(Browser => { })

@@ -9,7 +9,7 @@
     <ProjectGuid>{83EBF496-8CDB-43E3-BC85-2C1F831DEB1C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebKitBrowser.Tests</RootNamespace>
+    <RootNamespace>WebKit.Tests</RootNamespace>
     <AssemblyName>WebKitBrowser.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

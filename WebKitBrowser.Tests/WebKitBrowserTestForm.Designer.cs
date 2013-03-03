@@ -1,4 +1,4 @@
-﻿namespace WebKitBrowser.Tests
+﻿namespace WebKit.Tests
 {
     partial class WebKitBrowserTestForm
     {
