@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div id="output"></div>
+    <script>
+      var output = document.getElementById("output");
+      if (localStorage) {
+        output.innerText = "FAIL";
+      } else {
+        output.innerText = "SUCCESS";
+      }
+    </script>
+  </body>
+</html>

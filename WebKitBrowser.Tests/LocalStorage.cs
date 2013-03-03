@@ -14,16 +14,33 @@ namespace WebKit.Tests
     public class LocalStorage
     {
         [TestMethod]
-        public void TestLocalStorage()
+        public void TestLocalStorageDisabled()
         {
             var localStorageDirPath = Path.Combine(Environment.CurrentDirectory, "localstorage");
-            Directory.Delete(localStorageDirPath, true);
+            
+            var testHarness = new TestHarness(Browser => {
+                Browser.LocalStorageDatabaseDirectory = localStorageDirPath;
+                Browser.IsLocalStorageEnabled = false;
+            });
+
+            testHarness.Test(@"TestContent\LocalStorageDisabled.html");
+            testHarness.Stop();
+        }
+
+        [TestMethod]
+        public void TestLocalStorageEnabled()
+        {
+            var localStorageDirPath = Path.Combine(Environment.CurrentDirectory, "localstorage");
+            
+            if (Directory.Exists(localStorageDirPath))
+                Directory.Delete(localStorageDirPath, true);
 
             var testHarness = new TestHarness(Browser => {
                 Browser.LocalStorageDatabaseDirectory = localStorageDirPath;
+                Browser.IsLocalStorageEnabled = true;
             });
 
-            testHarness.Test(@"TestContent\LocalStorage.html");
+            testHarness.Test(@"TestContent\LocalStorageEnabled.html");
             testHarness.Stop();
         }
 
