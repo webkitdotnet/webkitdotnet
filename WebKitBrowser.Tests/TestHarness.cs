@@ -56,6 +56,10 @@ namespace WebKit.Tests
                     documentContent = _form.Browser.Document.GetElementById("output").TextContent;
                     ready.Set();
                 };
+                _form.Browser.Error += (Sender, Args) => {
+                    documentContent = "ERROR " + Args.Description;
+                    ready.Set();
+                };
                 _form.Browser.Navigate(filename);
             }));
             ready.WaitOne();
