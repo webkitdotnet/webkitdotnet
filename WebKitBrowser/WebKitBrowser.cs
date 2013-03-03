@@ -420,6 +420,16 @@ namespace WebKit
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether cross origin requests
+        /// from file:// URIs to other file:// URIs are allowed.
+        /// </summary>
+        public bool AllowFileAccessFromFileURLs
+        {
+            get { return _core.AllowFileAccessFromFileURLs; }
+            set { _core.AllowFileAccessFromFileURLs = value; }
+        }
+
+        /// <summary>
         /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

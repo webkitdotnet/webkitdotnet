@@ -11,6 +11,7 @@ namespace WebKit.Tests
         private Thread _thread;
         private WebKitBrowserTestForm _form;
         private readonly Action<WebKitBrowser> _webKitBrowserInit;
+        private AutoResetEvent _scriptComplete;
 
         public TestHarness()
             : this(Browser => { })
@@ -20,6 +21,7 @@ namespace WebKit.Tests
         public TestHarness(Action<WebKit.WebKitBrowser> WebKitBrowserInit)
         {
             _webKitBrowserInit = WebKitBrowserInit;
+            _scriptComplete = new AutoResetEvent(false);
             StartWebBrowser();
         }
 
@@ -29,6 +31,7 @@ namespace WebKit.Tests
             _thread = new Thread(() => {
                 _form = new WebKitBrowserTestForm();
                 _webKitBrowserInit(_form.Browser);
+                _form.Browser.ObjectForScripting = this;
                 _form.Shown += (Sender, Args) => ready.Set();
                 Application.Run(_form);
             });
@@ -44,29 +47,40 @@ namespace WebKit.Tests
             _thread.Join();
         }
 
-        public void Test(string TestFilePath)
+        public void Test(string TestFilePath, bool FinishedOnDocumentComplete = true)
         {
             var dir = Environment.CurrentDirectory;
             var filename = "file:///" + Uri.EscapeUriString(Path.Combine(dir, TestFilePath).Replace('\\', '/'));
 
             var documentContent = "";
-            var ready = new AutoResetEvent(false);
-            _form.Invoke(new Action(() => {
-                _form.Browser.DocumentCompleted += (Sender, Args) => {
+            if (FinishedOnDocumentComplete)
+            {
+                var ready = new AutoResetEvent(false);
+                _form.Invoke(new Action(() => {
+                    _form.Browser.DocumentCompleted += (Sender, Args) => {
+                        documentContent = _form.Browser.Document.GetElementById("output").TextContent;
+                        ready.Set();
+                    };
+                    _form.Browser.Error += (Sender, Args) => {
+                        documentContent = "ERROR " + Args.Description;
+                        ready.Set();
+                    };
+                    _form.Browser.Navigate(filename);
+                }));
+                ready.WaitOne();
+            }
+            else
+            {
+                _form.Invoke(new Action(() => _form.Browser.Navigate(filename)));
+                _scriptComplete.WaitOne();
+                _form.Invoke(new Action(() => {
                     documentContent = _form.Browser.Document.GetElementById("output").TextContent;
-                    ready.Set();
-                };
-                _form.Browser.Error += (Sender, Args) => {
-                    documentContent = "ERROR " + Args.Description;
-                    ready.Set();
-                };
-                _form.Browser.Navigate(filename);
-            }));
-            ready.WaitOne();
+                }));
+            }
 
             Assert.AreEqual("SUCCESS", documentContent);
         }
-
+        
         public void Stop()
         {
             StopWebBrowser();
@@ -75,6 +89,11 @@ namespace WebKit.Tests
         public void InvokeOnBrowser(Action<WebKit.WebKitBrowser> Action)
         {
             _form.Invoke(new Action(() => Action(_form.Browser)));
+        }
+
+        public void Complete()
+        {
+            _scriptComplete.Set();
         }
     }
 }

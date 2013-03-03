@@ -1,0 +1,14 @@
+﻿<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div id="output">FAIL</div>
+    <script>
+      var output = document.getElementById("output");
+      var request = new XMLHttpRequest();
+      request.open("GET", "XMLHttpRequestText.txt", false);
+      request.send();
+      output.innerText = request.responseText;
+    </script>
+  </body>
+</html>

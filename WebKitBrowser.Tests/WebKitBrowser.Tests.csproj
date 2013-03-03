@@ -68,6 +68,7 @@
     <Compile Include="JavaScript.cs" />
     <Compile Include="LocalStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XMLHttpRequest.cs" />
     <Compile Include="TestHarness.cs" />
     <Compile Include="WebKitBrowserTestForm.cs">
       <SubType>Form</SubType>
@@ -92,6 +93,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestContent\XMLHttpRequestLocalFilesDisallowed.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestContent\XMLHttpRequestLocalFilesAllowed.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestContent\LocalStorageDisabled.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -105,6 +112,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TestContent\LocalStoragePersistence.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestContent\XMLHttpRequestText.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

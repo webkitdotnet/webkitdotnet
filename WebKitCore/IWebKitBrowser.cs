@@ -181,6 +181,152 @@ namespace WebKit
         string LocalStorageDatabaseDirectory { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether cross origin requests
+        /// from file:// URIs to other file:// URIs are allowed.
+        /// </summary>
+        bool AllowFileAccessFromFileURLs { get; set; }
+
+        /*bool AcceleratedCompositingEnabled { get; set; }
+
+        bool AllowAnimatedImageLooping { get; set; }
+
+        bool AllowContinuousSpellChecking { get; set; }
+
+        bool AllowAnimatedImages { get; set; }
+
+        bool AllowUniversalFileAccessFromFileURLs { get; set; }
+
+        bool PluginsEnabled { get; set; }
+
+        bool AuthorAndUserStylesEnabled { get; set; }
+
+        bool DetectCacheModelAutomatically { get; set; }
+
+        bool Autosave { get; set; }
+
+        bool AVFoundationEnabled { get; set; }
+
+        object CacheModel { get; set; }
+
+        bool ContinuousSpellCheckingEnabled { get; set; }
+
+        object CookieStorageAcceptPolicy { get; set; }
+
+        string CursiveFontFamily { get; set; }
+
+        bool CustomDragCursorsEnabled { get; set; }
+
+        bool DatabasesEnabled { get; set; }
+
+        int DefaultFixedFontSize { get; set; }
+
+        int DefaultFontSize { get; set; }
+
+        string DefaultTextEncodingName { get; set; }
+
+        object EditableLinkBehavior { get; set; }
+
+        object EditingBehavior { get; set; }
+
+        bool NotificationsEnabled { get; set; }
+
+        string FantasyFontFamily { get; set; }
+
+        string FixedFontFamily { get; set; }
+
+        object FontSmoothing { get; set; }
+
+        float FontSmoothingContrast { get; set; }
+
+        bool GrammarCheckingEnabled { get; set; }
+
+        bool Hixie76WebSocketProtocolEnabled { get; set; }
+
+        bool HyperlinkAuditingEnabled { get; set; }
+
+        bool IconDatabaseEnabled { get; set; }
+
+        string IconDatabaseDirectory { get; set; }
+
+        bool ApplicationChromeModeEnabled { get; set; }
+
+        bool DNSPrefetchingEnabled { get; set; }
+
+        bool DOMPasteAllowed { get; set; }
+
+        bool FrameFlatteningEnabled { get; set; }
+
+        bool FullScreenEnabled { get; set; }
+
+        bool JavaEnabled { get; set; }
+
+        bool WebSecurityEnabled { get; set; }
+
+        bool XSSAuditorEnabled { get; set; }
+
+        bool JavaScriptCanAccessClipboard { get; set; }
+
+        bool JavaScriptCanOpenWindowsAutomatically { get; set; }
+
+        bool LoadImagesAutomatically { get; set; }
+
+        bool LoadSiteIconsIgnoringImageLoadingPreference { get; set; }
+
+        bool MediaPlaybackAllowsInline { get; set; }
+
+        bool MediaPlaybackRequiresUserGesture { get; set; }
+
+        bool MemoryInfoEnabled { get; set; }
+
+        int MinimumFontSize { get; set; }
+
+        int MinimumLogicalFontSize { get; set; }
+
+        bool OfflineWebApplicationCacheEnabled { get; set; }
+
+        string PictographFontFamily { get; set; }
+
+        bool PrivateBrowsingEnabled { get; set; }
+
+        string SansSerifFontFamily { get; set; }
+
+        string SerifFontFamily { get; set; }
+
+        bool DisplayCaptions { get; set; }
+
+        bool DisplaySubtitles { get; set; }
+
+        bool DisplayTextDescriptions { get; set; }
+
+        bool InvertColors { get; set; }
+
+        bool PaintNativeControls { get; set; }
+
+        bool PrintBackgrounds { get; set; }
+
+        bool HighResolutionTimersEnabled { get; set; }
+
+        bool ShowDebugBorders { get; set; }
+
+        bool ShowRepaintCounter { get; set; }
+
+        bool ShowTooltipOverTruncatedText { get; set; }
+
+        string StandardFontFamily { get; set; }
+
+        bool TabsToLinks { get; set; }
+
+        bool TextAreasAreResizable { get; set; }
+
+        bool UserStyleSheetEnabled { get; set; }
+
+        string UserStyleSheetLocation { get; set; }
+
+        bool PageCacheEnabled { get; set; }
+
+        bool ZoomsTextOnly { get; set; }*/
+
+        /// <summary>
         /// Navigates to the specified Url.
         /// </summary>
         /// <param name="NewUrl">Url to navigate to.</param>

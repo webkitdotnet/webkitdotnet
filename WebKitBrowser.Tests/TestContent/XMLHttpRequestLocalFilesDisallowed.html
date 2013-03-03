@@ -1,0 +1,16 @@
+﻿<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div id="output">SUCCESS</div>
+    <script>
+      var output = document.getElementById("output");
+      var request = new XMLHttpRequest();
+      request.open("GET", "XMLHttpRequestText.txt", false);
+      request.send();
+      if (request.responseText === "SUCCESS") {
+        output.innerText = "FAIL";
+      }
+    </script>
+  </body>
+</html>

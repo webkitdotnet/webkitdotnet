@@ -39,6 +39,7 @@ namespace WebKit
         private bool _initialAllowNewWindows = true;
         private bool _initialJavaScriptEnabled = true;
         private bool _initialLocalStorageEnabled = true;
+        private bool _initialAllowFileAccessFromFileURLs;
         private string _initialLocalStorageDatabaseDirectory = "";
         private bool _contextMenuEnabled = true;
         private readonly Version _version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -480,6 +481,24 @@ namespace WebKit
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether cross origin requests
+        /// from file:// URIs to other file:// URIs are allowed.
+        /// </summary>
+        public bool AllowFileAccessFromFileURLs
+        {
+            get
+            {
+                return GetIfLoaded(_initialAllowFileAccessFromFileURLs,
+                                   () => ((IWebPreferencesPrivate) _webView.preferences()).allowFileAccessFromFileURLs() != 0);
+            }
+            set
+            {
+                SetIfLoaded(value, ref _initialAllowFileAccessFromFileURLs,
+                            B => ((IWebPreferencesPrivate) _webView.preferences()).setAllowFileAccessFromFileURLs(B ? 1 : 0));
+            }
+        }
+
+        /// <summary>
         /// Gets the host.
         /// </summary>
         /// <value>The host.</value>
@@ -674,6 +693,7 @@ namespace WebKit
             ScriptingEnabled = _initialJavaScriptEnabled;
             LocalStorageEnabled = _initialLocalStorageEnabled;
             LocalStorageDatabaseDirectory = _initialLocalStorageDatabaseDirectory;
+            AllowFileAccessFromFileURLs = _initialAllowFileAccessFromFileURLs;
         }
 
         // TODO: unused?
