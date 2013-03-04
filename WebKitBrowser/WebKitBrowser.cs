@@ -430,7 +430,7 @@ namespace WebKit
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets a value indicating how cookies are handled.
         /// </summary>
         public CookieAcceptPolicy CookieAcceptPolicy
         {

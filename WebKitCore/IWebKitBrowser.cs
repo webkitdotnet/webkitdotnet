@@ -187,7 +187,7 @@ namespace WebKit
         bool AllowFileAccessFromFileURLs { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets a value indicating how cookies are handled.
         /// </summary>
         CookieAcceptPolicy CookieAcceptPolicy { get; set; }
 
