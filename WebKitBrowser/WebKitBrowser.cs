@@ -430,6 +430,15 @@ namespace WebKit
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public CookieAcceptPolicy CookieAcceptPolicy
+        {
+            get { return _core.CookieAcceptPolicy; }
+            set { _core.CookieAcceptPolicy = value; }
+        }
+
+        /// <summary>
         /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

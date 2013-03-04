@@ -186,6 +186,11 @@ namespace WebKit
         /// </summary>
         bool AllowFileAccessFromFileURLs { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        CookieAcceptPolicy CookieAcceptPolicy { get; set; }
+
         /*bool AcceleratedCompositingEnabled { get; set; }
 
         bool AllowAnimatedImageLooping { get; set; }
@@ -209,8 +214,6 @@ namespace WebKit
         object CacheModel { get; set; }
 
         bool ContinuousSpellCheckingEnabled { get; set; }
-
-        object CookieStorageAcceptPolicy { get; set; }
 
         string CursiveFontFamily { get; set; }
 

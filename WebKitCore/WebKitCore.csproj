@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivationContext.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="IWebKitBrowser.cs" />
     <Compile Include="IWebKitBrowserHost.cs" />
     <Compile Include="NativeMethods.cs" />

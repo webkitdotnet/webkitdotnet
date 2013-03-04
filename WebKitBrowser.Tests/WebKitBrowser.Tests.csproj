@@ -65,6 +65,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cookies.cs" />
     <Compile Include="JavaScript.cs" />
     <Compile Include="LocalStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +94,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestContent\CookieAcceptPolicyAlways.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestContent\CookieAcceptPolicyNever.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestContent\XMLHttpRequestLocalFilesDisallowed.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

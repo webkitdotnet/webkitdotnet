@@ -40,6 +40,7 @@ namespace WebKit
         private bool _initialJavaScriptEnabled = true;
         private bool _initialLocalStorageEnabled = true;
         private bool _initialAllowFileAccessFromFileURLs;
+        private CookieAcceptPolicy _initialCookieAcceptPolicy = CookieAcceptPolicy.Always;
         private string _initialLocalStorageDatabaseDirectory = "";
         private bool _contextMenuEnabled = true;
         private readonly Version _version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -499,6 +500,23 @@ namespace WebKit
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public CookieAcceptPolicy CookieAcceptPolicy
+        {
+            get
+            {
+                return GetIfLoaded(_initialCookieAcceptPolicy,
+                                   () => _webView.preferences().cookieStorageAcceptPolicy().ToCookieAcceptPolicy());
+            }
+            set
+            {
+                SetIfLoaded(value, ref _initialCookieAcceptPolicy,
+                    (Policy) => _webView.preferences().setCookieStorageAcceptPolicy(Policy.ToWebKitCookieStorageAcceptPolicy()));
+            }
+        }
+
+        /// <summary>
         /// Gets the host.
         /// </summary>
         /// <value>The host.</value>
@@ -694,6 +712,7 @@ namespace WebKit
             LocalStorageEnabled = _initialLocalStorageEnabled;
             LocalStorageDatabaseDirectory = _initialLocalStorageDatabaseDirectory;
             AllowFileAccessFromFileURLs = _initialAllowFileAccessFromFileURLs;
+            CookieAcceptPolicy = _initialCookieAcceptPolicy;
         }
 
         // TODO: unused?

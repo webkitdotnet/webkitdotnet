@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div id="output"></div>
+    <script>
+      var output = document.getElementById("output");
+      document.cookie = "testcookie=value123";
+      output.innerText = document.cookie;
+      if (document.cookie.contains("testcookie=value123")) {
+        output.innerText = "SUCCESS";
+      } else {
+        output.innerText = "FAIL";
+      }
+    </script>
+  </body>
+</html>
