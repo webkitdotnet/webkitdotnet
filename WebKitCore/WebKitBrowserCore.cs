@@ -39,6 +39,7 @@ namespace WebKit
         private bool _initialAllowNewWindows = true;
         private bool _initialJavaScriptEnabled = true;
         private bool _initialLocalStorageEnabled = true;
+        private bool _initialAllowAnimatedImages = true;
         private bool _initialAllowFileAccessFromFileURLs;
         private CookieAcceptPolicy _initialCookieAcceptPolicy = CookieAcceptPolicy.Always;
         private string _initialLocalStorageDatabaseDirectory = "";
@@ -512,7 +513,24 @@ namespace WebKit
             set
             {
                 SetIfLoaded(value, ref _initialCookieAcceptPolicy,
-                    (Policy) => _webView.preferences().setCookieStorageAcceptPolicy(Policy.ToWebKitCookieStorageAcceptPolicy()));
+                    (Policy) => {
+                        _webView.preferences().setCookieStorageAcceptPolicy(Policy.ToWebKitCookieStorageAcceptPolicy());
+                        ((IWebViewPrivate) _webView).setCookieEnabled(Policy == CookieAcceptPolicy.Never ? 0 : 1);
+                    });
+            }
+        }
+
+        public bool AllowAnimatedImages
+        {
+            get
+            {
+                return GetIfLoaded(_initialAllowAnimatedImages,
+                                   () => _webView.preferences().allowsAnimatedImages() != 0);
+            }
+            set
+            {
+                SetIfLoaded(value, ref _initialAllowAnimatedImages,
+                            B => _webView.preferences().setAllowsAnimatedImages(B ? 1 : 0));
             }
         }
 
@@ -713,6 +731,7 @@ namespace WebKit
             LocalStorageDatabaseDirectory = _initialLocalStorageDatabaseDirectory;
             AllowFileAccessFromFileURLs = _initialAllowFileAccessFromFileURLs;
             CookieAcceptPolicy = _initialCookieAcceptPolicy;
+            AllowAnimatedImages = _initialAllowAnimatedImages;
         }
 
         // TODO: unused?

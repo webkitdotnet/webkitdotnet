@@ -84,6 +84,7 @@ namespace WebKitBrowserTest
             this.testTextAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setLocalStorageDatabaseDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.cookiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.navigationBar = new WebKitBrowserTest.NavigationBar();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -249,7 +250,8 @@ namespace WebKitBrowserTest
             this.jSTestPageToolStripMenuItem,
             this.test3ToolStripMenuItem,
             this.testTextAreaToolStripMenuItem,
-            this.setLocalStorageDatabaseDirectoryToolStripMenuItem});
+            this.setLocalStorageDatabaseDirectoryToolStripMenuItem,
+            this.cookiesToolStripMenuItem});
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
             this.testToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.testToolStripMenuItem.Text = "Test";
@@ -326,6 +328,13 @@ namespace WebKitBrowserTest
             this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl.TabIndex = 2;
             // 
+            // cookiesToolStripMenuItem
+            // 
+            this.cookiesToolStripMenuItem.Name = "cookiesToolStripMenuItem";
+            this.cookiesToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.cookiesToolStripMenuItem.Text = "Cookies";
+            this.cookiesToolStripMenuItem.Click += new System.EventHandler(this.cookiesToolStripMenuItem_Click);
+            // 
             // navigationBar
             // 
             this.navigationBar.Dock = System.Windows.Forms.DockStyle.Top;
@@ -387,6 +396,7 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem inspectorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testTextAreaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setLocalStorageDatabaseDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cookiesToolStripMenuItem;
 
     }
 }

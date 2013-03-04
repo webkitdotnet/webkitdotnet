@@ -438,6 +438,12 @@ namespace WebKit
             set { _core.CookieAcceptPolicy = value; }
         }
 
+        public bool AllowAnimatedImages
+        {
+            get { return _core.AllowAnimatedImages; }
+            set { _core.AllowAnimatedImages = value; }
+        }
+
         /// <summary>
         /// Gets or sets an object that can be accessed by JavaScript contained within the WebKitBrowser control.
         /// </summary>

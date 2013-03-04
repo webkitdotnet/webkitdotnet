@@ -62,6 +62,8 @@ namespace WebKitBrowserTest
                     else
                         navigationBar.UrlText = "";
 
+                    SetCookieMenuItemText();
+
                     this.Text = "WebKit Browser Example - " + currentPage.browser.DocumentTitle;
 
                     currentPage.browser.Focus();
@@ -74,6 +76,14 @@ namespace WebKitBrowserTest
             navigationBar.Go += () => { currentPage.browser.Navigate(navigationBar.UrlText); ActivateBrowser(); };
             navigationBar.Refresh += () => { currentPage.browser.Reload(); ActivateBrowser(); };
             navigationBar.Stop += () => { currentPage.Stop(); ActivateBrowser(); };
+
+            SetCookieMenuItemText();
+        }
+
+        private void SetCookieMenuItemText()
+        {
+            cookiesToolStripMenuItem.Text = currentPage.browser.CookieAcceptPolicy == CookieAcceptPolicy.Always ?
+                                                "Disable cookies" : "Enable cookies";
         }
 
         private void RegisterBrowserEvents()
@@ -337,6 +347,12 @@ window.onload = function() {
             {
                 currentPage.browser.LocalStorageDatabaseDirectory = dlg.SelectedPath;
             }
+        }
+
+        private void cookiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentPage.browser.CookieAcceptPolicy = currentPage.browser.CookieAcceptPolicy == CookieAcceptPolicy.Always ? CookieAcceptPolicy.Never : CookieAcceptPolicy.Always;
+            SetCookieMenuItemText();
         }
     }
 }

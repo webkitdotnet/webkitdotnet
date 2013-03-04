@@ -191,13 +191,13 @@ namespace WebKit
         /// </summary>
         CookieAcceptPolicy CookieAcceptPolicy { get; set; }
 
+        bool AllowAnimatedImages { get; set; }
+
         /*bool AcceleratedCompositingEnabled { get; set; }
 
         bool AllowAnimatedImageLooping { get; set; }
 
         bool AllowContinuousSpellChecking { get; set; }
-
-        bool AllowAnimatedImages { get; set; }
 
         bool AllowUniversalFileAccessFromFileURLs { get; set; }
 
