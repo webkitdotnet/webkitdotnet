@@ -25,6 +25,7 @@
 */
 
 using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using System.Threading;
 
@@ -353,6 +354,20 @@ window.onload = function() {
         {
             currentPage.browser.CookieAcceptPolicy = currentPage.browser.CookieAcceptPolicy == CookieAcceptPolicy.Always ? CookieAcceptPolicy.Never : CookieAcceptPolicy.Always;
             SetCookieMenuItemText();
+        }
+
+        private void setCertificateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var f = new OpenFileDialog();
+            f.CheckFileExists = true;
+            f.Multiselect = false;
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                var filename = f.FileName;
+                var certificate = new X509Certificate(f.FileName);
+                MessageBox.Show(certificate.Issuer);
+                currentPage.browser.ClientCertificate = certificate;
+            }
         }
     }
 }

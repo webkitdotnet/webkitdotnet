@@ -83,9 +83,10 @@ namespace WebKitBrowserTest
             this.test3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testTextAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setLocalStorageDatabaseDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl = new System.Windows.Forms.TabControl();
             this.cookiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.navigationBar = new WebKitBrowserTest.NavigationBar();
+            this.setCertificateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -183,7 +184,8 @@ namespace WebKitBrowserTest
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyToolStripMenuItem,
-            this.setPasswordToolStripMenuItem});
+            this.setPasswordToolStripMenuItem,
+            this.setCertificateToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "&Edit";
@@ -191,14 +193,14 @@ namespace WebKitBrowserTest
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.copyToolStripMenuItem.Text = "&Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // setPasswordToolStripMenuItem
             // 
             this.setPasswordToolStripMenuItem.Name = "setPasswordToolStripMenuItem";
-            this.setPasswordToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.setPasswordToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.setPasswordToolStripMenuItem.Text = "&Set Password";
             // 
             // viewToolStripMenuItem
@@ -317,6 +319,13 @@ namespace WebKitBrowserTest
             this.setLocalStorageDatabaseDirectoryToolStripMenuItem.Text = "Set Local Storage Database Directory";
             this.setLocalStorageDatabaseDirectoryToolStripMenuItem.Click += new System.EventHandler(this.setLocalStorageDatabaseDirectoryToolStripMenuItem_Click);
             // 
+            // cookiesToolStripMenuItem
+            // 
+            this.cookiesToolStripMenuItem.Name = "cookiesToolStripMenuItem";
+            this.cookiesToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.cookiesToolStripMenuItem.Text = "Cookies";
+            this.cookiesToolStripMenuItem.Click += new System.EventHandler(this.cookiesToolStripMenuItem_Click);
+            // 
             // tabControl
             // 
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -328,13 +337,6 @@ namespace WebKitBrowserTest
             this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl.TabIndex = 2;
             // 
-            // cookiesToolStripMenuItem
-            // 
-            this.cookiesToolStripMenuItem.Name = "cookiesToolStripMenuItem";
-            this.cookiesToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
-            this.cookiesToolStripMenuItem.Text = "Cookies";
-            this.cookiesToolStripMenuItem.Click += new System.EventHandler(this.cookiesToolStripMenuItem_Click);
-            // 
             // navigationBar
             // 
             this.navigationBar.Dock = System.Windows.Forms.DockStyle.Top;
@@ -343,6 +345,13 @@ namespace WebKitBrowserTest
             this.navigationBar.Size = new System.Drawing.Size(662, 49);
             this.navigationBar.TabIndex = 1;
             this.navigationBar.UrlText = "";
+            // 
+            // setCertificateToolStripMenuItem
+            // 
+            this.setCertificateToolStripMenuItem.Name = "setCertificateToolStripMenuItem";
+            this.setCertificateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setCertificateToolStripMenuItem.Text = "Set Certificate";
+            this.setCertificateToolStripMenuItem.Click += new System.EventHandler(this.setCertificateToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -397,6 +406,7 @@ namespace WebKitBrowserTest
         private System.Windows.Forms.ToolStripMenuItem testTextAreaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setLocalStorageDatabaseDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cookiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setCertificateToolStripMenuItem;
 
     }
 }

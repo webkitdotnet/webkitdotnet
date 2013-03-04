@@ -30,6 +30,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using System.Drawing.Printing;
 
@@ -442,6 +443,12 @@ namespace WebKit
         {
             get { return _core.AllowAnimatedImages; }
             set { _core.AllowAnimatedImages = value; }
+        }
+
+        public X509Certificate ClientCertificate
+        {
+            get { return _core.ClientCertificate; }
+            set { _core.ClientCertificate = value; }
         }
 
         /// <summary>

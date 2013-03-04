@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 
 namespace WebKit
@@ -192,6 +193,8 @@ namespace WebKit
         CookieAcceptPolicy CookieAcceptPolicy { get; set; }
 
         bool AllowAnimatedImages { get; set; }
+
+        X509Certificate ClientCertificate { get; set; }
 
         /*bool AcceleratedCompositingEnabled { get; set; }
 

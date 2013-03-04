@@ -6,6 +6,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using WebKit.Interop;
 using WebKit.JSCore;
@@ -52,6 +53,7 @@ namespace WebKit
         private WebDownloadDelegate _downloadDelegate;
         private WebPolicyDelegate _policyDelegate;
         private WebUIDelegate _uiDelegate;
+        private WebResourceLoadDelegate _resourceLoadDelegate;
 
         #region WebKitBrowser events
 
@@ -534,6 +536,8 @@ namespace WebKit
             }
         }
 
+        public X509Certificate ClientCertificate { get; set; }
+
         /// <summary>
         /// Gets the host.
         /// </summary>
@@ -646,6 +650,9 @@ namespace WebKit
             _uiDelegate = new WebUIDelegate(this);
             Marshal.AddRef(Marshal.GetIUnknownForObject(_uiDelegate));
 
+            _resourceLoadDelegate = new WebResourceLoadDelegate();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(_resourceLoadDelegate));
+
             _webNotificationCenter = new WebNotificationCenter();
             Marshal.AddRef(Marshal.GetIUnknownForObject(_webNotificationCenter)); // TODO: find out if this is really needed
             _webNotificationObserver = new WebNotificationObserver();
@@ -659,6 +666,8 @@ namespace WebKit
             _webView.setUIDelegate(_uiDelegate);
 
             _webView.setHostWindow(this._webKitBrowserHost.Handle.ToInt32());
+
+            //_webView.setResourceLoadDelegate(_resourceLoadDelegate);
 
             var rect = new tagRECT();
             rect.top = rect.left = 0;
@@ -932,6 +941,9 @@ namespace WebKit
                 WebMutableURLRequest request = new WebMutableURLRequestClass();
                 request.initWithURL(NewUrl, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 60);
                 request.setHTTPMethod("GET");
+
+                if (ClientCertificate != null)
+                    ((IWebMutableURLRequestPrivate) request).setClientCertificate(ClientCertificate.Handle.ToInt32());
 
                 //use basic authentication if username and password are supplied.
                 if (!string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(Password))
