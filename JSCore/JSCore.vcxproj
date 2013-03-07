@@ -173,4 +173,8 @@ del /F /Q "$(SolutionDir)webkit\temp_webkit_interop.*"
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="AfterClean">
+    <Delete Files="$(SolutionDir)webkit\WebKit.Interop.dll" />
+    <Delete Files="$(SolutionDir)tools\TypeNormalizer.exe" />
+  </Target>
 </Project>
