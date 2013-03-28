@@ -291,13 +291,17 @@ window.onload = function() {
 
         private void test3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
+            JSContext ctx = (JSContext) currentPage.browser.GetGlobalScriptContext();
+            var window = ctx.GetGlobalObject();
+            dynamic doStuff = window.GetProperty("doStuff");
+            doStuff("hello!");
+            /*JSContext ctx = (JSContext)currentPage.browser.GetGlobalScriptContext();
 
             TestClass myTest = new TestClass()
             {
                 ctx = ctx
             };
-            currentPage.browser.ObjectForScripting = myTest;
+            currentPage.browser.ObjectForScripting = myTest;*/
             
             //ctx.EvaluateScript("test()");
    

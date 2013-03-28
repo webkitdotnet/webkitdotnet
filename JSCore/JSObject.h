@@ -31,7 +31,7 @@ public:
     void SetProperty(String ^ propertyName, System::String ^ value);
     void SetProperty(String ^ propertyName, EventDelegate ^ func);
     void SetProperty(String ^ propertyName, ActionDelegate ^ func);
-    JSValue ^ JSObject::CallAsFunction(JSContext ^ context, array<Object ^> ^ variableArgs);
+    JSValue ^ CallAsFunction(array<Object ^> ^ variableArgs);
     JSValue ^ CallFunction(String ^ methodName, ... array<Object ^> ^ variableArgs);
 
     Dictionary<Object^, Object^>^ ToDictionary();

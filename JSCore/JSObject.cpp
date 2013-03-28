@@ -72,29 +72,24 @@ void JSObject::SetProperty(String ^ propertyName, ActionDelegate ^ func)
     SetProperty(propertyName, jsVal);
 }
 
-JSValue ^ JSObject::CallAsFunction(JSContext ^ context, array<Object ^> ^ variableArgs)
+JSValue ^ JSObject::CallAsFunction(array<Object ^> ^ variableArgs)
 {
     JSContextRef ctx = _context->context();
-    JSContextRef ctxworks = context->context();
-
-    if (ctx == ctxworks) {
-        float i = 2;
-    }
 
     JSValueRef * args = new JSValueRef[variableArgs->Length];
     for(int i = 0; i < variableArgs->Length; i++)
     {
-        args[i] = getJSValueRefFromObject(context->context(), variableArgs[i], NULL);
+        args[i] = getJSValueRefFromObject(ctx, variableArgs[i], NULL);
     }
 
-    JSValueRef ret = JSObjectCallAsFunction(context->context(), (JSObjectRef)_value, NULL, variableArgs->Length, args, NULL);
+    JSValueRef ret = JSObjectCallAsFunction(ctx, (JSObjectRef)_value, NULL, variableArgs->Length, args, NULL);
 
     for(int i = 0; i < variableArgs->Length; i++)
     {
-        JSValueUnprotect(context->context(), args[i]);
+        JSValueUnprotect(ctx, args[i]);
     }
     delete[] args;
-    return gcnew JSValue(context, ret);
+    return gcnew JSValue(_context, ret);
 }
 
 JSValue ^ JSObject::CallFunction(String ^ methodName, ... array<Object ^> ^ variableArgs)

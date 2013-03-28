@@ -188,5 +188,14 @@ bool JSValue::TryInvokeMember(System::Dynamic::InvokeMemberBinder ^ binder, arra
     result = obj->CallFunction(binder->Name, args);
     return true;
 }
+
+bool JSValue::TryInvoke(System::Dynamic::InvokeBinder^ binder, array<Object ^> ^ args, [OutAttribute] Object ^% result)
+{
+    if (!IsObject) return false;
+    JSObject ^ obj = ToObject();
+    result = obj->CallAsFunction(args);
+    return true;
+}
+
 #endif
 

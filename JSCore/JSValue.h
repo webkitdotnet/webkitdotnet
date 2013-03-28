@@ -51,6 +51,7 @@ public:
     virtual bool TryGetMember(System::Dynamic::GetMemberBinder^ binder, [OutAttribute] Object ^% result) override;
     virtual bool TrySetMember(System::Dynamic::SetMemberBinder^ binder, Object ^ result) override;
     virtual bool TryInvokeMember(System::Dynamic::InvokeMemberBinder^ binder, array<Object ^> ^ args, [OutAttribute] Object ^% result) override;
+    virtual bool TryInvoke(System::Dynamic::InvokeBinder^ binder, array<Object ^> ^ args, [OutAttribute] Object ^% result) override;
 #endif
 
 internal:
